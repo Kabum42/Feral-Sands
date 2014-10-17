@@ -4,6 +4,8 @@
 
 USING_NS_CC;
 
+#define INPUT_DEADZONE  ( 0.24f * FLOAT(0x7FFF) )  // Default to 24% of the +/- 32767 range.   This is a reasonable default value but can be altered if needed.
+
 DWORD dwResult;
 Sprite3D* boss;
 
@@ -106,10 +108,32 @@ void HelloWorld::update(float dt)
 	{
 		// Controller is connected 
 
+		if( (state.Gamepad.sThumbLX < INPUT_DEADZONE &&
+                state.Gamepad.sThumbLX > -INPUT_DEADZONE ) &&
+            ( state.Gamepad.sThumbLY < INPUT_DEADZONE &&
+                state.Gamepad.sThumbLY > -INPUT_DEADZONE ) )
+        {
+            state.Gamepad.sThumbLX = 0;
+            state.Gamepad.sThumbLY = 0;
+        }
+
+        if( ( state.Gamepad.sThumbRX < INPUT_DEADZONE &&
+                state.Gamepad.sThumbRX > -INPUT_DEADZONE ) &&
+            ( state.Gamepad.sThumbRY < INPUT_DEADZONE &&
+                state.Gamepad.sThumbRY > -INPUT_DEADZONE ) )
+        {
+            state.Gamepad.sThumbRX = 0;
+            state.Gamepad.sThumbRY = 0;
+        }
+
 		WORD wButtons = state.Gamepad.wButtons;
 
 		if(wButtons & XINPUT_GAMEPAD_A)
 			boss->setPosition3D(Vec3(800 / 2 + (rand()%2) -1 * rand()%1 * 800 / 2, 600 / 2 + (rand()%2) -1 * rand()%1 * 600 / 2, rand()%1 * 300));
+
+		boss->setRotation3D(Vec3(-state.Gamepad.sThumbLY/1000,state.Gamepad.sThumbLX/1000,0));
+
+		boss->setPosition3D(boss->getPosition3D() + Vec3(state.Gamepad.sThumbLX/4000,state.Gamepad.sThumbLY/4000,0));
 	}
 	else
 	{
