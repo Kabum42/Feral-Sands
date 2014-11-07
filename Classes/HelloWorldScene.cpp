@@ -1,3 +1,13 @@
+/*
+TO DO:
+-Eventos para evitar tener ochenta arrays.
+-Pulsaciones de botones como eventos.
+-Boss como clase Character que hereda de Sprite3D.
+-Spawner como clase
+-Crear funciones init para todos los elementos más importantes de la GameScreen(camera, layers, etc.)
+-Crear el physicsworld que contenga todos los elementos y compruebe sus colisiones.
+-Meter dentro del Character todo lo que sea pulsación de botones.
+*/
 #include "HelloWorldScene.h"
 
 #include "XInput.h"
@@ -11,10 +21,7 @@ USING_NS_CC;
 DWORD dwResult;
 Sprite3D* boss;
 Sprite3D* boss1;
-
-Sprite* point1;
-Sprite* point2;
-Sprite* pointend;
+Sprite3D* boss2;
 
 bool paused = false;
 
@@ -22,8 +29,6 @@ float cameraAngle = 34;
 float zoom = 1000.0f;
 
 Camera* camera;
-
-Sprite3D* boss2;
 
 Sprite3D* green_tower;
 
@@ -52,12 +57,10 @@ bool leftShoulderPushed = false;
 float rightThumbX = 0;
 float rightThumbY = 0;
 
-float coolDownMax = 0.5;
+float coolDownMax = 0.2;
 float coolDownNow = coolDownMax;
 
 EventCustom event("EnterFrame");
-
-//WeaponShot* _shotInstance;
 
 Scene* HelloWorld::createScene()
 {
@@ -120,17 +123,6 @@ bool HelloWorld::init()
     // add the label as a child to this layer
     this->addChild(label, 1);
 
-    // add "HelloWorld" splash screen"
-    auto sprite = Sprite::create("HelloWorld.png");
-
-    // position the sprite on the center of the screen
-    sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-
-    // add the sprite as a child to this layer
-	sprite->setCameraMask(2);
-    this->addChild(sprite, 0);
-	sprite->setCameraMask(2);
-
 	auto floor = Sprite3D::create("plano2.obj", "sand.png");
 	floor->setScale(100);
 	Vec3 corners_floor[8] = {};
@@ -148,16 +140,22 @@ bool HelloWorld::init()
 	boss->setCameraMask(2);
 	this->addChild(boss, 0);
 
+	boss1 = Sprite3D::create("boss.obj", "boss.png");
 
-	//boss->setPosition3D(Vec3(visibleSize.width / 2 + (rand()%2) -1 * rand()%1 * visibleSize.width / 2, visibleSize.height / 2 + (rand()%2) -1 * rand()%1 * visibleSize.height / 2, rand()%1 * 300));
+	boss1->setPosition3D(Vec3(0, 300, 100));
+	boss1->setRotation3D(Vec3(90, 0, 180));
+	boss1->setScale(20);
+	boss1->setColor(ccc3(0, 200, 0));
+	boss1->setCameraMask(2);
+	this->addChild(boss1, 0);
 	
 	boss2 = Sprite3D::create("boss.obj", "boss.png");
+
 	boss2->setPosition3D(Vec3(-500, 0, 100));
 	boss2->setRotation3D(Vec3(90, 0, 270));
 	boss2->setScale(20);
 	boss2->setCameraMask(2);
 	boss2->setColor(Color3B::YELLOW);
-	//boss2->getAABB();
 	this->addChild(boss2, 0);
 
 	position2 = Point(-500, 0);
@@ -171,20 +169,14 @@ bool HelloWorld::init()
 	green_tower->setVisible(false);
 	this->addChild(green_tower, 0);
 	
-	
-
 	Point p = Point(-500, 0);
 	ccBezierConfig bezier;
 	bezier.controlPoint_1 = Point(point1_x, point1_y);
 	bezier.controlPoint_2 = Point(point2_x, point2_y);
 	bezier.endPosition = Point(pointend_x, pointend_y);
 
-
-	
-	path = PathStone::PathStone(20, 5, p, bezier);
-
+	path = PathStone::PathStone(50, 5, p, bezier);
 	this->addChild(path.getLayer());
-
 
 	p = Point(0, 0);
 
@@ -192,9 +184,6 @@ bool HelloWorld::init()
 	towers[num_towers] = t;
 	num_towers++;
 	this->addChild(t.getLayer());
-	
-	
-	
 
 	camera = Camera::createPerspective(60, visibleSize.width/visibleSize.height, 1, 2000);
 	camera->setCameraFlag(CameraFlag::USER1);
@@ -206,107 +195,14 @@ bool HelloWorld::init()
 	directionalLight->setLightFlag(LightFlag::LIGHT1);
 	this->addChild(directionalLight);
 	*/
-	
-
-	cocos2d::log("LOL");
-
-	// BEZIER PUNTITOS DIBUJADOS
-
-	point1 = Sprite::create("point1.png");
-	point1->setPosition(Vec2(point1_x, point1_y));
-	point1->setCameraMask(2);
-	this->addChild(point1, 0);
-
-	point2 = Sprite::create("point2.png");
-	point2->setPosition(Vec2(point2_x, point2_y));
-	point2->setCameraMask(2);
-	this->addChild(point2, 0);
-
-	pointend = Sprite::create("pointend.png");
-	pointend->setPosition(Vec2(pointend_x, pointend_y));
-	pointend->setCameraMask(2);
-	this->addChild(pointend, 0);
 
 	//now the bezier config declaration
-
-	boss1 = Sprite3D::create("boss.obj", "boss.png");
-
-	//boss->setPosition3D(Vec3(visibleSize.width / 2 + (rand()%2) -1 * rand()%1 * visibleSize.width / 2, visibleSize.height / 2 + (rand()%2) -1 * rand()%1 * visibleSize.height / 2, rand()%1 * 300));
-
-	boss1->setPosition3D(Vec3(0, 300, 100));
-
-	// LO GIRA A LA DERECHA
-	//boss->setRotation3D(Vec3(0,90,0));
-	boss1->setRotation3D(Vec3(90, 0, 180));
-
-	//boss->setScale(rand()%1 * 20);
-
-	boss1->setScale(20);
-
-	boss1->setColor(ccc3(0, 200, 0));
-
-	this->addChild(boss1, 0);
-
-	boss1->setCameraMask(2);
 
 	_eventDispatcher->addCustomEventListener("object_collision", [=](EventCustom* event){
 		float* elements = static_cast<float*>(event->getUserData());
 		boss1->setPositionX(boss1->getPositionX() - elements[0]);
 		boss1->setPositionY(boss1->getPositionY() - elements[1]);
 	});
-
-	/*auto bossOBB = OBB(boss->getAABB());
-
-	Vec3 corners[8] = {};
-
-	bossOBB.getCorners(corners);
-
-	drawOBB = DrawNode3D::create();
-	drawOBB->drawCube(corners, Color4F(1.0, 1.0, 1.0, 1.0));
-	this->addChild(drawOBB, 0);
-
-	drawOBB->setCameraMask(2);*/
-
-	//drawOBB->setAnchorPoint(boss->getPosition());
-
-	//camera->setPosition3D(Vec3(boss->getPositionX(),boss->getPositionY(),boss->getPositionZ() + zoom));
-
-
-	/* BEZIER PUNTITOS DIBUJADOS
-
-	point1 = Sprite::create("point1.png");
-	point1->setPosition(Vec2(point1_x, point1_y));
-	this->addChild(point1, 0);
-
-	point2 = Sprite::create("point2.png");
-	point2->setPosition(Vec2(point2_x, point2_y));
-	this->addChild(point2, 0);
-
-	pointend = Sprite::create("pointend.png");
-	pointend->setPosition(Vec2(pointend_x, pointend_y));
-	this->addChild(pointend, 0);
-
-	*/
-
-	//now the bezier config declaration
-	
-	//camera->setPosition3D(Vec3(boss->getPositionX(),boss->getPositionY(),boss->getPositionZ() + zoom));
-
-
-	/* BEZIER PUNTITOS DIBUJADOS
-	point1 = Sprite::create("point1.png");
-	point1->setPosition(Vec2(point1_x, point1_y));
-	this->addChild(point1, 0);
-	point2 = Sprite::create("point2.png");
-	point2->setPosition(Vec2(point2_x, point2_y));
-	this->addChild(point2, 0);
-	pointend = Sprite::create("pointend.png");
-	pointend->setPosition(Vec2(pointend_x, pointend_y));
-	this->addChild(pointend, 0);
-    
-	*/
-
-	//now the bezier config declaration
 
 	this->scheduleUpdate();
 
@@ -374,9 +270,8 @@ void HelloWorld::update(float dt)
 
 		
 		if (wButtons & XINPUT_GAMEPAD_A)
-			boss->setPosition3D(Vec3(800 / 2 + (rand() % 2) - 1 * rand() % 1 * 800 / 2, 600 / 2 + (rand() % 2) - 1 * rand() % 1 * 600 / 2, rand() % 1 * 300));
+			boss->setPosition3D(Vec3(800 / 2 + (rand() % 2) - 1 * rand() % 1 * 800 / 2, 600 / 2 + (rand() % 2) - 1 * rand() % 1 * 600 / 2, 100));
 		
-		//drawOBB->setPosition3D(drawOBB->getPosition3D() + Vec3(state.Gamepad.sThumbLX / 4000, state.Gamepad.sThumbLY / 4000, 0));
 
 		// ROTACION DE NAVE
 		if (state.Gamepad.sThumbRY != 0) rightThumbY = state.Gamepad.sThumbRY;
@@ -385,21 +280,19 @@ void HelloWorld::update(float dt)
 		boss->setRotation3D(Vec3(90, 0, -90 - atan2(rightThumbY, rightThumbX)*360/(2*M_PI)));
 
 		// DISPARO
-		if(state.Gamepad.bRightTrigger >= 50)
-		{
+
+		if(state.Gamepad.bRightTrigger != 0 && coolDownNow >= coolDownMax) {
+			coolDownNow = state.Gamepad.bRightTrigger/255 * coolDownMax/2;
+			CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
 			WeaponShot* _shotInstance = new WeaponShot(boss->getPosition3D(), boss->getRotation3D());
 			_shotInstance->_sprite->setCameraMask(2);
 			this->addChild(_shotInstance->_sprite, 1);
 		}
 
-		if(state.Gamepad.bRightTrigger != 0 && coolDownNow >= coolDownMax) {
-			coolDownNow = 0;
-			CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
-		}
-
 		// ROTAR CAMARA
-		//if (wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) cameraAngle += 0.1;
-		//if (wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) cameraAngle -= 0.1;
+		if (wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) cameraAngle += 0.1;
+		if (wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) cameraAngle -= 0.1;
+		camera->setRotation3D(Vec3(cameraAngle, 0, 0));
 
 		// MENU DE TORRETAS
 		if (wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
@@ -427,7 +320,6 @@ void HelloWorld::update(float dt)
 
 		}
 
-
 		// VIBRACION
 		/*
 		if (wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
@@ -443,100 +335,10 @@ void HelloWorld::update(float dt)
 			XInputSetState(0, &vibration);
 		}
 		*/
-
-
 		// SEGUIR AL PERSONAJE
 		if(wButtons & XINPUT_GAMEPAD_DPAD_UP) zoom -= 5;
 		if(wButtons & XINPUT_GAMEPAD_DPAD_DOWN) zoom += 5;
-		//camera->setPosition3D(Vec3(boss->getPositionX(), boss->getPositionY() - sin(cameraAngle*(2*M_PI)/360)*zoom, boss->getPositionZ() + cos(cameraAngle*(2*M_PI)/360)*zoom ));
-		
-		boss->setRotation3D(Vec3(90, 0, -90 - atan2(rightThumbY, rightThumbX) * 360 / (2 * M_PI)));
 
-		//drawOBB->setRotation3D(Vec3(0, 0, -90 - atan2(rightThumbY, rightThumbX) * 360 / (2 * M_PI)));
-
-		/* BEZIERS
-
-		point1_x += state.Gamepad.sThumbLX/4000;
-		point1_y += state.Gamepad.sThumbLY/4000;
-
-		point2_x += state.Gamepad.sThumbRX/4000;
-		point2_y += state.Gamepad.sThumbRY/4000;
-
->>>>>>> origin/master
-		if(wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) pointend_x += 5;
-		if(wButtons & XINPUT_GAMEPAD_DPAD_LEFT) pointend_x -= 5;
-		if(wButtons & XINPUT_GAMEPAD_DPAD_UP) pointend_y += 5;
-		if(wButtons & XINPUT_GAMEPAD_DPAD_DOWN) pointend_y -= 5;
-<<<<<<< HEAD
-		point1->setPosition(Vec2(point1_x, point1_y));
-		point2->setPosition(Vec2(point2_x, point2_y));
-		pointend->setPosition(Vec2(pointend_x, pointend_y));
-	
-		if (boss->numberOfRunningActions() == 0 && !paused) { 
-			boss->setPosition3D(Vec3(0, 300, 100));
-			ccBezierConfig bezier;
-			bezier.controlPoint_1 = Point(point1_x, point1_y);
-			bezier.controlPoint_2 = Point(point2_x, point2_y);
-			bezier.endPosition = Point(pointend_x, pointend_y);
-			auto action = CCBezierTo::create(3, bezier);
-    
-			boss->runAction(action);
-			
-		}
-		if(wButtons & XINPUT_GAMEPAD_START) {
-			if (!paused) {
-				paused = true;
-				boss->pauseSchedulerAndActions();
-			}
-			else {
-				paused = false;
-				boss->resumeSchedulerAndActions();
-			}
-		}
-=======
-
-		point1->setPosition(Vec2(point1_x, point1_y));
-		point2->setPosition(Vec2(point2_x, point2_y));
-		pointend->setPosition(Vec2(pointend_x, pointend_y));
-
-		if (boss->numberOfRunningActions() == 0 && !paused) {
-
-		boss->setPosition3D(Vec3(0, 300, 100));
-
-		ccBezierConfig bezier;
-		bezier.controlPoint_1 = Point(point1_x, point1_y);
-		bezier.controlPoint_2 = Point(point2_x, point2_y);
-		bezier.endPosition = Point(pointend_x, pointend_y);
-
-		auto action = CCBezierTo::create(3, bezier);
-
-		boss->runAction(action);
-
-		}
-
-		if(wButtons & XINPUT_GAMEPAD_START) {
-		if (!paused) {
-		paused = true;
-		boss->pauseSchedulerAndActions();
-		}
-		else {
-		paused = false;
-		boss->resumeSchedulerAndActions();
-		}
-		}
-
->>>>>>> origin/master
-		*/
-
-		if (wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) cameraAngle += 0.1;
-		if (wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) cameraAngle -= 0.1;
-		camera->setRotation3D(Vec3(cameraAngle, 0, 0));
-
-		// SEGUIR AL PERSONAJE
-
-		if (wButtons & XINPUT_GAMEPAD_DPAD_UP) zoom -= 5;
-		if (wButtons & XINPUT_GAMEPAD_DPAD_DOWN) zoom += 5;
-		//camera->setPosition3D(Vec3(boss->getPositionX(),boss->getPositionY() -zoom,boss->getPositionZ() +zoom));
 		camera->setPosition3D(Vec3(boss->getPositionX(), boss->getPositionY() - sin(cameraAngle*(2 * M_PI) / 360)*zoom, boss->getPositionZ() + cos(cameraAngle*(2 * M_PI) / 360)*zoom));
 
 		if (pow(boss->getPositionX() - boss1->getPositionX(), 2) + pow(boss->getPositionY() - boss1->getPositionY(), 2) < pow(300, 2)){
@@ -561,7 +363,6 @@ void HelloWorld::update(float dt)
 	else
 	{
 		// Controller is not connected 
-
 	}
 
 	// Irrelevant if controlles is connected
@@ -573,10 +374,6 @@ void HelloWorld::update(float dt)
 	// BOSS 2 ROTATED TOWARDS BOSS 1
 	//Point p = Point(boss->getPositionX(), boss->getPositionY());
 	//rotateToPoint(boss2, p);
-
-	//rightThumbY 
-	//rightThumbX 
-	//boss->setRotation3D(Vec3(90, 0, -90 - atan2(rightThumbY, rightThumbX)*360/(2*M_PI)));
 
 	Vec3 corners[8] = {};
 	green_tower->getAABB().getCorners(corners);
@@ -592,10 +389,6 @@ void HelloWorld::update(float dt)
 
 	//UPDATE PATHS
 	path.update(dt);
-	
-	point1->setPosition(Vec2(point1_x, point1_y));
-	point2->setPosition(Vec2(point2_x, point2_y));
-	pointend->setPosition(Vec2(pointend_x, pointend_y));
 	
 	if (boss2->numberOfRunningActions() == 0 && !paused) { 
 

@@ -6,12 +6,13 @@ WeaponShot::WeaponShot(Vec3 start, Vec3 aim)
 	_origin = start;
 	_direction = aim;
 
-	_speed = 10;
+	_speed = 100;
 	_range = 100;
 
 	_sprite = Sprite3D::create("boss.obj", "boss.png");
 	_sprite->setPosition3D(_origin);
 	_sprite->setRotation3D(_direction);
+	_sprite->setScale(3);
 
 
 	_direction.z += 90;
