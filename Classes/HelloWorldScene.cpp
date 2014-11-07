@@ -232,7 +232,7 @@ bool HelloWorld::init()
 
 	//boss->setPosition3D(Vec3(visibleSize.width / 2 + (rand()%2) -1 * rand()%1 * visibleSize.width / 2, visibleSize.height / 2 + (rand()%2) -1 * rand()%1 * visibleSize.height / 2, rand()%1 * 300));
 
-	boss1->setPosition3D(Vec3(0, 300, 0));
+	boss1->setPosition3D(Vec3(0, 300, 100));
 
 	// LO GIRA A LA DERECHA
 	//boss->setRotation3D(Vec3(0,90,0));
@@ -241,6 +241,8 @@ bool HelloWorld::init()
 	//boss->setScale(rand()%1 * 20);
 
 	boss1->setScale(20);
+
+	boss1->setColor(ccc3(0, 200, 0));
 
 	this->addChild(boss1, 0);
 
