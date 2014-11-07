@@ -2,9 +2,12 @@
 #define __HELLOWORLD_SCENE_H__
 
 #include "cocos2d.h"
+#include "PathStone.h"
+#include "Tower.h"
 
 class HelloWorld : public cocos2d::Layer
 {
+
 public:
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::Scene* createScene();
@@ -14,6 +17,10 @@ public:
 
 	// Update Function
 	void HelloWorld::update(float dt);
+
+	void HelloWorld::rotateToPoint(cocos2d::Sprite3D* s, cocos2d::Point p);
+
+	void HelloWorld::rotateToVec2(cocos2d::Sprite3D* s, cocos2d::Vec2 v);
     
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
