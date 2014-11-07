@@ -2,10 +2,7 @@
 
 #include "XInput.h"
 
-<<<<<<< HEAD
-=======
 #include "SimpleAudioEngine.h"
->>>>>>> origin/master
 
 USING_NS_CC;
 
@@ -58,30 +55,7 @@ float rightThumbY = 0;
 float coolDownMax = 0.5;
 float coolDownNow = coolDownMax;
 
-Sprite* point1;
-Sprite* point2;
-Sprite* pointend;
-
 EventCustom event("EnterFrame");
-
-float point1_x = 200.0f;
-float point1_y = 200.0f;
-
-float point2_x = 300.0f;
-float point2_y = 100.0f;
-
-float pointend_x = 400.0f;
-float pointend_y = 200.0f;
-
-bool paused = false;
-
-float cameraAngle = 34;
-float zoom = 500.0f;
-
-float rightThumbX = 0;
-float rightThumbY = 32767;
-
-Camera* camera;
 
 //WeaponShot* _shotInstance;
 
@@ -176,17 +150,6 @@ bool HelloWorld::init()
 
 
 	//boss->setPosition3D(Vec3(visibleSize.width / 2 + (rand()%2) -1 * rand()%1 * visibleSize.width / 2, visibleSize.height / 2 + (rand()%2) -1 * rand()%1 * visibleSize.height / 2, rand()%1 * 300));
-
-<<<<<<< HEAD
-	boss->setPosition3D(Vec3(400, 300, 0));
-
-	// LO GIRA A LA DERECHA
-	//boss->setRotation3D(Vec3(0,90,0));
-	boss->setRotation3D(Vec3(90, 0, 180));
-=======
-	// LO GIRA A LA DERECHA
-	//boss->setRotation3D(Vec3(0,90,0));
-	boss->setRotation3D(Vec3(90, 0, 180));
 	
 	boss2 = Sprite3D::create("boss.obj", "boss.png");
 	boss2->setPosition3D(Vec3(-500, 0, 100));
@@ -275,7 +238,6 @@ bool HelloWorld::init()
 	// LO GIRA A LA DERECHA
 	//boss->setRotation3D(Vec3(0,90,0));
 	boss1->setRotation3D(Vec3(90, 0, 180));
->>>>>>> origin/master
 
 	//boss->setScale(rand()%1 * 20);
 
@@ -327,12 +289,6 @@ bool HelloWorld::init()
 	*/
 
 	//now the bezier config declaration
-
-	boss->setCameraMask(2);
-	camera = Camera::createPerspective(60, visibleSize.width/visibleSize.height, 1, 2000);
-	camera->setCameraFlag(CameraFlag::USER1);
-	this->addChild(camera, 1);
-	camera->setRotation3D(Vec3(cameraAngle, 0, 0));
 	
 	//camera->setPosition3D(Vec3(boss->getPositionX(),boss->getPositionY(),boss->getPositionZ() + zoom));
 
@@ -352,9 +308,6 @@ bool HelloWorld::init()
 
 	//now the bezier config declaration
 
-	
-
-
 	this->scheduleUpdate();
 
 	return true;
@@ -362,10 +315,7 @@ bool HelloWorld::init()
 
 void HelloWorld::update(float dt)
 {
-<<<<<<< HEAD
 	_eventDispatcher->dispatchEvent(&event);
-=======
->>>>>>> origin/master
 
 	XINPUT_STATE state;
 	ZeroMemory(&state, sizeof(XINPUT_STATE));
@@ -420,33 +370,19 @@ void HelloWorld::update(float dt)
 		}
 			
 		// CONTROL DE NAVE
-		boss->setPosition3D(boss->getPosition3D() + Vec3(state.Gamepad.sThumbLX/4000,state.Gamepad.sThumbLY/4000,0));
-		
-		// CONTROL DE NAVE
-
-<<<<<<< HEAD
-		// CONTROL DE NAVE
-
-		if(wButtons & XINPUT_GAMEPAD_A)
-			boss->setPosition3D(Vec3(800 / 2 + (rand()%2) -1 * rand()%1 * 800 / 2, 600 / 2 + (rand()%2) -1 * rand()%1 * 600 / 2, rand()%1 * 300));
-
-		boss->setPosition3D(boss->getPosition3D() + Vec3(state.Gamepad.sThumbLX/4000,state.Gamepad.sThumbLY/4000,0));
-		
-=======
-		if (wButtons & XINPUT_GAMEPAD_A)
-			boss->setPosition3D(Vec3(800 / 2 + (rand() % 2) - 1 * rand() % 1 * 800 / 2, 600 / 2 + (rand() % 2) - 1 * rand() % 1 * 600 / 2, rand() % 1 * 300));
-
 		boss->setPosition3D(boss->getPosition3D() + Vec3(state.Gamepad.sThumbLX / 4000, state.Gamepad.sThumbLY / 4000, 0));
 
+		
+		if (wButtons & XINPUT_GAMEPAD_A)
+			boss->setPosition3D(Vec3(800 / 2 + (rand() % 2) - 1 * rand() % 1 * 800 / 2, 600 / 2 + (rand() % 2) - 1 * rand() % 1 * 600 / 2, rand() % 1 * 300));
+		
 		//drawOBB->setPosition3D(drawOBB->getPosition3D() + Vec3(state.Gamepad.sThumbLX / 4000, state.Gamepad.sThumbLY / 4000, 0));
 
->>>>>>> origin/master
 		// ROTACION DE NAVE
 		if (state.Gamepad.sThumbRY != 0) rightThumbY = state.Gamepad.sThumbRY;
 		if (state.Gamepad.sThumbRX != 0) rightThumbX = state.Gamepad.sThumbRX;
 
 		boss->setRotation3D(Vec3(90, 0, -90 - atan2(rightThumbY, rightThumbX)*360/(2*M_PI)));
-<<<<<<< HEAD
 
 		// DISPARO
 		if(state.Gamepad.bRightTrigger >= 50)
@@ -456,21 +392,10 @@ void HelloWorld::update(float dt)
 			this->addChild(_shotInstance->_sprite, 1);
 		}
 
-
-		/* BEZIERS
-		point1_x += state.Gamepad.sThumbLX/4000;
-		point1_y += state.Gamepad.sThumbLY/4000;
-		point2_x += state.Gamepad.sThumbRX/4000;
-		point2_y += state.Gamepad.sThumbRY/4000;
-=======
-			
-
 		if(state.Gamepad.bRightTrigger != 0 && coolDownNow >= coolDownMax) {
 			coolDownNow = 0;
 			CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
 		}
-			
-		
 
 		// ROTAR CAMARA
 		//if (wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) cameraAngle += 0.1;
@@ -608,13 +533,7 @@ void HelloWorld::update(float dt)
 		camera->setRotation3D(Vec3(cameraAngle, 0, 0));
 
 		// SEGUIR AL PERSONAJE
-<<<<<<< HEAD
-		if(wButtons & XINPUT_GAMEPAD_DPAD_UP) zoom -= 5;
-		if(wButtons & XINPUT_GAMEPAD_DPAD_DOWN) zoom += 5;
-		//camera->setPosition3D(Vec3(boss->getPositionX(),boss->getPositionY() -zoom,boss->getPositionZ() +zoom));
-		camera->setPosition3D(Vec3(boss->getPositionX(), boss->getPositionY() - sin(cameraAngle*(2*M_PI)/360)*zoom, boss->getPositionZ() + cos(cameraAngle*(2*M_PI)/360)*zoom ));
-		
-=======
+
 		if (wButtons & XINPUT_GAMEPAD_DPAD_UP) zoom -= 5;
 		if (wButtons & XINPUT_GAMEPAD_DPAD_DOWN) zoom += 5;
 		//camera->setPosition3D(Vec3(boss->getPositionX(),boss->getPositionY() -zoom,boss->getPositionZ() +zoom));
@@ -637,7 +556,6 @@ void HelloWorld::update(float dt)
 
 		}
 
->>>>>>> origin/master
 	}
 
 	else
@@ -674,8 +592,6 @@ void HelloWorld::update(float dt)
 
 	//UPDATE PATHS
 	path.update(dt);
-
-	
 	
 	point1->setPosition(Vec2(point1_x, point1_y));
 	point2->setPosition(Vec2(point2_x, point2_y));
