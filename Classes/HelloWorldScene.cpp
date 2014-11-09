@@ -19,6 +19,7 @@ USING_NS_CC;
 #define INPUT_DEADZONE  ( 0.24f * FLOAT(0x7FFF) )  // Default to 24% of the +/- 32767 range.   This is a reasonable default value but can be altered if needed.
 
 DWORD dwResult;
+
 Sprite3D* boss;
 Sprite3D* boss1;
 Sprite3D* boss2;
@@ -34,7 +35,7 @@ Sprite3D* green_tower;
 
 PathStone path;
 
-Tower towers [50] = { };
+Tower* towers [50] = { };
 int num_towers = 0;
 
 Point position1;
@@ -180,10 +181,11 @@ bool HelloWorld::init()
 
 	p = Point(0, 0);
 
-	Tower t = Tower::Tower("standard", p);
+	Tower* t = new Tower("standard", p);
 	towers[num_towers] = t;
 	num_towers++;
-	this->addChild(t.getLayer());
+	t->_sprite->setCameraMask(2);
+	this->addChild(t->_sprite, 1);
 
 	camera = Camera::createPerspective(60, visibleSize.width/visibleSize.height, 1, 2000);
 	camera->setCameraFlag(CameraFlag::USER1);
@@ -211,6 +213,10 @@ bool HelloWorld::init()
 
 void HelloWorld::update(float dt)
 {
+	float* data = new float[1];
+	data[0] = dt;
+	event.setUserData(data);
+
 	_eventDispatcher->dispatchEvent(&event);
 
 	XINPUT_STATE state;
@@ -246,24 +252,31 @@ void HelloWorld::update(float dt)
 
 		WORD wButtons = state.Gamepad.wButtons;
 		
+
 		// COLOCAR TORRETA
+		
 		if(state.Gamepad.bLeftTrigger > 50) {
 			if (!leftTriggerPushed && menuTurrets) {
+				
 				
 				Vec3 corners[8] = {};
 				green_tower->getAABB().getCorners(corners);
 				Point p = Point(boss->getPositionX() + rightThumbX/100 +(corners[5].x - corners[0].x)/2, boss->getPositionY() + rightThumbY/100 -(corners[5].y - corners[0].y)/2);
-				
-				Tower t = Tower::Tower("standard", p);
+
+				Tower* t = new Tower("standard", p);
 				towers[num_towers] = t;
 				num_towers++;
+				t->_sprite->setCameraMask(2);
+				this->addChild(t->_sprite, 1);
+				
 				
 			}
-			leftTriggerPushed = true;
+			if (!leftTriggerPushed) leftTriggerPushed = true;
 		}
 		else {
-			leftTriggerPushed = false;
+			if (leftTriggerPushed) leftTriggerPushed = false;
 		}
+		
 			
 		// CONTROL DE NAVE
 		boss->setPosition3D(boss->getPosition3D() + Vec3(state.Gamepad.sThumbLX / 4000, state.Gamepad.sThumbLY / 4000, 0));
@@ -280,7 +293,7 @@ void HelloWorld::update(float dt)
 		boss->setRotation3D(Vec3(90, 0, -90 - atan2(rightThumbY, rightThumbX)*360/(2*M_PI)));
 
 		// DISPARO
-
+		
 		if(state.Gamepad.bRightTrigger != 0 && coolDownNow >= coolDownMax) {
 			coolDownNow = state.Gamepad.bRightTrigger/255 * coolDownMax/2;
 			CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
@@ -288,6 +301,7 @@ void HelloWorld::update(float dt)
 			_shotInstance->_sprite->setCameraMask(2);
 			this->addChild(_shotInstance->_sprite, 1);
 		}
+		
 
 		// ROTAR CAMARA
 		if (wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) cameraAngle += 0.1;
@@ -380,12 +394,6 @@ void HelloWorld::update(float dt)
 	
 	green_tower->setPosition3D(Vec3(boss->getPositionX() + rightThumbX/100 +(corners[5].x - corners[0].x)/2, boss->getPositionY() + rightThumbY/100 -(corners[5].y - corners[0].y)/2, 0));
 
-	//UPDATE TOWERS
-	
-	for (int i = 0; i < num_towers; i++) {
-		towers[i].update(dt);
-		//towers[i].getLayer()->setPositionX(towers[i].getLayer()->getPositionX()+1);
-	}
 
 	//UPDATE PATHS
 	path.update(dt);

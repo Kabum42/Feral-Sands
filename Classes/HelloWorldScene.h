@@ -4,7 +4,6 @@
 #include "cocos2d.h"
 #include "PathStone.h"
 #include "Tower.h"
-
 #include "WeaponShot.h"
 
 class HelloWorld : public cocos2d::Layer
