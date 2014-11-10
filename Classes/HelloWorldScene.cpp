@@ -202,8 +202,14 @@ bool HelloWorld::init()
 
 	_eventDispatcher->addCustomEventListener("object_collision", [=](EventCustom* event){
 		float* elements = static_cast<float*>(event->getUserData());
-		boss1->setPositionX(boss1->getPositionX() - elements[0]);
-		boss1->setPositionY(boss1->getPositionY() - elements[1]);
+		if (elements[3] == 1){
+			boss1->setPositionX(boss1->getPositionX() - elements[0]);
+			boss1->setPositionY(boss1->getPositionY() - elements[1]);
+		}
+		else{
+			boss2->setPositionX(boss2->getPositionX() - elements[0]);
+			boss2->setPositionY(boss2->getPositionY() - elements[1]);
+		}
 	});
 
 	this->scheduleUpdate();
@@ -359,11 +365,30 @@ void HelloWorld::update(float dt)
 
 			float div = pow(300, 2) / (pow(boss->getPositionX() - boss1->getPositionX(), 2) + pow(boss->getPositionY() - boss1->getPositionY(), 2));
 
-			float* elements = new float[2];
+			float* elements = new float[3];
 			elements[0] = 0.5 * (abs(boss->getPositionX() - boss1->getPositionX())*div - abs(boss->getPositionX() - boss1->getPositionX()));
 			if (boss->getPositionX() < boss1->getPositionX()) elements[0] = -elements[0];
 			elements[1] = 0.5 * (abs(boss->getPositionY() - boss1->getPositionY())*div - abs(boss->getPositionY() - boss1->getPositionY()));
 			if (boss->getPositionY() < boss1->getPositionY()) elements[1] = -elements[1];
+			elements[3] = 1;
+
+			EventCustom event("object_collision");
+			event.setUserData(elements);
+
+			_eventDispatcher->dispatchEvent(&event);
+
+		}
+
+		if (pow(boss->getPositionX() - boss2->getPositionX(), 2) + pow(boss->getPositionY() - boss2->getPositionY(), 2) < pow(300, 2)){
+
+			float div = pow(300, 2) / (pow(boss->getPositionX() - boss2->getPositionX(), 2) + pow(boss->getPositionY() - boss2->getPositionY(), 2));
+
+			float* elements = new float[3];
+			elements[0] = 0.5 * (abs(boss->getPositionX() - boss2->getPositionX())*div - abs(boss->getPositionX() - boss2->getPositionX()));
+			if (boss->getPositionX() < boss2->getPositionX()) elements[0] = -elements[0];
+			elements[1] = 0.5 * (abs(boss->getPositionY() - boss2->getPositionY())*div - abs(boss->getPositionY() - boss2->getPositionY()));
+			if (boss->getPositionY() < boss2->getPositionY()) elements[1] = -elements[1];
+			elements[3] = 2;
 
 			EventCustom event("object_collision");
 			event.setUserData(elements);
