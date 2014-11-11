@@ -19,10 +19,16 @@ USING_NS_CC;
 #define INPUT_DEADZONE  ( 0.24f * FLOAT(0x7FFF) )  // Default to 24% of the +/- 32767 range.   This is a reasonable default value but can be altered if needed.
 
 DWORD dwResult;
+float data [1] = { };
 
 Sprite3D* boss;
 Sprite3D* boss1;
-Sprite3D* boss2;
+//Sprite3D* boss2;
+
+Sprite3D* mobile_objects [200] = { };
+int num_mobile_objects = 0;
+Sprite3D* static_objects [100] = { };
+int num_static_objects = 0;
 
 bool paused = false;
 
@@ -35,11 +41,8 @@ Sprite3D* green_tower;
 
 PathStone path;
 
-Tower* towers [50] = { };
-int num_towers = 0;
-
-Point position1;
-Point position2;
+//Point position1;
+//Point position2;
 
 float point1_x = 0;
 float point1_y = -300;
@@ -134,6 +137,8 @@ bool HelloWorld::init()
 	this->addChild(floor, 0);
 	
 	boss = Sprite3D::create("boss.obj", "boss.png");
+	mobile_objects [num_mobile_objects] = boss;
+	num_mobile_objects++;
 
 	boss->setPosition3D(Vec3(400, 300, 100));
 	boss->setRotation3D(Vec3(90, 0, 180));
@@ -142,6 +147,8 @@ bool HelloWorld::init()
 	this->addChild(boss, 0);
 
 	boss1 = Sprite3D::create("boss.obj", "boss.png");
+	mobile_objects [num_mobile_objects] = boss1;
+	num_mobile_objects++;
 
 	boss1->setPosition3D(Vec3(0, 300, 100));
 	boss1->setRotation3D(Vec3(90, 0, 180));
@@ -150,6 +157,7 @@ bool HelloWorld::init()
 	boss1->setCameraMask(2);
 	this->addChild(boss1, 0);
 	
+	/*
 	boss2 = Sprite3D::create("boss.obj", "boss.png");
 
 	boss2->setPosition3D(Vec3(-500, 0, 100));
@@ -158,8 +166,9 @@ bool HelloWorld::init()
 	boss2->setCameraMask(2);
 	boss2->setColor(Color3B::YELLOW);
 	this->addChild(boss2, 0);
+	*/
 
-	position2 = Point(-500, 0);
+	//position2 = Point(-500, 0);
 
 	green_tower = Sprite3D::create("tower.obj", "stone.png");
 	green_tower->setPosition3D(Vec3(0, 0, 0));
@@ -179,11 +188,41 @@ bool HelloWorld::init()
 	path = PathStone::PathStone(50, 5, p, bezier);
 	this->addChild(path.getLayer());
 
+	Enemy* e = new Enemy("grunt", p, bezier, 5);
+	mobile_objects [num_mobile_objects] = e->_sprite;
+	num_mobile_objects++;
+	e->_sprite->setCameraMask(2);
+	this->addChild(e->_sprite, 1);
+
+	e = new Enemy("grunt", p, bezier, 4);
+	mobile_objects [num_mobile_objects] = e->_sprite;
+	num_mobile_objects++;
+	e->_sprite->setCameraMask(2);
+	this->addChild(e->_sprite, 1);
+
+	e = new Enemy("grunt", p, bezier, 3);
+	mobile_objects [num_mobile_objects] = e->_sprite;
+	num_mobile_objects++;
+	e->_sprite->setCameraMask(2);
+	this->addChild(e->_sprite, 1);
+
+	e = new Enemy("grunt", p, bezier, 2);
+	mobile_objects [num_mobile_objects] = e->_sprite;
+	num_mobile_objects++;
+	e->_sprite->setCameraMask(2);
+	this->addChild(e->_sprite, 1);
+
+	e = new Enemy("grunt", p, bezier, 1);
+	mobile_objects [num_mobile_objects] = e->_sprite;
+	num_mobile_objects++;
+	e->_sprite->setCameraMask(2);
+	this->addChild(e->_sprite, 1);
+
 	p = Point(0, 0);
 
 	Tower* t = new Tower("standard", p);
-	towers[num_towers] = t;
-	num_towers++;
+	static_objects [num_static_objects] = t->_sprite;
+	num_static_objects++;
 	t->_sprite->setCameraMask(2);
 	this->addChild(t->_sprite, 1);
 
@@ -202,15 +241,12 @@ bool HelloWorld::init()
 
 	_eventDispatcher->addCustomEventListener("object_collision", [=](EventCustom* event){
 		float* elements = static_cast<float*>(event->getUserData());
-		if (elements[3] == 1){
-			boss1->setPositionX(boss1->getPositionX() - elements[0]);
-			boss1->setPositionY(boss1->getPositionY() - elements[1]);
-		}
-		else{
-			boss2->setPositionX(boss2->getPositionX() - elements[0]);
-			boss2->setPositionY(boss2->getPositionY() - elements[1]);
-		}
+		mobile_objects[(int)elements[2]]->setPositionX(mobile_objects[(int)elements[2]]->getPositionX() - elements[0]);
+		mobile_objects[(int)elements[2]]->setPositionY(mobile_objects[(int)elements[2]]->getPositionY() - elements[1]);
 	});
+
+	//SET BACKGROUND MUSIC
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("sandstorm.wav", true);
 
 	this->scheduleUpdate();
 
@@ -219,17 +255,19 @@ bool HelloWorld::init()
 
 void HelloWorld::update(float dt)
 {
-	float* data = new float[1];
+	
 	data[0] = dt;
 	event.setUserData(data);
-
 	_eventDispatcher->dispatchEvent(&event);
 
+	
 	XINPUT_STATE state;
 	ZeroMemory(&state, sizeof(XINPUT_STATE));
-
+	
 	XINPUT_VIBRATION vibration;
 	ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
+	
+	
 
 	// Simply get the state of the controller from XInput.
 	dwResult = XInputGetState(0, &state);
@@ -237,6 +275,8 @@ void HelloWorld::update(float dt)
 	if (dwResult == ERROR_SUCCESS)
 	{
 		// Controller is connected 
+
+		
 
 		if ((state.Gamepad.sThumbLX < INPUT_DEADZONE &&
 			state.Gamepad.sThumbLX > -INPUT_DEADZONE) &&
@@ -270,8 +310,8 @@ void HelloWorld::update(float dt)
 				Point p = Point(boss->getPositionX() + rightThumbX/100 +(corners[5].x - corners[0].x)/2, boss->getPositionY() + rightThumbY/100 -(corners[5].y - corners[0].y)/2);
 
 				Tower* t = new Tower("standard", p);
-				towers[num_towers] = t;
-				num_towers++;
+				static_objects [num_static_objects] = t->_sprite;
+				num_static_objects++;
 				t->_sprite->setCameraMask(2);
 				this->addChild(t->_sprite, 1);
 				
@@ -285,7 +325,7 @@ void HelloWorld::update(float dt)
 		
 			
 		// CONTROL DE NAVE
-		boss->setPosition3D(boss->getPosition3D() + Vec3(state.Gamepad.sThumbLX / 4000, state.Gamepad.sThumbLY / 4000, 0));
+		boss->setPosition3D(boss->getPosition3D() + Vec3(state.Gamepad.sThumbLX*dt/70, state.Gamepad.sThumbLY*dt/70, 0));
 
 		
 		if (wButtons & XINPUT_GAMEPAD_A)
@@ -340,6 +380,11 @@ void HelloWorld::update(float dt)
 
 		}
 
+		if(wButtons & XINPUT_GAMEPAD_DPAD_UP) zoom -= 5;
+		if(wButtons & XINPUT_GAMEPAD_DPAD_DOWN) zoom += 5;
+
+		
+
 		// VIBRACION
 		/*
 		if (wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
@@ -354,48 +399,7 @@ void HelloWorld::update(float dt)
 			vibration.wRightMotorSpeed = 0;
 			XInputSetState(0, &vibration);
 		}
-		*/
-		// SEGUIR AL PERSONAJE
-		if(wButtons & XINPUT_GAMEPAD_DPAD_UP) zoom -= 5;
-		if(wButtons & XINPUT_GAMEPAD_DPAD_DOWN) zoom += 5;
-
-		camera->setPosition3D(Vec3(boss->getPositionX(), boss->getPositionY() - sin(cameraAngle*(2 * M_PI) / 360)*zoom, boss->getPositionZ() + cos(cameraAngle*(2 * M_PI) / 360)*zoom));
-
-		if (pow(boss->getPositionX() - boss1->getPositionX(), 2) + pow(boss->getPositionY() - boss1->getPositionY(), 2) < pow(300, 2)){
-
-			float div = pow(300, 2) / (pow(boss->getPositionX() - boss1->getPositionX(), 2) + pow(boss->getPositionY() - boss1->getPositionY(), 2));
-
-			float* elements = new float[3];
-			elements[0] = 0.5 * (abs(boss->getPositionX() - boss1->getPositionX())*div - abs(boss->getPositionX() - boss1->getPositionX()));
-			if (boss->getPositionX() < boss1->getPositionX()) elements[0] = -elements[0];
-			elements[1] = 0.5 * (abs(boss->getPositionY() - boss1->getPositionY())*div - abs(boss->getPositionY() - boss1->getPositionY()));
-			if (boss->getPositionY() < boss1->getPositionY()) elements[1] = -elements[1];
-			elements[3] = 1;
-
-			EventCustom event("object_collision");
-			event.setUserData(elements);
-
-			_eventDispatcher->dispatchEvent(&event);
-
-		}
-
-		if (pow(boss->getPositionX() - boss2->getPositionX(), 2) + pow(boss->getPositionY() - boss2->getPositionY(), 2) < pow(300, 2)){
-
-			float div = pow(300, 2) / (pow(boss->getPositionX() - boss2->getPositionX(), 2) + pow(boss->getPositionY() - boss2->getPositionY(), 2));
-
-			float* elements = new float[3];
-			elements[0] = 0.5 * (abs(boss->getPositionX() - boss2->getPositionX())*div - abs(boss->getPositionX() - boss2->getPositionX()));
-			if (boss->getPositionX() < boss2->getPositionX()) elements[0] = -elements[0];
-			elements[1] = 0.5 * (abs(boss->getPositionY() - boss2->getPositionY())*div - abs(boss->getPositionY() - boss2->getPositionY()));
-			if (boss->getPositionY() < boss2->getPositionY()) elements[1] = -elements[1];
-			elements[3] = 2;
-
-			EventCustom event("object_collision");
-			event.setUserData(elements);
-
-			_eventDispatcher->dispatchEvent(&event);
-
-		}
+		*/	
 
 	}
 
@@ -405,6 +409,8 @@ void HelloWorld::update(float dt)
 	}
 
 	// Irrelevant if controlles is connected
+
+	
 
 	if (coolDownNow < coolDownMax) {
 		coolDownNow += dt;
@@ -423,31 +429,58 @@ void HelloWorld::update(float dt)
 	//UPDATE PATHS
 	path.update(dt);
 	
-	if (boss2->numberOfRunningActions() == 0 && !paused) { 
+	// COLLISION DETECTION MOBILE VS MOBILE OBJECTS
+		for (int i = 0; i < num_mobile_objects; i++) {
+			for (int j = 0; j < num_mobile_objects; j++) {
 
-		boss2->setPosition3D(Vec3(-500, 0, 100));
+				if (mobile_objects[i] != mobile_objects[j] && pow(mobile_objects[i]->getPositionX() - mobile_objects[j]->getPositionX(), 2) + pow(mobile_objects[i]->getPositionY() - mobile_objects[j]->getPositionY(), 2) < pow(300, 2)) {
 
-		ccBezierConfig bezier;
-		bezier.controlPoint_1 = Point(point1_x, point1_y);
-		bezier.controlPoint_2 = Point(point2_x, point2_y);
-		bezier.endPosition = Point(pointend_x, pointend_y);
+					float div = pow(300, 2) / (pow(mobile_objects[i]->getPositionX() - mobile_objects[j]->getPositionX(), 2) + pow(mobile_objects[i]->getPositionY() - mobile_objects[j]->getPositionY(), 2));
 
-		auto action = CCBezierTo::create(5, bezier);
-    
-		boss2->runAction(action);
-			
-	}
+					float* elements = new float[3];
+					elements[0] = 0.5 * (abs(mobile_objects[i]->getPositionX() - mobile_objects[j]->getPositionX())*div - abs(mobile_objects[i]->getPositionX() - mobile_objects[j]->getPositionX()));
+					if (mobile_objects[i]->getPositionX() < mobile_objects[j]->getPositionX()) elements[0] = -elements[0];
+					elements[1] = 0.5 * (abs(mobile_objects[i]->getPositionY() - mobile_objects[j]->getPositionY())*div - abs(mobile_objects[i]->getPositionY() - mobile_objects[j]->getPositionY()));
+					if (mobile_objects[i]->getPositionY() < mobile_objects[j]->getPositionY()) elements[1] = -elements[1];
+					elements[2] = j;
 
-	else {
+					EventCustom event("object_collision");
+					event.setUserData(elements);
 
-		position1 = position2;
-		position2 = Point(boss2->getPositionX(), boss2->getPositionY());
+					_eventDispatcher->dispatchEvent(&event);
 
-		rotateToVec2(boss2, Vec2(position2.x - position1.x, position2.y - position1.y));
+				}
 
-	}
+			}
+		}
+
+		
+		// COLLISION DETECTION STATIC VS MOBILE OBJECTS
+		for (int i = 0; i < num_static_objects; i++) {
+			for (int j = 0; j < num_mobile_objects; j++) {
+
+				if (static_objects[i] != mobile_objects[j] && pow(static_objects[i]->getPositionX() - mobile_objects[j]->getPositionX(), 2) + pow(static_objects[i]->getPositionY() - mobile_objects[j]->getPositionY(), 2) < pow(300, 2)) {
+
+					float div = pow(300, 2) / (pow(static_objects[i]->getPositionX() - mobile_objects[j]->getPositionX(), 2) + pow(static_objects[i]->getPositionY() - mobile_objects[j]->getPositionY(), 2));
+
+					float* elements = new float[3];
+					elements[0] = 0.5 * (abs(static_objects[i]->getPositionX() - mobile_objects[j]->getPositionX())*div - abs(static_objects[i]->getPositionX() - mobile_objects[j]->getPositionX()));
+					if (static_objects[i]->getPositionX() < mobile_objects[j]->getPositionX()) elements[0] = -elements[0];
+					elements[1] = 0.5 * (abs(static_objects[i]->getPositionY() - mobile_objects[j]->getPositionY())*div - abs(static_objects[i]->getPositionY() - mobile_objects[j]->getPositionY()));
+					if (static_objects[i]->getPositionY() < mobile_objects[j]->getPositionY()) elements[1] = -elements[1];
+					elements[2] = j;
+
+					EventCustom event("object_collision");
+					event.setUserData(elements);
+
+					_eventDispatcher->dispatchEvent(&event);
+
+				}
+
+			}
+		}
+
 	
-	// FIN BEZIERS
 
 	camera->setRotation3D(Vec3(cameraAngle, 0, 0));
 	camera->setPosition3D(Vec3(boss->getPositionX(), boss->getPositionY() - sin(cameraAngle*(2*M_PI)/360)*zoom, boss->getPositionZ() + cos(cameraAngle*(2*M_PI)/360)*zoom ));

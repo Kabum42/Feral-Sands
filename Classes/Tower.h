@@ -1,6 +1,5 @@
 using namespace std;
 #include "cocos2d.h"
-#include <math.h>
 USING_NS_CC;
 
 class Tower : public cocos2d::Sprite3D
