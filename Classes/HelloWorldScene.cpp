@@ -37,6 +37,8 @@ float zoom = 1000.0f;
 
 Camera* camera;
 
+DirectionLight* sun;
+
 Sprite3D* green_tower;
 
 PathStone path;
@@ -63,6 +65,8 @@ float rightThumbY = 0;
 
 float coolDownMax = 0.2;
 float coolDownNow = coolDownMax;
+
+Sprite3D* bla;
 
 EventCustom event("EnterFrame");
 
@@ -171,9 +175,9 @@ bool HelloWorld::init()
 	//position2 = Point(-500, 0);
 
 	green_tower = Sprite3D::create("tower.obj", "stone.png");
-	green_tower->setPosition3D(Vec3(0, 0, 0));
+	green_tower->setPosition3D(Vec3(0, 0, 4*30));
 	green_tower->setRotation3D(Vec3(90, 0, 270));
-	green_tower->setScale(3);
+	green_tower->setScale(30);
 	green_tower->setCameraMask(2);
 	green_tower->setColor(ccc3(0, 200, 0));
 	green_tower->setVisible(false);
@@ -226,10 +230,18 @@ bool HelloWorld::init()
 	t->_sprite->setCameraMask(2);
 	this->addChild(t->_sprite, 1);
 
+	bla = t->_sprite;
+
 	camera = Camera::createPerspective(60, visibleSize.width/visibleSize.height, 1, 2000);
 	camera->setCameraFlag(CameraFlag::USER1);
 	camera->setRotation3D(Vec3(cameraAngle, 0, 0));
 	this->addChild(camera, 1);
+
+	sun = DirectionLight::create(Vec3(-1.0f, -1.0f, -1.0f), Color3B(255, 255, 255));
+	sun->retain();
+	sun->setEnabled(true);
+	addChild(sun);
+	sun->setCameraMask(2);
 
 	/*
 	auto directionalLight = DirectionLight::create(Vec3(-1.0f, -1.0f, 0.0f), Color3B(200, 200, 200));
@@ -382,6 +394,8 @@ void HelloWorld::update(float dt)
 
 		if(wButtons & XINPUT_GAMEPAD_DPAD_UP) zoom -= 5;
 		if(wButtons & XINPUT_GAMEPAD_DPAD_DOWN) zoom += 5;
+		if (wButtons & XINPUT_GAMEPAD_DPAD_LEFT) bla->setScale(bla->getScaleX()*0.9);
+		if (wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) bla->setScale(bla->getScaleX()*1.1);
 
 		
 
@@ -423,7 +437,7 @@ void HelloWorld::update(float dt)
 	Vec3 corners[8] = {};
 	green_tower->getAABB().getCorners(corners);
 	
-	green_tower->setPosition3D(Vec3(boss->getPositionX() + rightThumbX/100 +(corners[5].x - corners[0].x)/2, boss->getPositionY() + rightThumbY/100 -(corners[5].y - corners[0].y)/2, 0));
+	green_tower->setPosition3D(Vec3(boss->getPositionX() + rightThumbX/100 +(corners[5].x - corners[0].x)/2, boss->getPositionY() + rightThumbY/100 -(corners[5].y - corners[0].y)/2, 4*30));
 
 
 	//UPDATE PATHS

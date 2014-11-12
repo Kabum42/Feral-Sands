@@ -14,10 +14,9 @@ Tower::Tower(String s2, Point initial_point_2) {
 	s = s2;
 	initial_point_tower = initial_point_2;
 
-	scale_tower = 3;
+	scale_tower = 30;
 
-	position_z_tower = -90*scale_tower;
-	//position_z_tower = 0;
+	position_z_tower = -4*scale_tower;
 
 	_sprite = Sprite3D::create("tower.obj", "stone.png");
 	_sprite->setPosition3D(Vec3(initial_point_tower.x, initial_point_tower.y, position_z_tower));
@@ -47,9 +46,9 @@ Tower::~Tower(void)
 void Tower::update(float dt)
 {
 	
-	if (position_z_tower < 0) {
+	if (position_z_tower < 4*scale_tower) {
 
-		position_z_tower += dt*scale_tower*50;
+		position_z_tower += dt*scale_tower*10;
 		_sprite->setPositionZ(position_z_tower);
 
 	}
