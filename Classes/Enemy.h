@@ -1,13 +1,14 @@
 using namespace std;
 #include "cocos2d.h"
+#include "Entity.h"
 USING_NS_CC;
 
-class Enemy : public cocos2d::Sprite3D
+class Enemy : public Entity
 {
 
 	//Sprite3D* _sprite;
 public:
-	Sprite3D* _sprite;
+	//Sprite3D* _sprite;
 	ccBezierConfig _bezier;
 	float seconds_enemy;
 	float position_z_enemy;
@@ -19,8 +20,6 @@ public:
 
 	Enemy(void);
 	Enemy(String s_enemy2, Point initial_point_enemy2, ccBezierConfig bezier_enemy2, float seconds_enemy2);
-	Enemy(Vec3, Vec3);
-	Layer* getLayer(void);
 	~Enemy(void);
 
 	void Enemy::update(float dt);

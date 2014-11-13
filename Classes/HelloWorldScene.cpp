@@ -21,13 +21,13 @@ USING_NS_CC;
 DWORD dwResult;
 float data [1] = { };
 
-Sprite3D* boss;
+Player* boss;
 Sprite3D* boss1;
 //Sprite3D* boss2;
 
-Sprite3D* mobile_objects [200] = { };
+Entity* mobile_objects [200] = { };
 int num_mobile_objects = 0;
-Sprite3D* static_objects [100] = { };
+Entity* static_objects [200] = { };
 int num_static_objects = 0;
 
 bool paused = false;
@@ -65,8 +65,6 @@ float rightThumbY = 0;
 
 float coolDownMax = 0.2;
 float coolDownNow = coolDownMax;
-
-Sprite3D* bla;
 
 EventCustom event("EnterFrame");
 
@@ -131,7 +129,7 @@ bool HelloWorld::init()
     // add the label as a child to this layer
     this->addChild(label, 1);
 
-	auto floor = Sprite3D::create("plano2.obj", "sand.png");
+	auto floor = Sprite3D::create("floor.obj", "sand.png");
 	floor->setScale(100);
 	Vec3 corners_floor[8] = {};
 	floor->getAABB().getCorners(corners_floor);
@@ -140,16 +138,15 @@ bool HelloWorld::init()
 	floor->setCameraMask(2);
 	this->addChild(floor, 0);
 	
-	boss = Sprite3D::create("boss.obj", "boss.png");
+	Point p = Point(400, 300);
+
+	boss = new Player(p);
 	mobile_objects [num_mobile_objects] = boss;
 	num_mobile_objects++;
+	boss->_sprite->setCameraMask(2);
+	this->addChild(boss->_sprite, 0);
 
-	boss->setPosition3D(Vec3(400, 300, 100));
-	boss->setRotation3D(Vec3(90, 0, 180));
-	boss->setScale(20);
-	boss->setCameraMask(2);
-	this->addChild(boss, 0);
-
+	/*
 	boss1 = Sprite3D::create("boss.obj", "boss.png");
 	mobile_objects [num_mobile_objects] = boss1;
 	num_mobile_objects++;
@@ -160,6 +157,7 @@ bool HelloWorld::init()
 	boss1->setColor(ccc3(0, 200, 0));
 	boss1->setCameraMask(2);
 	this->addChild(boss1, 0);
+	*/
 	
 	/*
 	boss2 = Sprite3D::create("boss.obj", "boss.png");
@@ -183,7 +181,7 @@ bool HelloWorld::init()
 	green_tower->setVisible(false);
 	this->addChild(green_tower, 0);
 	
-	Point p = Point(-500, 0);
+	p = Point(-500, 0);
 	ccBezierConfig bezier;
 	bezier.controlPoint_1 = Point(point1_x, point1_y);
 	bezier.controlPoint_2 = Point(point2_x, point2_y);
@@ -193,44 +191,42 @@ bool HelloWorld::init()
 	this->addChild(path.getLayer());
 
 	Enemy* e = new Enemy("grunt", p, bezier, 5);
-	mobile_objects [num_mobile_objects] = e->_sprite;
+	mobile_objects [num_mobile_objects] = e;
 	num_mobile_objects++;
 	e->_sprite->setCameraMask(2);
 	this->addChild(e->_sprite, 1);
 
 	e = new Enemy("grunt", p, bezier, 4);
-	mobile_objects [num_mobile_objects] = e->_sprite;
+	mobile_objects [num_mobile_objects] = e;
 	num_mobile_objects++;
 	e->_sprite->setCameraMask(2);
 	this->addChild(e->_sprite, 1);
 
 	e = new Enemy("grunt", p, bezier, 3);
-	mobile_objects [num_mobile_objects] = e->_sprite;
+	mobile_objects [num_mobile_objects] = e;
 	num_mobile_objects++;
 	e->_sprite->setCameraMask(2);
 	this->addChild(e->_sprite, 1);
 
 	e = new Enemy("grunt", p, bezier, 2);
-	mobile_objects [num_mobile_objects] = e->_sprite;
+	mobile_objects [num_mobile_objects] = e;
 	num_mobile_objects++;
 	e->_sprite->setCameraMask(2);
 	this->addChild(e->_sprite, 1);
 
 	e = new Enemy("grunt", p, bezier, 1);
-	mobile_objects [num_mobile_objects] = e->_sprite;
+	mobile_objects [num_mobile_objects] = e;
 	num_mobile_objects++;
 	e->_sprite->setCameraMask(2);
 	this->addChild(e->_sprite, 1);
 
 	p = Point(0, 0);
 
-	Tower* t = new Tower("standard", p);
-	static_objects [num_static_objects] = t->_sprite;
+	Nexus* n = new Nexus(p);
+	static_objects [num_static_objects] = n;
 	num_static_objects++;
-	t->_sprite->setCameraMask(2);
-	this->addChild(t->_sprite, 1);
-
-	bla = t->_sprite;
+	n->_sprite->setCameraMask(2);
+	this->addChild(n->_sprite, 1);
 
 	camera = Camera::createPerspective(60, visibleSize.width/visibleSize.height, 1, 2000);
 	camera->setCameraFlag(CameraFlag::USER1);
@@ -253,8 +249,8 @@ bool HelloWorld::init()
 
 	_eventDispatcher->addCustomEventListener("object_collision", [=](EventCustom* event){
 		float* elements = static_cast<float*>(event->getUserData());
-		mobile_objects[(int)elements[2]]->setPositionX(mobile_objects[(int)elements[2]]->getPositionX() - elements[0]);
-		mobile_objects[(int)elements[2]]->setPositionY(mobile_objects[(int)elements[2]]->getPositionY() - elements[1]);
+		mobile_objects[(int)elements[2]]->_sprite->setPositionX(mobile_objects[(int)elements[2]]->_sprite->getPositionX() - elements[0]);
+		mobile_objects[(int)elements[2]]->_sprite->setPositionY(mobile_objects[(int)elements[2]]->_sprite->getPositionY() - elements[1]);
 	});
 
 	//SET BACKGROUND MUSIC
@@ -319,10 +315,10 @@ void HelloWorld::update(float dt)
 				
 				Vec3 corners[8] = {};
 				green_tower->getAABB().getCorners(corners);
-				Point p = Point(boss->getPositionX() + rightThumbX/100 +(corners[5].x - corners[0].x)/2, boss->getPositionY() + rightThumbY/100 -(corners[5].y - corners[0].y)/2);
+				Point p = Point(boss->_sprite->getPositionX() + rightThumbX/100 +(corners[5].x - corners[0].x)/2, boss->_sprite->getPositionY() + rightThumbY/100 -(corners[5].y - corners[0].y)/2);
 
 				Tower* t = new Tower("standard", p);
-				static_objects [num_static_objects] = t->_sprite;
+				static_objects [num_static_objects] = t;
 				num_static_objects++;
 				t->_sprite->setCameraMask(2);
 				this->addChild(t->_sprite, 1);
@@ -337,25 +333,25 @@ void HelloWorld::update(float dt)
 		
 			
 		// CONTROL DE NAVE
-		boss->setPosition3D(boss->getPosition3D() + Vec3(state.Gamepad.sThumbLX*dt/70, state.Gamepad.sThumbLY*dt/70, 0));
+		boss->_sprite->setPosition3D(boss->_sprite->getPosition3D() + Vec3(state.Gamepad.sThumbLX*dt/70, state.Gamepad.sThumbLY*dt/70, 0));
 
 		
 		if (wButtons & XINPUT_GAMEPAD_A)
-			boss->setPosition3D(Vec3(800 / 2 + (rand() % 2) - 1 * rand() % 1 * 800 / 2, 600 / 2 + (rand() % 2) - 1 * rand() % 1 * 600 / 2, 100));
+			boss->_sprite->setPosition3D(Vec3(800 / 2 + (rand() % 2) - 1 * rand() % 1 * 800 / 2, 600 / 2 + (rand() % 2) - 1 * rand() % 1 * 600 / 2, 100));
 		
 
 		// ROTACION DE NAVE
 		if (state.Gamepad.sThumbRY != 0) rightThumbY = state.Gamepad.sThumbRY;
 		if (state.Gamepad.sThumbRX != 0) rightThumbX = state.Gamepad.sThumbRX;
 
-		boss->setRotation3D(Vec3(90, 0, -90 - atan2(rightThumbY, rightThumbX)*360/(2*M_PI)));
+		boss->_sprite->setRotation3D(Vec3(90, 0, -90 - atan2(rightThumbY, rightThumbX)*360/(2*M_PI)));
 
 		// DISPARO
 		
 		if(state.Gamepad.bRightTrigger != 0 && coolDownNow >= coolDownMax) {
 			coolDownNow = state.Gamepad.bRightTrigger/255 * coolDownMax/2;
 			CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
-			WeaponShot* _shotInstance = new WeaponShot(boss->getPosition3D(), boss->getRotation3D());
+			WeaponShot* _shotInstance = new WeaponShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
 			_shotInstance->_sprite->setCameraMask(2);
 			this->addChild(_shotInstance->_sprite, 1);
 		}
@@ -394,8 +390,6 @@ void HelloWorld::update(float dt)
 
 		if(wButtons & XINPUT_GAMEPAD_DPAD_UP) zoom -= 5;
 		if(wButtons & XINPUT_GAMEPAD_DPAD_DOWN) zoom += 5;
-		if (wButtons & XINPUT_GAMEPAD_DPAD_LEFT) bla->setScale(bla->getScaleX()*0.9);
-		if (wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) bla->setScale(bla->getScaleX()*1.1);
 
 		
 
@@ -433,11 +427,8 @@ void HelloWorld::update(float dt)
 	// BOSS 2 ROTATED TOWARDS BOSS 1
 	//Point p = Point(boss->getPositionX(), boss->getPositionY());
 	//rotateToPoint(boss2, p);
-
-	Vec3 corners[8] = {};
-	green_tower->getAABB().getCorners(corners);
 	
-	green_tower->setPosition3D(Vec3(boss->getPositionX() + rightThumbX/100 +(corners[5].x - corners[0].x)/2, boss->getPositionY() + rightThumbY/100 -(corners[5].y - corners[0].y)/2, 4*30));
+	green_tower->setPosition3D(Vec3(boss->_sprite->getPositionX() + rightThumbX/100, boss->_sprite->getPositionY() + rightThumbY/100, 4*30));
 
 
 	//UPDATE PATHS
@@ -447,15 +438,15 @@ void HelloWorld::update(float dt)
 		for (int i = 0; i < num_mobile_objects; i++) {
 			for (int j = 0; j < num_mobile_objects; j++) {
 
-				if (mobile_objects[i] != mobile_objects[j] && pow(mobile_objects[i]->getPositionX() - mobile_objects[j]->getPositionX(), 2) + pow(mobile_objects[i]->getPositionY() - mobile_objects[j]->getPositionY(), 2) < pow(300, 2)) {
+				if (mobile_objects[i] != mobile_objects[j] && pow(mobile_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(mobile_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2) < pow(300, 2)) {
 
-					float div = pow(300, 2) / (pow(mobile_objects[i]->getPositionX() - mobile_objects[j]->getPositionX(), 2) + pow(mobile_objects[i]->getPositionY() - mobile_objects[j]->getPositionY(), 2));
+					float div = pow(300, 2) / (pow(mobile_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(mobile_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2));
 
 					float* elements = new float[3];
-					elements[0] = 0.5 * (abs(mobile_objects[i]->getPositionX() - mobile_objects[j]->getPositionX())*div - abs(mobile_objects[i]->getPositionX() - mobile_objects[j]->getPositionX()));
-					if (mobile_objects[i]->getPositionX() < mobile_objects[j]->getPositionX()) elements[0] = -elements[0];
-					elements[1] = 0.5 * (abs(mobile_objects[i]->getPositionY() - mobile_objects[j]->getPositionY())*div - abs(mobile_objects[i]->getPositionY() - mobile_objects[j]->getPositionY()));
-					if (mobile_objects[i]->getPositionY() < mobile_objects[j]->getPositionY()) elements[1] = -elements[1];
+					elements[0] = 0.5 * (abs(mobile_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX())*div - abs(mobile_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX()));
+					if (mobile_objects[i]->_sprite->getPositionX() < mobile_objects[j]->_sprite->getPositionX()) elements[0] = -elements[0];
+					elements[1] = 0.5 * (abs(mobile_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY())*div - abs(mobile_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY()));
+					if (mobile_objects[i]->_sprite->getPositionY() < mobile_objects[j]->_sprite->getPositionY()) elements[1] = -elements[1];
 					elements[2] = j;
 
 					EventCustom event("object_collision");
@@ -473,15 +464,17 @@ void HelloWorld::update(float dt)
 		for (int i = 0; i < num_static_objects; i++) {
 			for (int j = 0; j < num_mobile_objects; j++) {
 
-				if (static_objects[i] != mobile_objects[j] && pow(static_objects[i]->getPositionX() - mobile_objects[j]->getPositionX(), 2) + pow(static_objects[i]->getPositionY() - mobile_objects[j]->getPositionY(), 2) < pow(300, 2)) {
+				float total_radius = static_objects[i]->_radius + mobile_objects[j]->_radius;
 
-					float div = pow(300, 2) / (pow(static_objects[i]->getPositionX() - mobile_objects[j]->getPositionX(), 2) + pow(static_objects[i]->getPositionY() - mobile_objects[j]->getPositionY(), 2));
+				if (static_objects[i] != mobile_objects[j] && pow(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2) < pow(total_radius, 2)) {
+
+					float div = pow(total_radius, 2) / (pow(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2));
 
 					float* elements = new float[3];
-					elements[0] = 0.5 * (abs(static_objects[i]->getPositionX() - mobile_objects[j]->getPositionX())*div - abs(static_objects[i]->getPositionX() - mobile_objects[j]->getPositionX()));
-					if (static_objects[i]->getPositionX() < mobile_objects[j]->getPositionX()) elements[0] = -elements[0];
-					elements[1] = 0.5 * (abs(static_objects[i]->getPositionY() - mobile_objects[j]->getPositionY())*div - abs(static_objects[i]->getPositionY() - mobile_objects[j]->getPositionY()));
-					if (static_objects[i]->getPositionY() < mobile_objects[j]->getPositionY()) elements[1] = -elements[1];
+					elements[0] = 0.5 * (abs(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX())*div - abs(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX()));
+					if (static_objects[i]->_sprite->getPositionX() < mobile_objects[j]->_sprite->getPositionX()) elements[0] = -elements[0];
+					elements[1] = 0.5 * (abs(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY())*div - abs(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY()));
+					if (static_objects[i]->_sprite->getPositionY() < mobile_objects[j]->_sprite->getPositionY()) elements[1] = -elements[1];
 					elements[2] = j;
 
 					EventCustom event("object_collision");
@@ -497,7 +490,7 @@ void HelloWorld::update(float dt)
 	
 
 	camera->setRotation3D(Vec3(cameraAngle, 0, 0));
-	camera->setPosition3D(Vec3(boss->getPositionX(), boss->getPositionY() - sin(cameraAngle*(2*M_PI)/360)*zoom, boss->getPositionZ() + cos(cameraAngle*(2*M_PI)/360)*zoom ));
+	camera->setPosition3D(Vec3(boss->_sprite->getPositionX(), boss->_sprite->getPositionY() - sin(cameraAngle*(2*M_PI)/360)*zoom, boss->_sprite->getPositionZ() + cos(cameraAngle*(2*M_PI)/360)*zoom ));
 
 }
 

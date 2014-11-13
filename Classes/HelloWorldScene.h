@@ -2,10 +2,13 @@
 #define __HELLOWORLD_SCENE_H__
 
 #include "cocos2d.h"
+#include "Entity.h"
 #include "PathStone.h"
 #include "Tower.h"
 #include "WeaponShot.h"
 #include "Enemy.h"
+#include "Player.h"
+#include "Nexus.h"
 
 class HelloWorld : public cocos2d::Layer
 {

@@ -16,6 +16,9 @@ Tower::Tower(String s2, Point initial_point_2) {
 
 	scale_tower = 30;
 
+	// ESTE RADIO ES PERFECTO, NO TOCAR
+	_radius = scale_tower*1;
+
 	position_z_tower = -4*scale_tower;
 
 	_sprite = Sprite3D::create("tower.obj", "stone.png");
@@ -31,11 +34,6 @@ Tower::Tower(String s2, Point initial_point_2) {
 	
 	
 
-}
-
-Tower::Tower(Vec3 start, Vec3 aim)
-{
-	
 }
 
 Tower::~Tower(void)
