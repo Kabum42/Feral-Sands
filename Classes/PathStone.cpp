@@ -30,7 +30,7 @@ PathStone::PathStone(int number_tiles_2, float seconds_total_2, Point initial_po
 
 	for (int i = 0; i < number_tiles; i++) {
 
-		auto stone = Sprite3D::create("plano2.obj", "stone.png");
+		auto stone = Sprite3D::create("floor.obj", "stone.png");
 		stone->setPosition3D(Vec3(initial_point.x, initial_point.y, 0));
 		stone->setRotation3D(Vec3(90, 0, 270));
 		stone->setScale(3);
