@@ -26,7 +26,8 @@ WeaponShot::WeaponShot(Vec3 start, Vec3 aim)
 
 WeaponShot::~WeaponShot(void/*WeaponShot _object*/)
 {
-	//delete _object;
+	removeFromParentAndCleanup(true);
+	//removeChild(this);
 }
 
 void WeaponShot::update(void)
@@ -39,6 +40,8 @@ void WeaponShot::update(void)
 		// Autodestruirse..?
 		//this->getParent()->removeChild(this);
 		//this->removeFromParentAndCleanup(true);
+		//removeFromParentAndCleanup(true);
+		//removeChild(this);
 	}
 }
 
