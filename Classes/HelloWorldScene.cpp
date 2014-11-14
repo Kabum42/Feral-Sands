@@ -25,10 +25,10 @@ Player* boss;
 Sprite3D* boss1;
 //Sprite3D* boss2;
 
-Entity* mobile_objects [200] = { };
-int num_mobile_objects = 0;
 Entity* static_objects [200] = { };
 int num_static_objects = 0;
+Entity* mobile_objects [200] = { };
+int num_mobile_objects = 0;
 
 bool paused = false;
 
@@ -142,6 +142,7 @@ bool HelloWorld::init()
 
 	boss = new Player(p);
 	mobile_objects [num_mobile_objects] = boss;
+	boss->_num_in_array = num_mobile_objects;
 	num_mobile_objects++;
 	boss->_sprite->setCameraMask(2);
 	this->addChild(boss->_sprite, 0);
@@ -192,30 +193,35 @@ bool HelloWorld::init()
 
 	Enemy* e = new Enemy("grunt", p, bezier, 5);
 	mobile_objects [num_mobile_objects] = e;
+	e->_num_in_array = num_mobile_objects;
 	num_mobile_objects++;
 	e->_sprite->setCameraMask(2);
 	this->addChild(e->_sprite, 1);
 
 	e = new Enemy("grunt", p, bezier, 4);
 	mobile_objects [num_mobile_objects] = e;
+	e->_num_in_array = num_mobile_objects;
 	num_mobile_objects++;
 	e->_sprite->setCameraMask(2);
 	this->addChild(e->_sprite, 1);
 
 	e = new Enemy("grunt", p, bezier, 3);
 	mobile_objects [num_mobile_objects] = e;
+	e->_num_in_array = num_mobile_objects;
 	num_mobile_objects++;
 	e->_sprite->setCameraMask(2);
 	this->addChild(e->_sprite, 1);
 
 	e = new Enemy("grunt", p, bezier, 2);
 	mobile_objects [num_mobile_objects] = e;
+	e->_num_in_array = num_mobile_objects;
 	num_mobile_objects++;
 	e->_sprite->setCameraMask(2);
 	this->addChild(e->_sprite, 1);
 
 	e = new Enemy("grunt", p, bezier, 1);
 	mobile_objects [num_mobile_objects] = e;
+	e->_num_in_array = num_mobile_objects;
 	num_mobile_objects++;
 	e->_sprite->setCameraMask(2);
 	this->addChild(e->_sprite, 1);
@@ -251,6 +257,16 @@ bool HelloWorld::init()
 		float* elements = static_cast<float*>(event->getUserData());
 		mobile_objects[(int)elements[2]]->_sprite->setPositionX(mobile_objects[(int)elements[2]]->_sprite->getPositionX() - elements[0]);
 		mobile_objects[(int)elements[2]]->_sprite->setPositionY(mobile_objects[(int)elements[2]]->_sprite->getPositionY() - elements[1]);
+	});
+
+	_eventDispatcher->addCustomEventListener("remove_static", [=](EventCustom* event){
+		float* data_static = static_cast<float*>(event->getUserData());
+		removeStaticObject(data_static[0]);
+	});
+	
+	_eventDispatcher->addCustomEventListener("remove_mobile", [=](EventCustom* event){
+		float* data_mobile = static_cast<float*>(event->getUserData());
+		removeMobileObject(data_mobile[0]);
 	});
 
 	//SET BACKGROUND MUSIC
@@ -312,10 +328,8 @@ void HelloWorld::update(float dt)
 		if(state.Gamepad.bLeftTrigger > 50) {
 			if (!leftTriggerPushed && menuTurrets) {
 				
-				
-				Vec3 corners[8] = {};
-				green_tower->getAABB().getCorners(corners);
-				Point p = Point(boss->_sprite->getPositionX() + rightThumbX/100 +(corners[5].x - corners[0].x)/2, boss->_sprite->getPositionY() + rightThumbY/100 -(corners[5].y - corners[0].y)/2);
+
+				Point p = Point(boss->_sprite->getPositionX() + rightThumbX/100, boss->_sprite->getPositionY() + rightThumbY/100);
 
 				Tower* t = new Tower("standard", p);
 				static_objects [num_static_objects] = t;
@@ -352,6 +366,9 @@ void HelloWorld::update(float dt)
 			coolDownNow = state.Gamepad.bRightTrigger/255 * coolDownMax/2;
 			CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
 			WeaponShot* _shotInstance = new WeaponShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
+			mobile_objects[num_mobile_objects] = _shotInstance;
+			_shotInstance->_num_in_array = num_mobile_objects;
+			num_mobile_objects++;
 			_shotInstance->_sprite->setCameraMask(2);
 			this->addChild(_shotInstance->_sprite, 1);
 		}
@@ -435,32 +452,55 @@ void HelloWorld::update(float dt)
 	path.update(dt);
 	
 	// COLLISION DETECTION MOBILE VS MOBILE OBJECTS
+	
 		for (int i = 0; i < num_mobile_objects; i++) {
 			for (int j = 0; j < num_mobile_objects; j++) {
 
-				if (mobile_objects[i] != mobile_objects[j] && pow(mobile_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(mobile_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2) < pow(300, 2)) {
+				float total_radius = mobile_objects[i]->_radius + mobile_objects[j]->_radius;
 
-					float div = pow(300, 2) / (pow(mobile_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(mobile_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2));
+				if (mobile_objects[i] != mobile_objects[j] && pow(mobile_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(mobile_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2) < pow(total_radius, 2)) {
+					// SON OBJETOS DIFERENTES Y COLISIONAN
 
-					float* elements = new float[3];
-					elements[0] = 0.5 * (abs(mobile_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX())*div - abs(mobile_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX()));
-					if (mobile_objects[i]->_sprite->getPositionX() < mobile_objects[j]->_sprite->getPositionX()) elements[0] = -elements[0];
-					elements[1] = 0.5 * (abs(mobile_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY())*div - abs(mobile_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY()));
-					if (mobile_objects[i]->_sprite->getPositionY() < mobile_objects[j]->_sprite->getPositionY()) elements[1] = -elements[1];
-					elements[2] = j;
+					if (mobile_objects[i]->_type.compare("shot") == 0 || mobile_objects[j]->_type.compare("shot") == 0) {
+						// UNO DE LOS DOS ES UN SHOT
+						if (mobile_objects[i]->_type.compare("player") == 0 || mobile_objects[j]->_type.compare("player") == 0) {
+							// EL OTRO ES EL JUGADOR
+						}
+						else if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy")) {
+							// EL OTRO ES UN ENEMY
+							mobile_objects[i]->_health = 0;
+							mobile_objects[j]->_health = 0;
+						
+						}
+					
+					}
+					else {
+						// COMPORTAMIENTO DE REPULSION
+						float div = pow(total_radius, 2) / (pow(mobile_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(mobile_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2));
 
-					EventCustom event("object_collision");
-					event.setUserData(elements);
+						float* elements = new float[3];
+						elements[0] = 0.5 * (abs(mobile_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX())*div - abs(mobile_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX()));
+						if (mobile_objects[i]->_sprite->getPositionX() < mobile_objects[j]->_sprite->getPositionX()) elements[0] = -elements[0];
+						elements[1] = 0.5 * (abs(mobile_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY())*div - abs(mobile_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY()));
+						if (mobile_objects[i]->_sprite->getPositionY() < mobile_objects[j]->_sprite->getPositionY()) elements[1] = -elements[1];
+						elements[2] = j;
 
-					_eventDispatcher->dispatchEvent(&event);
+						EventCustom event("object_collision");
+						event.setUserData(elements);
+
+						_eventDispatcher->dispatchEvent(&event);
+					}
 
 				}
-
+				
 			}
 		}
-
+		
+		
 		
 		// COLLISION DETECTION STATIC VS MOBILE OBJECTS
+		// VAN DESPUES QUE LA COLISION ENTRE MOVILES PORQUE LA COLISION ESTATICA SE TIENE QUE RESPETAR POR ENCIMA DE LA OTRA
+		
 		for (int i = 0; i < num_static_objects; i++) {
 			for (int j = 0; j < num_mobile_objects; j++) {
 
@@ -487,6 +527,28 @@ void HelloWorld::update(float dt)
 			}
 		}
 
+
+		// DIE, BASTARDS, DIE!
+		
+		for (int i = 0; i < num_mobile_objects; i++) {
+
+			if (mobile_objects[i]->_health <= 0) {
+
+				mobile_objects[i]->_sprite->stopAllActions();
+				mobile_objects[i]->_sprite->removeFromParentAndCleanup(true);
+				mobile_objects[i]->_sprite = NULL;
+				_eventDispatcher->removeEventListenersForTarget(mobile_objects[i]);
+				
+				float* data_mobile = new float[1];
+				data_mobile[0] = mobile_objects[i]->_num_in_array;
+				EventCustom event_mobile("remove_mobile");
+				event_mobile.setUserData(data_mobile);
+				_eventDispatcher->dispatchEvent(&event_mobile);
+
+			}
+
+		}
+		
 	
 
 	camera->setRotation3D(Vec3(cameraAngle, 0, 0));
@@ -509,6 +571,32 @@ void HelloWorld::rotateToVec2(Sprite3D* s, Vec2 v) {
 
 }
 
+void HelloWorld::removeStaticObject(int num_in_array) {
+
+	for (int i = num_in_array; i < (num_static_objects-1); i++) {
+		static_objects[i] = static_objects[i+1];
+		static_objects[i]->_num_in_array = i;
+	}
+
+	// SI HACES ESTO, EXPLOTA
+	//static_objects[num_static_objects] = NULL;
+	num_static_objects--;
+
+}
+
+void HelloWorld::removeMobileObject(int num_in_array) {
+
+	
+	for (int i = num_in_array; i < (num_mobile_objects-1); i++) {
+		mobile_objects[i] = mobile_objects[i+1];
+		mobile_objects[i]->_num_in_array = i;
+	}
+	
+	// SI HACES ESTO, EXPLOTA
+	//mobile_objects[num_mobile_objects] = NULL;
+	num_mobile_objects--;
+
+}
 
 void HelloWorld::menuCloseCallback(Ref* pSender)
 {

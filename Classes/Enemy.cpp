@@ -6,6 +6,8 @@ Enemy::Enemy(void) {
 
 Enemy::Enemy(String s_enemy2, Point initial_point_enemy2, ccBezierConfig bezier_enemy2, float seconds_enemy2) {
 
+	_health = 200;
+	_type = "enemy";
 	
 	s_enemy = s_enemy2;
 	initial_point_enemy = initial_point_enemy2;
@@ -44,26 +46,28 @@ Enemy::~Enemy(void)
 void Enemy::update(float dt)
 {
 
-	
-	
-	
-	if (_sprite->numberOfRunningActions() == 0) { 
-		
-		_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
+	if (_health > 0) {
 
-		auto action = CCBezierTo::create(seconds_enemy, _bezier);
+		if (_sprite->numberOfRunningActions() == 0) { 
+		
+			_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
+
+			auto action = CCBezierTo::create(seconds_enemy, _bezier);
     
-		_sprite->runAction(action);
+			_sprite->runAction(action);
 		
+		}
+		else {
+
+			position1 = position2;
+			position2 = Point(_sprite->getPositionX(), _sprite->getPositionY());
+
+			rotateToVec2(_sprite, Vec2(position2.x - position1.x, position2.y - position1.y));
+
+		}
+
 	}
-	else {
 
-		position1 = position2;
-		position2 = Point(_sprite->getPositionX(), _sprite->getPositionY());
-
-		rotateToVec2(_sprite, Vec2(position2.x - position1.x, position2.y - position1.y));
-
-	}
 	
 }
 
