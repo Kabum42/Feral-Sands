@@ -26,6 +26,10 @@ public:
 	void HelloWorld::rotateToPoint(cocos2d::Sprite3D* s, cocos2d::Point p);
 
 	void HelloWorld::rotateToVec2(cocos2d::Sprite3D* s, cocos2d::Vec2 v);
+
+	void HelloWorld::removeStaticObject(int num_in_array);
+
+	void HelloWorld::removeMobileObject(int num_in_array);
     
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
