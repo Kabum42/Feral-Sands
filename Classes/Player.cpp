@@ -14,7 +14,7 @@ Player::Player(Point initial_point_player2) {
 	scale_player = 20;
 	position_z_player = 100;
 
-	_radius = scale_player*7.5;
+	_radius = scale_player*1.0;
 
 
 	_sprite = Sprite3D::create("Lex_High.obj");

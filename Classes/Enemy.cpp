@@ -16,7 +16,7 @@ Enemy::Enemy(String s_enemy2, Point initial_point_enemy2, ccBezierConfig bezier_
 	scale_enemy = 20;
 	position_z_enemy = 100;
 
-	_radius = scale_enemy*7.5;
+	_radius = scale_enemy*1.0;
 
 	position2 = initial_point_enemy2;
 
