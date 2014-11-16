@@ -12,6 +12,9 @@ public:
 
 	Sprite3D* _sprite;
 	float _radius;
+	int _num_in_array;
+	String _type;
+	float _health;
 
 	Entity(void);
 	~Entity(void);

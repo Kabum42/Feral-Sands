@@ -6,7 +6,9 @@ Player::Player(void) {
 
 Player::Player(Point initial_point_player2) {
 
-	
+	_health = 200;
+	_type = "player";
+
 	initial_point_player = initial_point_player2;
 
 	scale_player = 20;
