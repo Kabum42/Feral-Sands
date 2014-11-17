@@ -18,13 +18,13 @@ Enemy::Enemy(String s_enemy2, Point initial_point_enemy2, ccBezierConfig bezier_
 	scale_enemy = 20;
 	position_z_enemy = 100;
 
-	_radius = scale_enemy*7.5;
+	_radius = scale_enemy*1.0;
 
 	position2 = initial_point_enemy2;
 
 	_bezier = bezier_enemy2;
 
-	_sprite = Sprite3D::create("boss.obj", "boss.png");
+	_sprite = Sprite3D::create("Lex_Low.obj");
 	_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
 	_sprite->setRotation3D(Vec3(90, 0, 270));
 	_sprite->setScale(scale_enemy);
