@@ -4,7 +4,9 @@
 WeaponShot::WeaponShot(Vec3 start, Vec3 aim)
 {
 
+	_active = false;
 	_health = 200;
+	_injured = 0;
 	_type = "shot";
 
 	_origin = start;

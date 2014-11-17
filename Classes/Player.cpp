@@ -6,7 +6,9 @@ Player::Player(void) {
 
 Player::Player(Point initial_point_player2) {
 
+	_active = false;
 	_health = 200;
+	_injured = 0;
 	_type = "player";
 
 	initial_point_player = initial_point_player2;

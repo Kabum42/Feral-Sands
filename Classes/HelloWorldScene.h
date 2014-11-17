@@ -9,6 +9,7 @@
 #include "Enemy.h"
 #include "Player.h"
 #include "Nexus.h"
+#include "Wave.h"
 
 class HelloWorld : public cocos2d::Layer
 {
@@ -30,6 +31,8 @@ public:
 	void HelloWorld::removeStaticObject(int num_in_array);
 
 	void HelloWorld::removeMobileObject(int num_in_array);
+
+	void HelloWorld::addMobileObject(Entity* e);
     
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);

@@ -6,7 +6,9 @@ Enemy::Enemy(void) {
 
 Enemy::Enemy(String s_enemy2, Point initial_point_enemy2, ccBezierConfig bezier_enemy2, float seconds_enemy2) {
 
+	_active = false;
 	_health = 200;
+	_injured = 0;
 	_type = "enemy";
 	
 	s_enemy = s_enemy2;
@@ -26,7 +28,6 @@ Enemy::Enemy(String s_enemy2, Point initial_point_enemy2, ccBezierConfig bezier_
 	_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
 	_sprite->setRotation3D(Vec3(90, 0, 270));
 	_sprite->setScale(scale_enemy);
-	_sprite->setColor(Color3B::YELLOW);
 
 	
 	_eventDispatcher->addCustomEventListener("EnterFrame", [=](EventCustom* event) {
@@ -46,8 +47,15 @@ Enemy::~Enemy(void)
 void Enemy::update(float dt)
 {
 
-	if (_health > 0) {
+	if (_health > 0 && _active) {
 
+		if (_injured > 0) {
+
+			_injured -= dt;
+			if (_injured <= 0) { _sprite->setColor(Color3B(255, 255, 255)); }
+
+		}
+		
 		if (_sprite->numberOfRunningActions() == 0) { 
 		
 			_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
@@ -65,7 +73,7 @@ void Enemy::update(float dt)
 			rotateToVec2(_sprite, Vec2(position2.x - position1.x, position2.y - position1.y));
 
 		}
-
+		
 	}
 
 	

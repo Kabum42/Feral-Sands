@@ -10,11 +10,13 @@ class Entity : public cocos2d::Sprite3D
 
 public:
 
+	bool _active;
 	Sprite3D* _sprite;
 	float _radius;
 	int _num_in_array;
 	String _type;
 	float _health;
+	float _injured;
 
 	Entity(void);
 	~Entity(void);
