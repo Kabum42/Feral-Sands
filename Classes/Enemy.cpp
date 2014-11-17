@@ -24,7 +24,7 @@ Enemy::Enemy(String s_enemy2, Point initial_point_enemy2, ccBezierConfig bezier_
 
 	_bezier = bezier_enemy2;
 
-	_sprite = Sprite3D::create("Lex_Low.obj");
+	_sprite = Sprite3D::create("Lex_Low.obj", "stone.png");
 	_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
 	_sprite->setRotation3D(Vec3(90, 0, 270));
 	_sprite->setScale(scale_enemy);
