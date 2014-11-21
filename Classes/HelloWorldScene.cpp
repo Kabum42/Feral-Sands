@@ -155,6 +155,11 @@ bool HelloWorld::init()
 		Entity* e = static_cast<Entity*>(event->getUserData());
 		addMobileObject(e);
 	});
+
+	_eventDispatcher->addCustomEventListener("tower_shot", [=](EventCustom* event){
+	Entity* data_towershot = static_cast<Entity*>(event->getUserData());
+	towerShoot(data_towershot);
+	});
 	
 	
 
@@ -229,33 +234,8 @@ bool HelloWorld::init()
 	this->addChild(directionalLight);
 	*/
 
-<<<<<<< HEAD
 	//now the bezier config declaration
 
-	_eventDispatcher->addCustomEventListener("object_collision", [=](EventCustom* event){
-		float* elements = static_cast<float*>(event->getUserData());
-		mobile_objects[(int)elements[2]]->_sprite->setPositionX(mobile_objects[(int)elements[2]]->_sprite->getPositionX() - elements[0]);
-		mobile_objects[(int)elements[2]]->_sprite->setPositionY(mobile_objects[(int)elements[2]]->_sprite->getPositionY() - elements[1]);
-	});
-
-	_eventDispatcher->addCustomEventListener("remove_static", [=](EventCustom* event){
-		float* data_static = static_cast<float*>(event->getUserData());
-		removeStaticObject(data_static[0]);
-	});
-	
-	_eventDispatcher->addCustomEventListener("remove_mobile", [=](EventCustom* event){
-		float* data_mobile = static_cast<float*>(event->getUserData());
-		removeMobileObject(data_mobile[0]);
-	});
-
-	_eventDispatcher->addCustomEventListener("tower_shot", [=](EventCustom* event){
-		//float* data_towershot = static_cast<float*>(event->getUserData());
-		Entity* data_towershot = static_cast<Entity*>(event->getUserData());
-		towerShoot(data_towershot);
-	});
-
-=======
->>>>>>> origin/master
 	//SET BACKGROUND MUSIC
 	CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("sandstorm.wav", true);
 
@@ -562,8 +542,10 @@ void HelloWorld::update(float dt)
 					for (int j = 0; j < num_mobile_objects; j++)
 					{
 						//float total_radius = myTower->_range;
-						if (static_objects[i] != mobile_objects[j] && pow(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2) < pow(static_objects[i]->_range, 2)) {
-							static_objects[i]->_target = mobile_objects[j]; // Depurar: IMPLEMENT ITERATOR TO CHOOSE CLOSEST
+						if (mobile_objects[j]->_type.compare("enemy") == 0){
+							if (pow(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2) < pow(static_objects[i]->_range, 2)) {
+								static_objects[i]->_target = mobile_objects[j]; // Depurar: IMPLEMENT ITERATOR TO CHOOSE CLOSEST
+							}
 						}
 					}
 				}
@@ -641,16 +623,21 @@ void HelloWorld::removeMobileObject(int num_in_array) {
 
 }
 
-<<<<<<< HEAD
 void HelloWorld::towerShoot(Entity* tower_shooter){
 	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
-	TowerShot* _shotInstance = new TowerShot(tower_shooter->_sprite->getPosition3D(), tower_shooter->_target);
-	mobile_objects[num_mobile_objects] = _shotInstance;
+	TowerShot* shotInstance = new TowerShot(tower_shooter->_sprite->getPosition3D(), tower_shooter->_target);
+	/*mobile_objects[num_mobile_objects] = _shotInstance;
 	_shotInstance->_num_in_array = num_mobile_objects;
 	num_mobile_objects++;
 	_shotInstance->_sprite->setCameraMask(2);
-	this->addChild(_shotInstance->_sprite, 1);
-=======
+	this->addChild(_shotInstance->_sprite, 1);*/
+	
+	//addMobileObject(shotInstance);
+	/*EventCustom event_add_mobile("add_mobile");
+	event_add_mobile.setUserData(_shotInstance);
+	_eventDispatcher->dispatchEvent(&event_add_mobile);*/
+}
+
 void HelloWorld::addMobileObject(Entity* e) {
 	
 	mobile_objects [num_mobile_objects] = e;
@@ -659,8 +646,6 @@ void HelloWorld::addMobileObject(Entity* e) {
 	e->_sprite->setCameraMask(2);
 	this->addChild(e->_sprite, 1);
 	e->_active = true;
-	
->>>>>>> origin/master
 }
 
 void HelloWorld::menuCloseCallback(Ref* pSender)

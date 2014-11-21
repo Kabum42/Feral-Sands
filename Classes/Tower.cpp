@@ -12,7 +12,7 @@ Tower::Tower(String s2, Point initial_point_2) {
 
 	_type = "tower";
 	_target = nullptr;
-	_cooldown = 500; // ARREGLAR: Tiempo que tarde en salir la torre
+	_cooldown = 0; // ARREGLAR: Tiempo que tarde en salir la torre
 
 	s = s2;
 	initial_point_tower = initial_point_2;
@@ -23,7 +23,7 @@ Tower::Tower(String s2, Point initial_point_2) {
 	_radius = scale_tower*1;
 
 	// RANGO DE SELECCIÓN DE OBJETIVOS ENEMIGOS
-	_range = 200;
+	_range = 500;
 
 	position_z_tower = -4*scale_tower;
 
@@ -63,9 +63,10 @@ void Tower::update(float dt)
 		if (_target != nullptr && _cooldown == 0)
 		{
 			_cooldown = 200;
-			Entity* target = _target;
-			EventCustom event("tower_shoot");
-			event.setUserData(target);
+			//Entity* target = _target;
+			EventCustom event("tower_shot");
+			//event.setUserData(target);
+			event.setUserData(this);
 			_eventDispatcher->dispatchEvent(&event);
 		}
 		
