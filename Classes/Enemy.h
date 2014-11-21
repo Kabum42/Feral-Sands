@@ -3,6 +3,9 @@ using namespace std;
 #include "Entity.h"
 USING_NS_CC;
 
+#ifndef ENEMY_H
+#define ENEMY_H
+
 class Enemy : public Entity
 {
 
@@ -27,3 +30,5 @@ public:
 
 	//Sprite3D* Enemy::sprite(void);
 };
+
+#endif

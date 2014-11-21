@@ -68,6 +68,7 @@ float coolDownMax = 0.2;
 float coolDownNow = coolDownMax;
 
 EventCustom event("EnterFrame");
+EventCustom event_add_mobile("add_mobile");
 
 Scene* HelloWorld::createScene()
 {
@@ -130,6 +131,37 @@ bool HelloWorld::init()
     // add the label as a child to this layer
     this->addChild(label, 1);
 
+
+
+
+	_eventDispatcher->addCustomEventListener("object_collision", [=](EventCustom* event){
+		float* elements = static_cast<float*>(event->getUserData());
+		mobile_objects[(int)elements[2]]->_sprite->setPositionX(mobile_objects[(int)elements[2]]->_sprite->getPositionX() - elements[0]);
+		mobile_objects[(int)elements[2]]->_sprite->setPositionY(mobile_objects[(int)elements[2]]->_sprite->getPositionY() - elements[1]);
+	});
+
+	_eventDispatcher->addCustomEventListener("remove_static", [=](EventCustom* event){
+		float* data_static = static_cast<float*>(event->getUserData());
+		removeStaticObject(data_static[0]);
+	});
+	
+	_eventDispatcher->addCustomEventListener("remove_mobile", [=](EventCustom* event){
+		float* data_mobile = static_cast<float*>(event->getUserData());
+		removeMobileObject(data_mobile[0]);
+	});
+	
+	
+	_eventDispatcher->addCustomEventListener("add_mobile", [=](EventCustom* event){
+		Entity* e = static_cast<Entity*>(event->getUserData());
+		addMobileObject(e);
+	});
+	
+	
+
+
+
+
+
 	auto floor = Sprite3D::create("floor.obj", "sand.png");
 	floor->setScale(100);
 	Vec3 corners_floor[8] = {};
@@ -147,32 +179,6 @@ bool HelloWorld::init()
 	num_mobile_objects++;
 	boss->_sprite->setCameraMask(2);
 	this->addChild(boss->_sprite, 0);
-
-	/*
-	boss1 = Sprite3D::create("boss.obj", "boss.png");
-	mobile_objects [num_mobile_objects] = boss1;
-	num_mobile_objects++;
-
-	boss1->setPosition3D(Vec3(0, 300, 100));
-	boss1->setRotation3D(Vec3(90, 0, 180));
-	boss1->setScale(20);
-	boss1->setColor(ccc3(0, 200, 0));
-	boss1->setCameraMask(2);
-	this->addChild(boss1, 0);
-	*/
-	
-	/*
-	boss2 = Sprite3D::create("boss.obj", "boss.png");
-
-	boss2->setPosition3D(Vec3(-500, 0, 100));
-	boss2->setRotation3D(Vec3(90, 0, 270));
-	boss2->setScale(20);
-	boss2->setCameraMask(2);
-	boss2->setColor(Color3B::YELLOW);
-	this->addChild(boss2, 0);
-	*/
-
-	//position2 = Point(-500, 0);
 
 	green_tower = Sprite3D::create("tower.obj", "stone.png");
 	green_tower->setPosition3D(Vec3(0, 0, 4*30));
@@ -192,40 +198,11 @@ bool HelloWorld::init()
 	path = PathStone::PathStone(50, 5, p, bezier);
 	this->addChild(path.getLayer());
 
-	Enemy* e = new Enemy("grunt", p, bezier, 5);
-	mobile_objects [num_mobile_objects] = e;
-	e->_num_in_array = num_mobile_objects;
-	num_mobile_objects++;
-	e->_sprite->setCameraMask(2);
-	this->addChild(e->_sprite, 1);
-
-	e = new Enemy("grunt", p, bezier, 4);
-	mobile_objects [num_mobile_objects] = e;
-	e->_num_in_array = num_mobile_objects;
-	num_mobile_objects++;
-	e->_sprite->setCameraMask(2);
-	this->addChild(e->_sprite, 1);
-
-	e = new Enemy("grunt", p, bezier, 3);
-	mobile_objects [num_mobile_objects] = e;
-	e->_num_in_array = num_mobile_objects;
-	num_mobile_objects++;
-	e->_sprite->setCameraMask(2);
-	this->addChild(e->_sprite, 1);
-
-	e = new Enemy("grunt", p, bezier, 2);
-	mobile_objects [num_mobile_objects] = e;
-	e->_num_in_array = num_mobile_objects;
-	num_mobile_objects++;
-	e->_sprite->setCameraMask(2);
-	this->addChild(e->_sprite, 1);
-
-	e = new Enemy("grunt", p, bezier, 1);
-	mobile_objects [num_mobile_objects] = e;
-	e->_num_in_array = num_mobile_objects;
-	num_mobile_objects++;
-	e->_sprite->setCameraMask(2);
-	this->addChild(e->_sprite, 1);
+	Wave* w = new Wave(p, bezier);
+	w->addEnemy("grunt", 1);
+	w->addEnemy("grunt", 1);
+	w->addEnemy("grunt", 2);
+	w->_active = true;
 
 	p = Point(0, 0);
 
@@ -252,6 +229,7 @@ bool HelloWorld::init()
 	this->addChild(directionalLight);
 	*/
 
+<<<<<<< HEAD
 	//now the bezier config declaration
 
 	_eventDispatcher->addCustomEventListener("object_collision", [=](EventCustom* event){
@@ -276,6 +254,8 @@ bool HelloWorld::init()
 		towerShoot(data_towershot);
 	});
 
+=======
+>>>>>>> origin/master
 	//SET BACKGROUND MUSIC
 	CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("sandstorm.wav", true);
 
@@ -442,8 +422,6 @@ void HelloWorld::update(float dt)
 
 	// Irrelevant if controlles is connected
 
-	
-
 	if (coolDownNow < coolDownMax) {
 		coolDownNow += dt;
 	}
@@ -454,6 +432,25 @@ void HelloWorld::update(float dt)
 	
 	green_tower->setPosition3D(Vec3(boss->_sprite->getPositionX() + rightThumbX/100, boss->_sprite->getPositionY() + rightThumbY/100, 4*30));
 
+	//CHECKEAR STUPIDTEST
+	/*
+	if (current_s->_active) {
+		current_s->placeEnemy();
+		
+		Point p = Point(-500, 0);
+		ccBezierConfig bezier;
+		bezier.controlPoint_1 = Point(point1_x, point1_y);
+		bezier.controlPoint_2 = Point(point2_x, point2_y);
+		bezier.endPosition = Point(pointend_x, pointend_y);
+		Enemy* e;
+		e = new Enemy("grunt", p, bezier, 5);
+		event_add_mobile.setUserData(e);
+		_eventDispatcher->dispatchEvent(&event_add_mobile);
+		
+		current_s->_active = false;
+	}
+	*/
+	
 
 	//UPDATE PATHS
 	path.update(dt);
@@ -465,18 +462,38 @@ void HelloWorld::update(float dt)
 
 				float total_radius = mobile_objects[i]->_radius + mobile_objects[j]->_radius;
 
-				if (mobile_objects[i] != mobile_objects[j] && pow(mobile_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(mobile_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2) < pow(total_radius, 2)) {
-					// SON OBJETOS DIFERENTES Y COLISIONAN
+				if (mobile_objects[i] != mobile_objects[j] && mobile_objects[i]->_health > 0 && mobile_objects[j]->_health > 0 && pow(mobile_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(mobile_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2) < pow(total_radius, 2)) {
+					// SON OBJETOS DIFERENTES Y COLISIONAN, Y ADEMAS LOS DOS ESTAN ACTIVOS (HEALTH > 0)
 
 					if (mobile_objects[i]->_type.compare("shot") == 0 || mobile_objects[j]->_type.compare("shot") == 0) {
 						// UNO DE LOS DOS ES UN SHOT
 						if (mobile_objects[i]->_type.compare("player") == 0 || mobile_objects[j]->_type.compare("player") == 0) {
 							// EL OTRO ES EL JUGADOR
 						}
-						else if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy")) {
+						else if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
 							// EL OTRO ES UN ENEMY
-							mobile_objects[i]->_health = 0;
-							mobile_objects[j]->_health = 0;
+							Entity* bala;
+							Entity* enemigo;
+
+							if (mobile_objects[i]->_type.compare("shot") == 0) bala = mobile_objects[i];
+							if (mobile_objects[j]->_type.compare("shot") == 0) bala = mobile_objects[j];
+
+							if (mobile_objects[i]->_type.compare("enemy") == 0) enemigo = mobile_objects[i];
+							if (mobile_objects[j]->_type.compare("enemy") == 0) enemigo = mobile_objects[j];
+
+							// LA BALA MUERE
+							bala->_health = 0;
+
+							// EL ENEMIGO SE HIERE
+							enemigo->_health -= 20;
+							if (enemigo->_health > 0) { 
+								CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
+								enemigo->_sprite->setColor(Color3B(255, 0, 0));
+								enemigo->_injured = 0.1;
+							}
+							else {
+								CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+							}
 						
 						}
 					
@@ -560,7 +577,7 @@ void HelloWorld::update(float dt)
 
 			if (mobile_objects[i]->_health <= 0) {
 
-				mobile_objects[i]->_sprite->stopAllActions();
+				//mobile_objects[i]->_sprite->stopAllActions();
 				mobile_objects[i]->_sprite->removeFromParentAndCleanup(true);
 				mobile_objects[i]->_sprite = NULL;
 				_eventDispatcher->removeEventListenersForTarget(mobile_objects[i]);
@@ -624,6 +641,7 @@ void HelloWorld::removeMobileObject(int num_in_array) {
 
 }
 
+<<<<<<< HEAD
 void HelloWorld::towerShoot(Entity* tower_shooter){
 	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
 	TowerShot* _shotInstance = new TowerShot(tower_shooter->_sprite->getPosition3D(), tower_shooter->_target);
@@ -632,6 +650,17 @@ void HelloWorld::towerShoot(Entity* tower_shooter){
 	num_mobile_objects++;
 	_shotInstance->_sprite->setCameraMask(2);
 	this->addChild(_shotInstance->_sprite, 1);
+=======
+void HelloWorld::addMobileObject(Entity* e) {
+	
+	mobile_objects [num_mobile_objects] = e;
+	e->_num_in_array = num_mobile_objects;
+	num_mobile_objects++;
+	e->_sprite->setCameraMask(2);
+	this->addChild(e->_sprite, 1);
+	e->_active = true;
+	
+>>>>>>> origin/master
 }
 
 void HelloWorld::menuCloseCallback(Ref* pSender)

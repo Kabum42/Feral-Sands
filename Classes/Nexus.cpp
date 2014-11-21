@@ -1,4 +1,5 @@
 #include "Nexus.h"
+#include "Enemy.h"
 
 Point initial_point_nexus;
 int scale_nexus;
@@ -8,7 +9,6 @@ Nexus::Nexus(void) {
 }
 
 Nexus::Nexus(Point initial_point_2) {
-
 	
 	initial_point_nexus = initial_point_2;
 
