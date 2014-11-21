@@ -15,6 +15,8 @@ public:
 	int _num_in_array;
 	String _type;
 	float _health;
+	float _range;		//TOWER
+	Entity* _target;	//TOWER
 
 	Entity(void);
 	~Entity(void);

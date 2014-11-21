@@ -5,6 +5,7 @@
 #include "Entity.h"
 #include "PathStone.h"
 #include "Tower.h"
+#include "TowerShot.h"
 #include "WeaponShot.h"
 #include "Enemy.h"
 #include "Player.h"
@@ -30,6 +31,8 @@ public:
 	void HelloWorld::removeStaticObject(int num_in_array);
 
 	void HelloWorld::removeMobileObject(int num_in_array);
+	
+	void HelloWorld::towerShoot(Entity*);
     
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);

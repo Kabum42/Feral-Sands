@@ -10,7 +10,10 @@ Tower::Tower(void) {
 
 Tower::Tower(String s2, Point initial_point_2) {
 
-	
+	_type = "tower";
+	_target = nullptr;
+	_cooldown = 500; // ARREGLAR: Tiempo que tarde en salir la torre
+
 	s = s2;
 	initial_point_tower = initial_point_2;
 
@@ -18,6 +21,9 @@ Tower::Tower(String s2, Point initial_point_2) {
 
 	// ESTE RADIO ES PERFECTO, NO TOCAR
 	_radius = scale_tower*1;
+
+	// RANGO DE SELECCIÓN DE OBJETIVOS ENEMIGOS
+	_range = 200;
 
 	position_z_tower = -4*scale_tower;
 
@@ -43,12 +49,32 @@ Tower::~Tower(void)
 
 void Tower::update(float dt)
 {
-	
-	if (position_z_tower < 4*scale_tower) {
 
-		position_z_tower += dt*scale_tower*10;
+	if (position_z_tower < 4 * scale_tower) {
+
+		position_z_tower += dt*scale_tower * 10;
 		_sprite->setPositionZ(position_z_tower);
 
 	}
-	
+	else {
+		if (_cooldown > 0)
+			_cooldown -= 1; // AJUSTAR TEMPORALMENTE
+
+		if (_target != nullptr && _cooldown == 0)
+		{
+			_cooldown = 200;
+			Entity* target = _target;
+			EventCustom event("tower_shoot");
+			event.setUserData(target);
+			_eventDispatcher->dispatchEvent(&event);
+		}
+		
+		if(_target != nullptr)
+		{
+			if(pow(_sprite->getPositionX() - _target->_sprite->getPositionX(), 2) + pow(_sprite->getPositionY() - _target->_sprite->getPositionY(), 2) > pow(_range, 2))
+			{
+				_target = nullptr;
+			}
+		}
+	}
 }

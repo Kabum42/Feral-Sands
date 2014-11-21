@@ -270,6 +270,12 @@ bool HelloWorld::init()
 		removeMobileObject(data_mobile[0]);
 	});
 
+	_eventDispatcher->addCustomEventListener("tower_shot", [=](EventCustom* event){
+		//float* data_towershot = static_cast<float*>(event->getUserData());
+		Entity* data_towershot = static_cast<Entity*>(event->getUserData());
+		towerShoot(data_towershot);
+	});
+
 	//SET BACKGROUND MUSIC
 	CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("sandstorm.wav", true);
 
@@ -528,6 +534,25 @@ void HelloWorld::update(float dt)
 			}
 		}
 
+		// TOWER TARGETING (STATIC VS MOBILE OBJECTS)
+
+		for (int i = 0; i < num_static_objects; i++) {
+				
+			if (static_objects[i]->_type.compare("tower") == 0){
+				
+				if (static_objects[i]->_target == nullptr)
+				{
+					for (int j = 0; j < num_mobile_objects; j++)
+					{
+						//float total_radius = myTower->_range;
+						if (static_objects[i] != mobile_objects[j] && pow(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2) < pow(static_objects[i]->_range, 2)) {
+							static_objects[i]->_target = mobile_objects[j]; // Depurar: IMPLEMENT ITERATOR TO CHOOSE CLOSEST
+						}
+					}
+				}
+			}
+		}
+
 
 		// DIE, BASTARDS, DIE!
 		
@@ -597,6 +622,16 @@ void HelloWorld::removeMobileObject(int num_in_array) {
 	//mobile_objects[num_mobile_objects] = NULL;
 	num_mobile_objects--;
 
+}
+
+void HelloWorld::towerShoot(Entity* tower_shooter){
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
+	TowerShot* _shotInstance = new TowerShot(tower_shooter->_sprite->getPosition3D(), tower_shooter->_target);
+	mobile_objects[num_mobile_objects] = _shotInstance;
+	_shotInstance->_num_in_array = num_mobile_objects;
+	num_mobile_objects++;
+	_shotInstance->_sprite->setCameraMask(2);
+	this->addChild(_shotInstance->_sprite, 1);
 }
 
 void HelloWorld::menuCloseCallback(Ref* pSender)
