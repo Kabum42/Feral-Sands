@@ -21,9 +21,12 @@ USING_NS_CC;
 DWORD dwResult;
 float data [1] = { };
 
+Nexus* nexus;
 Player* boss;
 Sprite3D* boss1;
-//Sprite3D* boss2;
+
+int total_enemies = 0;
+int dead_enemies = 0;
 
 Entity* static_objects [200] = { };
 int num_static_objects = 0;
@@ -41,19 +44,16 @@ DirectionLight* sun;
 
 Sprite3D* green_tower;
 
-PathStone path;
+float nomefio = 0;
 
-//Point position1;
-//Point position2;
-
-float point1_x = 0;
+float point1_x = -1500;
 float point1_y = -300;
 
-float point2_x = 700;
-float point2_y = 1500;
+float point2_x = -750;
+float point2_y = 700;
 
-float pointend_x = 1800;
-float pointend_y = 300;
+float pointend_x = 0;
+float pointend_y = 0;
 
 bool menuTurrets = false;
 
@@ -154,6 +154,18 @@ bool HelloWorld::init()
 		Entity* e = static_cast<Entity*>(event->getUserData());
 		addMobileObject(e);
 	});
+
+	_eventDispatcher->addCustomEventListener("nexus_life", [=](EventCustom* event){
+		int* data_nexus = static_cast<int*>(event->getUserData());
+		nexus->_life += data_nexus[0];
+		if (nexus->_life <= 0) {
+			nexus->_sprite->setColor(Color3B(200, 0, 0));
+		}
+	});
+
+	_eventDispatcher->addCustomEventListener("enemy_dead", [=](EventCustom* event){
+		dead_enemies++;
+	});
 	
 	
 
@@ -179,45 +191,72 @@ bool HelloWorld::init()
 	boss->_sprite->setCameraMask(2);
 	this->addChild(boss->_sprite, 0);
 
-	green_tower = Sprite3D::create("tower.obj", "stone.png");
-	green_tower->setPosition3D(Vec3(0, 0, 4*30));
+	green_tower = Sprite3D::create("Tower.obj", "stone.png");
+	green_tower->setPosition3D(Vec3(0, 0, 0.44*60));
 	green_tower->setRotation3D(Vec3(90, 0, 270));
-	green_tower->setScale(30);
+	green_tower->setScale(60);
 	green_tower->setCameraMask(2);
 	green_tower->setColor(ccc3(0, 200, 0));
 	green_tower->setVisible(false);
 	this->addChild(green_tower, 0);
 	
-	p = Point(-500, 0);
+	p = Point(-2000, 0);
 	ccBezierConfig bezier;
 	bezier.controlPoint_1 = Point(point1_x, point1_y);
 	bezier.controlPoint_2 = Point(point2_x, point2_y);
 	bezier.endPosition = Point(pointend_x, pointend_y);
 
-	path = PathStone::PathStone(50, 5, p, bezier);
-	this->addChild(path.getLayer());
 
-	Wave* w = new Wave(p, bezier);
+	PathStone* path = new PathStone(10, 1, p, bezier);
+	this->addChild(path->getLayer());
+	//PathStone* path = new PathStone();
+
+	Wave* w = new Wave(p, path);
 	w->addEnemy("grunt", 1);
 	w->addEnemy("grunt", 1);
 	w->addEnemy("grunt", 2);
+	total_enemies += w->num_enemies;
 	w->_active = true;
+
+	//
+	p = Point(2000, 0);
+	ccBezierConfig bezier2;
+	bezier2.controlPoint_1 = Point(1500, 300);
+	bezier2.controlPoint_2 = Point(750, -700);
+	bezier2.endPosition = Point(0, 0);
+	
+	PathStone* path2 = new PathStone(10, 1, p, bezier2);
+	this->addChild(path2->getLayer());
+	
+	Wave* w2 = new Wave(p, path2);
+	w2->addEnemy("grunt", 1);
+	w2->addEnemy("grunt", 1);
+	w2->addEnemy("grunt", 2);
+	total_enemies += w2->num_enemies;
+	w2->_active = true;
+	
+	//
+
+
+
+
+
 
 	p = Point(0, 0);
 
-	Nexus* n = new Nexus(p);
-	static_objects [num_static_objects] = n;
+	nexus = new Nexus(p);
+	static_objects [num_static_objects] = nexus;
 	num_static_objects++;
-	n->_sprite->setCameraMask(2);
-	this->addChild(n->_sprite, 1);
+	nexus->_sprite->setCameraMask(2);
+	this->addChild(nexus->_sprite, 1);
 
 	camera = Camera::createPerspective(60, visibleSize.width/visibleSize.height, 1, 2000);
 	camera->setCameraFlag(CameraFlag::USER1);
 	camera->setRotation3D(Vec3(cameraAngle, 0, 0));
 	this->addChild(camera, 1);
 
-	sun = DirectionLight::create(Vec3(-1.0f, -1.0f, -1.0f), Color3B(255, 255, 255));
-	sun->retain();
+	sun = DirectionLight::create(Vec3(0.0f, 0.0f, 1.0f), Color3B(255, 255, 127));
+	//sun->retain();
 	sun->setEnabled(true);
 	addChild(sun);
 	sun->setCameraMask(2);
@@ -242,6 +281,12 @@ void HelloWorld::update(float dt)
 	data[0] = dt;
 	event.setUserData(data);
 	_eventDispatcher->dispatchEvent(&event);
+
+	nomefio += dt/2;
+	if (nomefio > 1) { nomefio = -1; }
+	sun->setDirection(Vec3(0, nomefio, -1));
+	sun->setColor(Color3B(255, 255 -(nomefio+1)*(128/2), 127 + (nomefio+1)*(128/2)));
+	
 
 	
 	XINPUT_STATE state;
@@ -402,7 +447,7 @@ void HelloWorld::update(float dt)
 	//Point p = Point(boss->getPositionX(), boss->getPositionY());
 	//rotateToPoint(boss2, p);
 	
-	green_tower->setPosition3D(Vec3(boss->_sprite->getPositionX() + rightThumbX/100, boss->_sprite->getPositionY() + rightThumbY/100, 4*30));
+	green_tower->setPosition3D(Vec3(boss->_sprite->getPositionX() + rightThumbX/100, boss->_sprite->getPositionY() + rightThumbY/100, 0.44*60));
 
 	//CHECKEAR STUPIDTEST
 	/*
@@ -422,10 +467,7 @@ void HelloWorld::update(float dt)
 		current_s->_active = false;
 	}
 	*/
-	
 
-	//UPDATE PATHS
-	path.update(dt);
 	
 	// COLLISION DETECTION MOBILE VS MOBILE OBJECTS
 	
@@ -485,6 +527,16 @@ void HelloWorld::update(float dt)
 						event.setUserData(elements);
 
 						_eventDispatcher->dispatchEvent(&event);
+
+						elements[0] = 0.5 * (abs(mobile_objects[j]->_sprite->getPositionX() - mobile_objects[i]->_sprite->getPositionX() )*div - abs(mobile_objects[j]->_sprite->getPositionX() - mobile_objects[i]->_sprite->getPositionX()));
+						if (mobile_objects[i]->_sprite->getPositionX() > mobile_objects[j]->_sprite->getPositionX()) elements[0] = -elements[0];
+						elements[1] = 0.5 * (abs(mobile_objects[j]->_sprite->getPositionY() - mobile_objects[i]->_sprite->getPositionY() )*div - abs(mobile_objects[j]->_sprite->getPositionY() - mobile_objects[i]->_sprite->getPositionY()));
+						if (mobile_objects[i]->_sprite->getPositionY() > mobile_objects[j]->_sprite->getPositionY()) elements[1] = -elements[1];
+						elements[2] = i;
+
+						event.setUserData(elements);
+
+						_eventDispatcher->dispatchEvent(&event);
 					}
 
 				}
@@ -530,6 +582,11 @@ void HelloWorld::update(float dt)
 
 			if (mobile_objects[i]->_health <= 0) {
 
+				if (mobile_objects[i]->_type.compare("enemy") == 0) {
+					EventCustom event_dead("enemy_dead");
+					_eventDispatcher->dispatchEvent(&event_dead);
+				}
+
 				//mobile_objects[i]->_sprite->stopAllActions();
 				mobile_objects[i]->_sprite->removeFromParentAndCleanup(true);
 				mobile_objects[i]->_sprite = NULL;
@@ -545,7 +602,11 @@ void HelloWorld::update(float dt)
 
 		}
 		
-	
+	if (nexus->_life > 0 && dead_enemies == total_enemies) {
+
+		nexus->_sprite->setColor(Color3B(0, 255, 0));
+
+	}
 
 	camera->setRotation3D(Vec3(cameraAngle, 0, 0));
 	camera->setPosition3D(Vec3(boss->_sprite->getPositionX(), boss->_sprite->getPositionY() - sin(cameraAngle*(2*M_PI)/360)*zoom, boss->_sprite->getPositionZ() + cos(cameraAngle*(2*M_PI)/360)*zoom ));

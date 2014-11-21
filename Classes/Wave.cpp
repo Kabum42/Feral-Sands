@@ -1,11 +1,12 @@
 #include "Wave.h"
 
-Wave::Wave(Point initial_point2, ccBezierConfig bezier2) {
+Wave::Wave(Point initial_point2, PathStone* path2) {
 	
 	_active = false;
 	current_delay = 0;
 	initial_point = initial_point2;
-	bezier = bezier2;
+	//bezier = bezier2;
+	path = path2;
 	num_enemies = 0;
 	current_enemy = 0;
 
@@ -32,7 +33,7 @@ void Wave::update(float dt)
 	
 		if (current_delay >= enemies_delay[current_enemy]) {
 	
-			Enemy* e = new Enemy(enemies_type[current_enemy], initial_point, bezier, 5);
+			Enemy* e = new Enemy(enemies_type[current_enemy], initial_point, path, 20);
 			EventCustom event_add_mobile("add_mobile");
 			event_add_mobile.setUserData(e);
 			_eventDispatcher->dispatchEvent(&event_add_mobile);
