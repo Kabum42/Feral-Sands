@@ -33,6 +33,8 @@ public:
 	void HelloWorld::removeMobileObject(int num_in_array);
 
 	void HelloWorld::addMobileObject(Entity* e);
+
+	void HelloWorld::repulse(Entity* e1, Entity* e2);
     
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);

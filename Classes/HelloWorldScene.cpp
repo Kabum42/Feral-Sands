@@ -40,6 +40,7 @@ float zoom = 1000.0f;
 
 Camera* camera;
 
+bool enabledLights = false;
 DirectionLight* sun;
 
 Sprite3D* green_tower;
@@ -255,11 +256,15 @@ bool HelloWorld::init()
 	camera->setRotation3D(Vec3(cameraAngle, 0, 0));
 	this->addChild(camera, 1);
 
-	sun = DirectionLight::create(Vec3(0.0f, 0.0f, 1.0f), Color3B(255, 255, 127));
-	//sun->retain();
-	sun->setEnabled(true);
-	addChild(sun);
-	sun->setCameraMask(2);
+	if (enabledLights) {
+		sun = DirectionLight::create(Vec3(0.0f, 0.0f, 1.0f), Color3B(255, 255, 127));
+		//sun->retain();
+		sun->setEnabled(true);
+		addChild(sun);
+		sun->setCameraMask(2);
+	}
+	
+	
 
 	/*
 	auto directionalLight = DirectionLight::create(Vec3(-1.0f, -1.0f, 0.0f), Color3B(200, 200, 200));
@@ -282,10 +287,12 @@ void HelloWorld::update(float dt)
 	event.setUserData(data);
 	_eventDispatcher->dispatchEvent(&event);
 
-	nomefio += dt/2;
-	if (nomefio > 1) { nomefio = -1; }
-	sun->setDirection(Vec3(0, nomefio, -1));
-	sun->setColor(Color3B(255, 255 -(nomefio+1)*(128/2), 127 + (nomefio+1)*(128/2)));
+	if (enabledLights) {
+		nomefio += dt/2;
+		if (nomefio > 1) { nomefio = -1; }
+		sun->setDirection(Vec3(0, nomefio, -1));
+		sun->setColor(Color3B(255, 255 -(nomefio+1)*(128/2), 127 + (nomefio+1)*(128/2)));
+	}
 	
 
 	
@@ -481,10 +488,7 @@ void HelloWorld::update(float dt)
 
 					if (mobile_objects[i]->_type.compare("shot") == 0 || mobile_objects[j]->_type.compare("shot") == 0) {
 						// UNO DE LOS DOS ES UN SHOT
-						if (mobile_objects[i]->_type.compare("player") == 0 || mobile_objects[j]->_type.compare("player") == 0) {
-							// EL OTRO ES EL JUGADOR
-						}
-						else if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
+						if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
 							// EL OTRO ES UN ENEMY
 							Entity* bala;
 							Entity* enemigo;
@@ -512,31 +516,41 @@ void HelloWorld::update(float dt)
 						}
 					
 					}
+					else if (mobile_objects[i]->_type.compare("player") == 0 || mobile_objects[j]->_type.compare("player") == 0) {
+						// UNO DE LOS DOS ES EL JUGADOR
+
+						if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
+							// EL OTRO ES UN ENEMY
+							Entity* player;
+							Entity* enemigo;
+
+							if (mobile_objects[i]->_type.compare("player") == 0) player = mobile_objects[i];
+							if (mobile_objects[j]->_type.compare("player") == 0) player = mobile_objects[j];
+
+							if (mobile_objects[i]->_type.compare("enemy") == 0) enemigo = mobile_objects[i];
+							if (mobile_objects[j]->_type.compare("enemy") == 0) enemigo = mobile_objects[j];
+
+							repulse(player, enemigo);
+
+							// EL JUGADOR SE HIERE
+							player->_health -= 20;
+							if (player->_health > 0) { 
+								CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
+								player->_sprite->setColor(Color3B(255, 0, 0));
+								player->_injured = 0.1;
+							}
+							else {
+								CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+								player->_health = 200;
+								player->_sprite->setPosition3D(Vec3(0, -500, player->_sprite->getPositionZ()));
+							}
+							
+						}
+					}
 					else {
-						// COMPORTAMIENTO DE REPULSION
-						float div = pow(total_radius, 2) / (pow(mobile_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(mobile_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2));
+						
+						repulse(mobile_objects[i], mobile_objects[j]);
 
-						float* elements = new float[3];
-						elements[0] = 0.5 * (abs(mobile_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX())*div - abs(mobile_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX()));
-						if (mobile_objects[i]->_sprite->getPositionX() < mobile_objects[j]->_sprite->getPositionX()) elements[0] = -elements[0];
-						elements[1] = 0.5 * (abs(mobile_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY())*div - abs(mobile_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY()));
-						if (mobile_objects[i]->_sprite->getPositionY() < mobile_objects[j]->_sprite->getPositionY()) elements[1] = -elements[1];
-						elements[2] = j;
-
-						EventCustom event("object_collision");
-						event.setUserData(elements);
-
-						_eventDispatcher->dispatchEvent(&event);
-
-						elements[0] = 0.5 * (abs(mobile_objects[j]->_sprite->getPositionX() - mobile_objects[i]->_sprite->getPositionX() )*div - abs(mobile_objects[j]->_sprite->getPositionX() - mobile_objects[i]->_sprite->getPositionX()));
-						if (mobile_objects[i]->_sprite->getPositionX() > mobile_objects[j]->_sprite->getPositionX()) elements[0] = -elements[0];
-						elements[1] = 0.5 * (abs(mobile_objects[j]->_sprite->getPositionY() - mobile_objects[i]->_sprite->getPositionY() )*div - abs(mobile_objects[j]->_sprite->getPositionY() - mobile_objects[i]->_sprite->getPositionY()));
-						if (mobile_objects[i]->_sprite->getPositionY() > mobile_objects[j]->_sprite->getPositionY()) elements[1] = -elements[1];
-						elements[2] = i;
-
-						event.setUserData(elements);
-
-						_eventDispatcher->dispatchEvent(&event);
 					}
 
 				}
@@ -664,6 +678,38 @@ void HelloWorld::addMobileObject(Entity* e) {
 	this->addChild(e->_sprite, 1);
 	e->_active = true;
 	
+}
+
+void HelloWorld::repulse(Entity* e1, Entity* e2) {
+
+	float total_radius = e1->_radius + e2->_radius;
+
+	// COMPORTAMIENTO DE REPULSION
+	float div = pow(total_radius, 2) / (pow(e1->_sprite->getPositionX() - e2->_sprite->getPositionX(), 2) + pow(e1->_sprite->getPositionY() - e2->_sprite->getPositionY(), 2));
+
+	float* elements = new float[3];
+	elements[0] = 0.5 * (abs(e1->_sprite->getPositionX() - e2->_sprite->getPositionX())*div - abs(e1->_sprite->getPositionX() - e2->_sprite->getPositionX()));
+	if (e1->_sprite->getPositionX() < e2->_sprite->getPositionX()) elements[0] = -elements[0];
+	elements[1] = 0.5 * (abs(e1->_sprite->getPositionY() - e2->_sprite->getPositionY())*div - abs(e1->_sprite->getPositionY() - e2->_sprite->getPositionY()));
+	if (e1->_sprite->getPositionY() < e2->_sprite->getPositionY()) elements[1] = -elements[1];
+	elements[2] = e2->_num_in_array;
+
+	EventCustom event("object_collision");
+	event.setUserData(elements);
+
+	_eventDispatcher->dispatchEvent(&event);
+
+	elements[0] = 0.5 * (abs(e2->_sprite->getPositionX() - e1->_sprite->getPositionX() )*div - abs(e2->_sprite->getPositionX() - e1->_sprite->getPositionX()));
+	if (e1->_sprite->getPositionX() > e2->_sprite->getPositionX()) elements[0] = -elements[0];
+	elements[1] = 0.5 * (abs(e2->_sprite->getPositionY() - e1->_sprite->getPositionY() )*div - abs(e2->_sprite->getPositionY() - e1->_sprite->getPositionY()));
+	if (e1->_sprite->getPositionY() > e2->_sprite->getPositionY()) elements[1] = -elements[1];
+	elements[2] = e1->_num_in_array;
+
+	event.setUserData(elements);
+
+	_eventDispatcher->dispatchEvent(&event);
+	//FIN REPULSION
+
 }
 
 void HelloWorld::menuCloseCallback(Ref* pSender)
