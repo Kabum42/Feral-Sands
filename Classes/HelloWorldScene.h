@@ -32,10 +32,9 @@ public:
 	void HelloWorld::removeStaticObject(int num_in_array);
 
 	void HelloWorld::removeMobileObject(int num_in_array);
-	
-	void HelloWorld::towerShoot(Entity*);
 
 	void HelloWorld::addMobileObject(Entity* e);
+	void HelloWorld::addShot(Entity* e);
     
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);

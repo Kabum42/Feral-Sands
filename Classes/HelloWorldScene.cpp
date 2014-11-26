@@ -156,17 +156,13 @@ bool HelloWorld::init()
 		addMobileObject(e);
 	});
 
-	_eventDispatcher->addCustomEventListener("tower_shot", [=](EventCustom* event){
-	Entity* data_towershot = static_cast<Entity*>(event->getUserData());
-	towerShoot(data_towershot);
+	_eventDispatcher->addCustomEventListener("add_shot", [=](EventCustom* event){
+		Entity* e = static_cast<Entity*>(event->getUserData());
+		addShot(e);
 	});
+
+
 	
-	
-
-
-
-
-
 	auto floor = Sprite3D::create("floor.obj", "sand.png");
 	floor->setScale(100);
 	Vec3 corners_floor[8] = {};
@@ -225,7 +221,7 @@ bool HelloWorld::init()
 	sun = DirectionLight::create(Vec3(-1.0f, -1.0f, -1.0f), Color3B(255, 255, 255));
 	sun->retain();
 	sun->setEnabled(true);
-	addChild(sun);
+	//addChild(sun);
 	sun->setCameraMask(2);
 
 	/*
@@ -333,11 +329,13 @@ void HelloWorld::update(float dt)
 			coolDownNow = state.Gamepad.bRightTrigger/255 * coolDownMax/2;
 			CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
 			WeaponShot* _shotInstance = new WeaponShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
-			mobile_objects[num_mobile_objects] = _shotInstance;
+			/*mobile_objects[num_mobile_objects] = _shotInstance;
 			_shotInstance->_num_in_array = num_mobile_objects;
 			num_mobile_objects++;
 			_shotInstance->_sprite->setCameraMask(2);
-			this->addChild(_shotInstance->_sprite, 1);
+			this->addChild(_shotInstance->_sprite, 1);*/
+			addMobileObject(_shotInstance);
+			//addShot(_shotInstance);
 		}
 		
 
@@ -623,21 +621,6 @@ void HelloWorld::removeMobileObject(int num_in_array) {
 
 }
 
-void HelloWorld::towerShoot(Entity* tower_shooter){
-	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
-	TowerShot* shotInstance = new TowerShot(tower_shooter->_sprite->getPosition3D(), tower_shooter->_target);
-	/*mobile_objects[num_mobile_objects] = _shotInstance;
-	_shotInstance->_num_in_array = num_mobile_objects;
-	num_mobile_objects++;
-	_shotInstance->_sprite->setCameraMask(2);
-	this->addChild(_shotInstance->_sprite, 1);*/
-	
-	//addMobileObject(shotInstance);
-	/*EventCustom event_add_mobile("add_mobile");
-	event_add_mobile.setUserData(_shotInstance);
-	_eventDispatcher->dispatchEvent(&event_add_mobile);*/
-}
-
 void HelloWorld::addMobileObject(Entity* e) {
 	
 	mobile_objects [num_mobile_objects] = e;
@@ -646,6 +629,15 @@ void HelloWorld::addMobileObject(Entity* e) {
 	e->_sprite->setCameraMask(2);
 	this->addChild(e->_sprite, 1);
 	e->_active = true;
+
+}
+
+void HelloWorld::addShot(Entity* e) {
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
+	e->_sprite->setCameraMask(2);
+	this->addChild(e->_sprite, 1);
+	e->_active = true;
+
 }
 
 void HelloWorld::menuCloseCallback(Ref* pSender)

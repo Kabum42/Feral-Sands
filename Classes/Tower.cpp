@@ -63,19 +63,20 @@ void Tower::update(float dt)
 		if (_target != nullptr && _cooldown == 0)
 		{
 			_cooldown = 200;
-			//Entity* target = _target;
-			EventCustom event("tower_shot");
-			//event.setUserData(target);
-			event.setUserData(this);
-			_eventDispatcher->dispatchEvent(&event);
+			Vec3 tower_position = _sprite->getPosition3D();
+			TowerShot* newTowerShot = new TowerShot(tower_position, _target);
+			EventCustom event_add_shot("add_shot");
+			event_add_shot.setUserData(newTowerShot);
+			_eventDispatcher->dispatchEvent(&event_add_shot);
 		}
 		
-		if(_target != nullptr)
+		if(_target != nullptr && _target != NULL && _target->_sprite != nullptr && _target->_sprite != NULL && _target->_health > 0)
 		{
 			if(pow(_sprite->getPositionX() - _target->_sprite->getPositionX(), 2) + pow(_sprite->getPositionY() - _target->_sprite->getPositionY(), 2) > pow(_range, 2))
 			{
 				_target = nullptr;
 			}
 		}
+		else { _target = nullptr; }
 	}
 }

@@ -1,6 +1,7 @@
 using namespace std;
 #include "cocos2d.h"
 #include "Entity.h"
+#include "TowerShot.h"
 USING_NS_CC;
 
 class Tower : public Entity
