@@ -35,6 +35,39 @@ Enemy::Enemy(String s_enemy2, Point initial_point_enemy2, PathStone* path2, floa
 		float* data = static_cast<float*>(event->getUserData());
 		update(data[0]);
 	});
+
+	_eventDispatcher->addCustomEventListener("paused", [=](EventCustom* event) {
+		if (_health > 0 && _active) {
+			_sprite->pauseSchedulerAndActions();
+		}
+	});
+
+	_eventDispatcher->addCustomEventListener("unpaused", [=](EventCustom* event) {
+		if (_health > 0 && _active) {
+			_sprite->resumeSchedulerAndActions();
+		}
+	});
+
+	_eventDispatcher->addCustomEventListener("checkVisible", [=](EventCustom* event) {
+		if (_health > 0 && _active) {
+			float cameraAngle = 34;
+			Point* data = static_cast<Point*>(event->getUserData());
+			Point* point_sprite = new Point(_sprite->getPositionX(), _sprite->getPositionY());
+			float distance = sqrt(pow(data->x - point_sprite->x, 2) + pow(data->y - point_sprite->y, 2));
+			if (distance < 2000 && !_sprite->isVisible()) {
+				_sprite->setVisible(true);
+			}
+			else if (distance >= 2000 && _sprite->isVisible()) {
+				_sprite->setVisible(false);
+			}
+		}
+	});
+
+
+
+
+	
+		
 	
 	
 
@@ -115,7 +148,7 @@ void Enemy::update(float dt)
 			rotateToVec2(_sprite, Vec2(position2.x - position1.x, position2.y - position1.y));
 
 		}
-		
+
 	}
 
 	

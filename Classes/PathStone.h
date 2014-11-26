@@ -9,7 +9,8 @@ class PathStone : public Sprite3D
 {
 
 public:
-	Sprite3D* tiles [50];
+	bool _active;
+	Sprite3D* tiles[50];
 	Layer* layer;
 	int number_tiles;
 	int paused_current;

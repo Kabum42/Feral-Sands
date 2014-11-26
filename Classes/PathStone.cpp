@@ -8,6 +8,7 @@ PathStone::PathStone() {
 
 PathStone::PathStone(int number_tiles_2, float seconds_total_2, Point initial_point_2, ccBezierConfig bezier_2) {
 
+	_active = true;
 	layer = Layer::create();
 	paused_current = 0;
 	seconds_current = 0;
@@ -38,6 +39,27 @@ PathStone::PathStone(int number_tiles_2, float seconds_total_2, Point initial_po
 	_eventDispatcher->addCustomEventListener("EnterFrame", [=](EventCustom* event) {
 		float* data = static_cast<float*>(event->getUserData());
 		update(data[0]);
+	});
+
+	_eventDispatcher->addCustomEventListener("checkVisible", [=](EventCustom* event) {	
+		if (_active) {
+			
+			Point* data = static_cast<Point*>(event->getUserData());
+
+			for (int i = 0; i < number_tiles; i++) {
+
+				Point* point_sprite = new Point(tiles[i]->getPositionX(), tiles[i]->getPositionY());
+				float distance = sqrt(pow(data->x - point_sprite->x, 2) + pow(data->y - point_sprite->y, 2));
+				if (distance < 2000 && !tiles[i]->isVisible()) {
+					tiles[i]->setVisible(true);
+				}
+				else if (distance >= 2000 && tiles[i]->isVisible()) {
+					tiles[i]->setVisible(false);
+				}
+
+			}
+
+		}
 	});
 
 }
