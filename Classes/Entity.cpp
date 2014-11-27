@@ -2,6 +2,7 @@
 
 Entity::Entity(void) {
 
+	_target = nullptr;
 }
 
 Entity::~Entity(void)

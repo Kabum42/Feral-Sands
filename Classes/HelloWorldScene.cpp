@@ -14,6 +14,7 @@ TO DO:
 
 #include "SimpleAudioEngine.h"
 
+
 USING_NS_CC;
 
 #define INPUT_DEADZONE  ( 0.24f * FLOAT(0x7FFF) )  // Default to 24% of the +/- 32767 range.   This is a reasonable default value but can be altered if needed.
@@ -171,13 +172,14 @@ bool HelloWorld::init()
 	_eventDispatcher->addCustomEventListener("enemy_dead", [=](EventCustom* event){
 		dead_enemies++;
 	});
+
+	_eventDispatcher->addCustomEventListener("add_shot", [=](EventCustom* event){
+		Entity* e = static_cast<Entity*>(event->getUserData());
+		addShot(e);
+	});
+
+
 	
-	
-
-
-
-
-
 	auto floor = Sprite3D::create("floor.obj", "sand.png");
 	floor->setScale(100);
 	Vec3 corners_floor[8] = {};
@@ -243,12 +245,6 @@ bool HelloWorld::init()
 	total_enemies += w2->num_enemies;
 	w2->_active = true;
 	
-	//
-
-
-
-
-
 
 	p = Point(0, 0);
 
@@ -270,6 +266,11 @@ bool HelloWorld::init()
 	camera->setRotation3D(Vec3(cameraAngle, 0, 0));
 	this->addChild(camera, 1);
 
+	sun = DirectionLight::create(Vec3(-1.0f, -1.0f, -1.0f), Color3B(255, 255, 255));
+	sun->retain();
+	sun->setEnabled(true);
+	addChild(sun);
+	sun->setCameraMask(2);
 	if (enabledLights) {
 		sun = DirectionLight::create(Vec3(0.0f, 0.0f, 1.0f), Color3B(255, 255, 127));
 		//sun->retain();
@@ -278,13 +279,14 @@ bool HelloWorld::init()
 		sun->setCameraMask(2);
 	}
 	
-	
 
 	/*
 	auto directionalLight = DirectionLight::create(Vec3(-1.0f, -1.0f, 0.0f), Color3B(200, 200, 200));
 	directionalLight->setLightFlag(LightFlag::LIGHT1);
 	this->addChild(directionalLight);
 	*/
+
+	//now the bezier config declaration
 
 	//SET BACKGROUND MUSIC
 	CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("sandstorm.wav", true);
@@ -429,7 +431,18 @@ void HelloWorld::update(float dt)
 			boss->_sprite->setRotation3D(Vec3(90, 0, -90 - atan2(rightThumbY, rightThumbX)*360/(2*M_PI)));
 
 			// DISPARO
-		
+		if(state.Gamepad.bRightTrigger != 0 && coolDownNow >= coolDownMax) {
+			coolDownNow = state.Gamepad.bRightTrigger/255 * coolDownMax/2;
+			CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
+			WeaponShot* _shotInstance = new WeaponShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
+			/*mobile_objects[num_mobile_objects] = _shotInstance;
+			_shotInstance->_num_in_array = num_mobile_objects;
+			num_mobile_objects++;
+			_shotInstance->_sprite->setCameraMask(2);
+			this->addChild(_shotInstance->_sprite, 1);*/
+			addMobileObject(_shotInstance);
+			//addShot(_shotInstance);
+		}
 			if(state.Gamepad.bRightTrigger != 0 && coolDownNow >= coolDownMax) {
 				coolDownNow = state.Gamepad.bRightTrigger/255 * coolDownMax/2;
 				CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
@@ -675,6 +688,27 @@ void HelloWorld::update(float dt)
 				}
 			}
 
+		// TOWER TARGETING (STATIC VS MOBILE OBJECTS)
+
+		for (int i = 0; i < num_static_objects; i++) {
+				
+			if (static_objects[i]->_type.compare("tower") == 0){
+				
+				if (static_objects[i]->_target == nullptr)
+				{
+					for (int j = 0; j < num_mobile_objects; j++)
+					{
+						//float total_radius = myTower->_range;
+						if (mobile_objects[j]->_type.compare("enemy") == 0){
+							if (pow(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2) < pow(static_objects[i]->_range, 2)) {
+								static_objects[i]->_target = mobile_objects[j]; // Depurar: IMPLEMENT ITERATOR TO CHOOSE CLOSEST
+							}
+						}
+					}
+				}
+			}
+		}
+
 
 			// DIE, BASTARDS, DIE!
 		
@@ -765,7 +799,15 @@ void HelloWorld::addMobileObject(Entity* e) {
 	e->_sprite->setCameraMask(2);
 	this->addChild(e->_sprite, 1);
 	e->_active = true;
-	
+
+}
+
+void HelloWorld::addShot(Entity* e) {
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
+	e->_sprite->setCameraMask(2);
+	this->addChild(e->_sprite, 1);
+	e->_active = true;
+
 }
 
 void HelloWorld::repulse(Entity* e1, Entity* e2) {
