@@ -1,20 +1,35 @@
-#pragma once
+#ifndef PATHSTONE_H
+#define PATHSTONE_H
 
+using namespace std;
 #include "cocos2d.h"
+USING_NS_CC;
 
-class PathStone
+class PathStone : public Sprite3D
 {
+
 public:
+	bool _active;
+	Sprite3D* tiles[50];
+	Layer* layer;
+	int number_tiles;
+	int paused_current;
+	float seconds_total;
+	float seconds_current;
+	Point initial_point;
+	ccBezierConfig bezier;
+	PathStone* _nextPath;
 	
-	PathStone::PathStone();
-	PathStone::PathStone(int number_tiles_2, float seconds_total_2, cocos2d::Point initial_point_2, cocos2d::ccBezierConfig bezier_2);
+	PathStone(void);
+	PathStone(int number_tiles_2, float seconds_total_2, cocos2d::Point initial_point_2, cocos2d::ccBezierConfig bezier_2);
 
 	void PathStone::update(float dt);
 	
-	cocos2d::Layer* getLayer();
-
-	void PathStone::deleteThis(void);
+	Layer* getLayer();
+	void setNextPath(PathStone* nextPath2);
 
 	~PathStone(void);
 };
+
+#endif
 

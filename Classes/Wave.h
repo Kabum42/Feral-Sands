@@ -1,6 +1,7 @@
 using namespace std;
 #include "cocos2d.h"
 #include "Enemy.h"
+#include "PathStone.h"
 USING_NS_CC;
 
 
@@ -16,10 +17,11 @@ public:
 	int current_enemy;
 	float current_delay;
 	Point initial_point;
-	ccBezierConfig bezier;
+	//ccBezierConfig bezier;
+	PathStone* path;
 	Enemy* lol;
 
-	Wave(Point initial_point2, ccBezierConfig bezier2);
+	Wave(Point initial_point2, PathStone* path2);
 	~Wave(void);
 
 	void update(float dt);

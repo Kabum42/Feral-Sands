@@ -1,6 +1,7 @@
 using namespace std;
 #include "cocos2d.h"
 #include "Entity.h"
+#include "PathStone.h"
 USING_NS_CC;
 
 #ifndef ENEMY_H
@@ -9,10 +10,9 @@ USING_NS_CC;
 class Enemy : public Entity
 {
 
-	//Sprite3D* _sprite;
 public:
-	//Sprite3D* _sprite;
-	ccBezierConfig _bezier;
+	bool _principio;
+	PathStone* path;
 	float seconds_enemy;
 	float position_z_enemy;
 	Point initial_point_enemy;
@@ -22,11 +22,12 @@ public:
 	int scale_enemy;
 
 	Enemy(void);
-	Enemy(String s_enemy2, Point initial_point_enemy2, ccBezierConfig bezier_enemy2, float seconds_enemy2);
+	Enemy(String s_enemy2, Point initial_point_enemy2, PathStone* path2, float seconds_enemy2);
 	~Enemy(void);
 
 	void Enemy::update(float dt);
 	void Enemy::rotateToVec2(Sprite3D* s, Vec2 v);
+	void Enemy::harmNexus();
 
 	//Sprite3D* Enemy::sprite(void);
 };

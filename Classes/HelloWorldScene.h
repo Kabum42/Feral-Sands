@@ -11,6 +11,7 @@
 #include "Player.h"
 #include "Nexus.h"
 #include "Wave.h"
+#include "Atrezzo.h"
 
 class HelloWorld : public cocos2d::Layer
 {
@@ -34,7 +35,11 @@ public:
 	void HelloWorld::removeMobileObject(int num_in_array);
 
 	void HelloWorld::addMobileObject(Entity* e);
+	
 	void HelloWorld::addShot(Entity* e);
+
+	void HelloWorld::repulse(Entity* e1, Entity* e2);
+
     
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
