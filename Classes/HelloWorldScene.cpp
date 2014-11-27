@@ -65,8 +65,8 @@ bool leftTriggerPushed = false;
 bool leftShoulderPushed = false;
 bool startPushed = false;
 
-float rightThumbX = 32000;
-float rightThumbY = 0;
+float rightThumbX = 0;
+float rightThumbY = 32767;
 
 float coolDownMax = 0.2;
 float coolDownNow = coolDownMax;
@@ -218,7 +218,7 @@ bool HelloWorld::init()
 	num_active_pathstones++;
 
 	Wave* w = new Wave(p, path);
-	w->addEnemy("grunt", 1);
+	w->addEnemy("grunt", 1.5);
 	w->addEnemy("grunt", 1);
 	w->addEnemy("grunt", 2);
 	total_enemies += w->num_enemies;
@@ -237,7 +237,7 @@ bool HelloWorld::init()
 	num_active_pathstones++;
 	
 	Wave* w2 = new Wave(p, path2);
-	w2->addEnemy("grunt", 1);
+	w2->addEnemy("grunt", 1.5);
 	w2->addEnemy("grunt", 1);
 	w2->addEnemy("grunt", 2);
 	total_enemies += w2->num_enemies;
@@ -257,6 +257,13 @@ bool HelloWorld::init()
 	num_static_objects++;
 	nexus->_sprite->setCameraMask(2);
 	this->addChild(nexus->_sprite, 1);
+
+	Atrezzo* a;
+	a = new Atrezzo(Point(500, 500), "rock");
+	static_objects [num_static_objects] = a;
+	num_static_objects++;
+	a->_sprite->setCameraMask(2);
+	this->addChild(a->_sprite, 1);
 
 	camera = Camera::createPerspective(60, visibleSize.width/visibleSize.height, 1, 2000);
 	camera->setCameraFlag(CameraFlag::USER1);
@@ -390,6 +397,14 @@ void HelloWorld::update(float dt)
 					}
 				
 				}
+				else if (!leftTriggerPushed && !menuTurrets && boss->dashing == 0 && (state.Gamepad.sThumbLX != 0 || state.Gamepad.sThumbLY != 0)) {
+
+					Vec2 v = Vec2(state.Gamepad.sThumbLX, state.Gamepad.sThumbLY);
+					v.normalize();
+					boss->dashingVector = v;
+					boss->dashing = 0.5;
+
+				}
 				if (!leftTriggerPushed) leftTriggerPushed = true;
 			}
 			else {
@@ -397,15 +412,17 @@ void HelloWorld::update(float dt)
 			}
 		
 			
-			// CONTROL DE NAVE
-			boss->_sprite->setPosition3D(boss->_sprite->getPosition3D() + Vec3(state.Gamepad.sThumbLX*dt/70, state.Gamepad.sThumbLY*dt/70, 0));
+			// CONTROL DE PLAYER
+			if (boss->dashing == 0) {
+				boss->_sprite->setPosition3D(boss->_sprite->getPosition3D() + Vec3(state.Gamepad.sThumbLX*dt/70, state.Gamepad.sThumbLY*dt/70, 0));
+			}
 
 		
 			if (wButtons & XINPUT_GAMEPAD_A)
 				//boss->_sprite->setPosition3D(Vec3(800 / 2 + (rand() % 2) - 1 * rand() % 1 * 800 / 2, 600 / 2 + (rand() % 2) - 1 * rand() % 1 * 600 / 2, 100));
 				boss->_sprite->setPosition3D(Vec3(0, -500, boss->_sprite->getPositionZ()));
 
-			// ROTACION DE NAVE
+			// ROTACION DE PLAYER
 			if (state.Gamepad.sThumbRY != 0) rightThumbY = state.Gamepad.sThumbRY;
 			if (state.Gamepad.sThumbRX != 0) rightThumbX = state.Gamepad.sThumbRX;
 
@@ -629,19 +646,29 @@ void HelloWorld::update(float dt)
 
 					if (static_objects[i] != mobile_objects[j] && pow(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2) < pow(total_radius, 2)) {
 
-						float div = pow(total_radius, 2) / (pow(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2));
+						if (mobile_objects[j]->_type.compare("enemy") == 0 && static_objects[i]->_type.compare("nexus") == 0) {
 
-						float* elements = new float[3];
-						elements[0] = 0.5 * (abs(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX())*div - abs(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX()));
-						if (static_objects[i]->_sprite->getPositionX() < mobile_objects[j]->_sprite->getPositionX()) elements[0] = -elements[0];
-						elements[1] = 0.5 * (abs(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY())*div - abs(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY()));
-						if (static_objects[i]->_sprite->getPositionY() < mobile_objects[j]->_sprite->getPositionY()) elements[1] = -elements[1];
-						elements[2] = j;
+							Enemy* e = (Enemy*)mobile_objects[j];
+							e->harmNexus();
 
-						EventCustom event("object_collision");
-						event.setUserData(elements);
+						}
+						else {
 
-						_eventDispatcher->dispatchEvent(&event);
+							float div = pow(total_radius, 2) / (pow(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2));
+
+							float* elements = new float[3];
+							elements[0] = 0.5 * (abs(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX())*div - abs(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX()));
+							if (static_objects[i]->_sprite->getPositionX() < mobile_objects[j]->_sprite->getPositionX()) elements[0] = -elements[0];
+							elements[1] = 0.5 * (abs(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY())*div - abs(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY()));
+							if (static_objects[i]->_sprite->getPositionY() < mobile_objects[j]->_sprite->getPositionY()) elements[1] = -elements[1];
+							elements[2] = j;
+
+							EventCustom event("object_collision");
+							event.setUserData(elements);
+
+							_eventDispatcher->dispatchEvent(&event);
+
+						}
 
 					}
 

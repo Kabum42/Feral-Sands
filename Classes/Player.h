@@ -11,6 +11,8 @@ public:
 	Point initial_point_player;
 	int scale_player;
 	float position_z_player;
+	float dashing;
+	Vec2 dashingVector;
 
 	Player(void);
 	Player(Point initial_point_Player2);

@@ -10,6 +10,7 @@
 #include "Player.h"
 #include "Nexus.h"
 #include "Wave.h"
+#include "Atrezzo.h"
 
 class HelloWorld : public cocos2d::Layer
 {

@@ -11,6 +11,7 @@ Nexus::Nexus(void) {
 Nexus::Nexus(Point initial_point_2) {
 	
 	_life = 5;
+	_type = "nexus";
 
 	initial_point_nexus = initial_point_2;
 

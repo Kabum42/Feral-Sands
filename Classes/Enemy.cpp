@@ -50,14 +50,16 @@ Enemy::Enemy(String s_enemy2, Point initial_point_enemy2, PathStone* path2, floa
 
 	_eventDispatcher->addCustomEventListener("checkVisible", [=](EventCustom* event) {
 		if (_health > 0 && _active) {
-			float cameraAngle = 34;
+
 			Point* data = static_cast<Point*>(event->getUserData());
 			Point* point_sprite = new Point(_sprite->getPositionX(), _sprite->getPositionY());
-			float distance = sqrt(pow(data->x - point_sprite->x, 2) + pow(data->y - point_sprite->y, 2));
-			if (distance < 2000 && !_sprite->isVisible()) {
+			bool distance_bool = false;
+			if ((data->x - point_sprite->x) < 1750 && (data->x - point_sprite->x) > -1750 &&
+				(data->y - point_sprite->y) < 600 && (data->y - point_sprite->y) > -1750) { distance_bool = true; }
+			if (distance_bool && !_sprite->isVisible()) {
 				_sprite->setVisible(true);
 			}
-			else if (distance >= 2000 && _sprite->isVisible()) {
+			else if (!distance_bool && _sprite->isVisible()) {
 				_sprite->setVisible(false);
 			}
 		}
@@ -106,28 +108,7 @@ void Enemy::update(float dt)
 
 					// HACERLE DAÑO AL NEXUS
 
-					_active = false;
-
-					int* data = new int[1];
-					data[0] = -1;
-					EventCustom event("nexus_life");
-					event.setUserData(data);
-					_eventDispatcher->dispatchEvent(&event);
-
-					float* data2 = new float[1];
-					data2[0] = _num_in_array;
-					EventCustom event2("remove_mobile");
-					event2.setUserData(data2);
-					_eventDispatcher->dispatchEvent(&event2);
-			
-					EventCustom event_dead("enemy_dead");
-					_eventDispatcher->dispatchEvent(&event_dead);
-
-					this->_sprite->removeFromParentAndCleanup(true);
-					_sprite = NULL;
-					_eventDispatcher->removeEventListenersForTarget(this);
-			
-					// AQUI PROBABLEMENTE HACE FALTA ALGUNA FORMA DE DELETEAR DEL TODO ESTE OBJETO, PERO delete this NO FUNCIONA
+					harmNexus();
 
 				}
 				else {
@@ -152,6 +133,33 @@ void Enemy::update(float dt)
 	}
 
 	
+}
+
+void Enemy::harmNexus() {
+
+	_active = false;
+
+	int* data = new int[1];
+	data[0] = -1;
+	EventCustom event("nexus_life");
+	event.setUserData(data);
+	_eventDispatcher->dispatchEvent(&event);
+
+	float* data2 = new float[1];
+	data2[0] = _num_in_array;
+	EventCustom event2("remove_mobile");
+	event2.setUserData(data2);
+	_eventDispatcher->dispatchEvent(&event2);
+			
+	EventCustom event_dead("enemy_dead");
+	_eventDispatcher->dispatchEvent(&event_dead);
+
+	this->_sprite->removeFromParentAndCleanup(true);
+	_sprite = NULL;
+	_eventDispatcher->removeEventListenersForTarget(this);
+			
+	// AQUI PROBABLEMENTE HACE FALTA ALGUNA FORMA DE DELETEAR DEL TODO ESTE OBJETO, PERO delete this NO FUNCIONA
+
 }
 
 void Enemy::rotateToVec2(Sprite3D* s, Vec2 v) {

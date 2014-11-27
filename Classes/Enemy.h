@@ -27,6 +27,7 @@ public:
 
 	void Enemy::update(float dt);
 	void Enemy::rotateToVec2(Sprite3D* s, Vec2 v);
+	void Enemy::harmNexus();
 
 	//Sprite3D* Enemy::sprite(void);
 };

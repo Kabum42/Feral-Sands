@@ -49,11 +49,13 @@ PathStone::PathStone(int number_tiles_2, float seconds_total_2, Point initial_po
 			for (int i = 0; i < number_tiles; i++) {
 
 				Point* point_sprite = new Point(tiles[i]->getPositionX(), tiles[i]->getPositionY());
-				float distance = sqrt(pow(data->x - point_sprite->x, 2) + pow(data->y - point_sprite->y, 2));
-				if (distance < 2000 && !tiles[i]->isVisible()) {
+				bool distance_bool = false;
+				if ((data->x - point_sprite->x) < 1750 && (data->x - point_sprite->x) > -1750 &&
+					(data->y - point_sprite->y) < 600 && (data->y - point_sprite->y) > -1750) { distance_bool = true; }
+				if (distance_bool && !tiles[i]->isVisible()) {
 					tiles[i]->setVisible(true);
 				}
-				else if (distance >= 2000 && tiles[i]->isVisible()) {
+				else if (!distance_bool && tiles[i]->isVisible()) {
 					tiles[i]->setVisible(false);
 				}
 

@@ -34,14 +34,16 @@ Tower::Tower(String s2, Point initial_point_2) {
 	
 	_eventDispatcher->addCustomEventListener("checkVisible", [=](EventCustom* event) {
 		if (_active) {
-			float cameraAngle = 34;
+
 			Point* data = static_cast<Point*>(event->getUserData());
 			Point* point_sprite = new Point(_sprite->getPositionX(), _sprite->getPositionY());
-			float distance = sqrt(pow(data->x - point_sprite->x, 2) + pow(data->y - point_sprite->y, 2));
-			if (distance < 2000 && !_sprite->isVisible()) {
+			bool distance_bool = false;
+			if ((data->x - point_sprite->x) < 1750 && (data->x - point_sprite->x) > -1750 &&
+				(data->y - point_sprite->y) < 600 && (data->y - point_sprite->y) > -1750) { distance_bool = true; }
+			if (distance_bool && !_sprite->isVisible()) {
 				_sprite->setVisible(true);
 			}
-			else if (distance >= 2000 && _sprite->isVisible()) {
+			else if (!distance_bool && _sprite->isVisible()) {
 				_sprite->setVisible(false);
 			}
 		}

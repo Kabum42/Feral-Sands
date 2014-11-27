@@ -17,5 +17,4 @@ public:
 
 	void Nexus::update(float dt);
 
-	//Sprite3D* Nexus::sprite(void);
 };
