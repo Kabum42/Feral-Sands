@@ -266,11 +266,6 @@ bool HelloWorld::init()
 	camera->setRotation3D(Vec3(cameraAngle, 0, 0));
 	this->addChild(camera, 1);
 
-	sun = DirectionLight::create(Vec3(-1.0f, -1.0f, -1.0f), Color3B(255, 255, 255));
-	sun->retain();
-	sun->setEnabled(true);
-	addChild(sun);
-	sun->setCameraMask(2);
 	if (enabledLights) {
 		sun = DirectionLight::create(Vec3(0.0f, 0.0f, 1.0f), Color3B(255, 255, 127));
 		//sun->retain();
