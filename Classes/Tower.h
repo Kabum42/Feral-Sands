@@ -6,7 +6,7 @@ USING_NS_CC;
 
 class Tower : public Entity
 {
-	int _cooldown;
+	float _cooldown;
 public:
 	float position_z_tower;
 

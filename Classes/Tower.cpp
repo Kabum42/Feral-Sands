@@ -72,17 +72,20 @@ void Tower::update(float dt)
 		_sprite->setPositionZ(position_z_tower);
 	}
 	else {
-		if (_cooldown > 0)
-			_cooldown -= 1; // AJUSTAR TEMPORALMENTE
+		if (_cooldown > 0) {
+			_cooldown -= dt;
+			if (_cooldown < 0) { _cooldown = 0; }
+		}	
 
 		if (_target != nullptr && _cooldown == 0)
 		{
-			_cooldown = 200;
+			_cooldown = 1; // ESTE ES EL COOLDOWN
 			Vec3 tower_position = _sprite->getPosition3D();
 			TowerShot* newTowerShot = new TowerShot(tower_position, _target);
-			EventCustom event_add_shot("add_shot");
+			EventCustom event_add_shot("add_mobile");
 			event_add_shot.setUserData(newTowerShot);
 			_eventDispatcher->dispatchEvent(&event_add_shot);
+			CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
 		}
 		
 		if(_target != nullptr && _target != NULL && _target->_sprite != nullptr && _target->_sprite != NULL && _target->_health > 0)

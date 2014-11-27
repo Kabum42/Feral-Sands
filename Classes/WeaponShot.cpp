@@ -71,22 +71,4 @@ void WeaponShot::update(float dt)
 		}
 
 	}
-
-	// CheckRange
-	/*
-	if ( sqrt(pow(_sprite->getPosition3D().x-_origin.x,2.0) + pow(_sprite->getPosition3D().y-_origin.y,2.0)) >= _range)
-	{
-		// Autodestruirse..?
-		//this->getParent()->removeChild(this);
-		//this->removeFromParentAndCleanup(true);
-		//removeFromParentAndCleanup(true);
-		//removeChild(this);
-	}
-	*/
 }
-
-
-/*Sprite3D* WeaponShot::sprite()
-{
-	return _sprite;
-}*/

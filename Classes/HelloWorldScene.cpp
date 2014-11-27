@@ -173,11 +173,6 @@ bool HelloWorld::init()
 		dead_enemies++;
 	});
 
-	_eventDispatcher->addCustomEventListener("add_shot", [=](EventCustom* event){
-		Entity* e = static_cast<Entity*>(event->getUserData());
-		addShot(e);
-	});
-
 
 	
 	auto floor = Sprite3D::create("floor.obj", "sand.png");
@@ -430,13 +425,7 @@ void HelloWorld::update(float dt)
 			coolDownNow = state.Gamepad.bRightTrigger/255 * coolDownMax/2;
 			CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
 			WeaponShot* _shotInstance = new WeaponShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
-			/*mobile_objects[num_mobile_objects] = _shotInstance;
-			_shotInstance->_num_in_array = num_mobile_objects;
-			num_mobile_objects++;
-			_shotInstance->_sprite->setCameraMask(2);
-			this->addChild(_shotInstance->_sprite, 1);*/
 			addMobileObject(_shotInstance);
-			//addShot(_shotInstance);
 		}
 			if(state.Gamepad.bRightTrigger != 0 && coolDownNow >= coolDownMax) {
 				coolDownNow = state.Gamepad.bRightTrigger/255 * coolDownMax/2;
@@ -600,6 +589,36 @@ void HelloWorld::update(float dt)
 							}
 					
 						}
+						else if (mobile_objects[i]->_type.compare("tower_shot") == 0 || mobile_objects[j]->_type.compare("tower_shot") == 0) {
+							// UNO DE LOS DOS ES UN TOWER_SHOT
+							if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
+								// EL OTRO ES UN ENEMY
+								Entity* bala;
+								Entity* enemigo;
+
+								if (mobile_objects[i]->_type.compare("tower_shot") == 0) bala = mobile_objects[i];
+								if (mobile_objects[j]->_type.compare("tower_shot") == 0) bala = mobile_objects[j];
+
+								if (mobile_objects[i]->_type.compare("enemy") == 0) enemigo = mobile_objects[i];
+								if (mobile_objects[j]->_type.compare("enemy") == 0) enemigo = mobile_objects[j];
+
+								// LA BALA MUERE
+								bala->_health = 0;
+
+								// EL ENEMIGO SE HIERE
+								enemigo->_health -= 50;
+								if (enemigo->_health > 0) { 
+									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
+									enemigo->_sprite->setColor(Color3B(255, 0, 0));
+									enemigo->_injured = 0.1;
+								}
+								else {
+									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+								}
+						
+							}
+					
+						}
 						else if (mobile_objects[i]->_type.compare("player") == 0 || mobile_objects[j]->_type.compare("player") == 0) {
 							// UNO DE LOS DOS ES EL JUGADOR
 
@@ -660,6 +679,9 @@ void HelloWorld::update(float dt)
 							e->harmNexus();
 
 						}
+						else if (mobile_objects[j]->_type.compare("tower_shot") == 0) {
+							// LOS TOWER_SHOT NO COLISIONAN CON NADA ESTATICO
+						}
 						else {
 
 							float div = pow(total_radius, 2) / (pow(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2));
@@ -694,7 +716,7 @@ void HelloWorld::update(float dt)
 					for (int j = 0; j < num_mobile_objects; j++)
 					{
 						//float total_radius = myTower->_range;
-						if (mobile_objects[j]->_type.compare("enemy") == 0){
+						if (mobile_objects[j]->_type.compare("enemy") == 0 && mobile_objects[j]->_health > 0){
 							if (pow(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2) < pow(static_objects[i]->_range, 2)) {
 								static_objects[i]->_target = mobile_objects[j]; // Depurar: IMPLEMENT ITERATOR TO CHOOSE CLOSEST
 							}
@@ -791,14 +813,6 @@ void HelloWorld::addMobileObject(Entity* e) {
 	mobile_objects [num_mobile_objects] = e;
 	e->_num_in_array = num_mobile_objects;
 	num_mobile_objects++;
-	e->_sprite->setCameraMask(2);
-	this->addChild(e->_sprite, 1);
-	e->_active = true;
-
-}
-
-void HelloWorld::addShot(Entity* e) {
-	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
 	e->_sprite->setCameraMask(2);
 	this->addChild(e->_sprite, 1);
 	e->_active = true;
