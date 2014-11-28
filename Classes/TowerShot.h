@@ -10,12 +10,12 @@ USING_NS_CC;
 
 class TowerShot : public Entity
 {
+public:
+
 	int _speed;
 	Vec3 _direction;
 	float _distance;
 	int _damage;
-
-public:
 
 	TowerShot(Vec3, Entity*);
 	~TowerShot(void);

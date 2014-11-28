@@ -44,7 +44,7 @@ float zoom = 1000.0f;
 
 Camera* camera;
 
-bool enabledLights = false;
+bool enabledLights = true;
 DirectionLight* sun;
 
 Sprite3D* green_tower;
@@ -176,7 +176,7 @@ bool HelloWorld::init()
 
 	
 	auto floor = Sprite3D::create("floor.obj", "sand.png");
-	floor->setScale(100);
+	floor->setScale(1000);
 	Vec3 corners_floor[8] = {};
 	floor->getAABB().getCorners(corners_floor);
 	floor->setPosition3D(Vec3(0, 0, -1));
@@ -218,6 +218,12 @@ bool HelloWorld::init()
 	w->addEnemy("grunt", 1.5);
 	w->addEnemy("grunt", 1);
 	w->addEnemy("grunt", 2);
+	w->addEnemy("grunt", 20);
+	w->addEnemy("grunt", 2);
+	w->addEnemy("grunt", 2);
+	w->addEnemy("grunt", 2);
+	w->addEnemy("grunt", 2);
+	w->addEnemy("grunt", 2);
 	total_enemies += w->num_enemies;
 	w->_active = true;
 
@@ -236,6 +242,12 @@ bool HelloWorld::init()
 	Wave* w2 = new Wave(p, path2);
 	w2->addEnemy("grunt", 1.5);
 	w2->addEnemy("grunt", 1);
+	w2->addEnemy("grunt", 2);
+	w2->addEnemy("grunt", 20);
+	w2->addEnemy("grunt", 2);
+	w2->addEnemy("grunt", 2);
+	w2->addEnemy("grunt", 2);
+	w2->addEnemy("grunt", 2);
 	w2->addEnemy("grunt", 2);
 	total_enemies += w2->num_enemies;
 	w2->_active = true;
@@ -593,11 +605,11 @@ void HelloWorld::update(float dt)
 							// UNO DE LOS DOS ES UN TOWER_SHOT
 							if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
 								// EL OTRO ES UN ENEMY
-								Entity* bala;
+								TowerShot* bala;
 								Entity* enemigo;
 
-								if (mobile_objects[i]->_type.compare("tower_shot") == 0) bala = mobile_objects[i];
-								if (mobile_objects[j]->_type.compare("tower_shot") == 0) bala = mobile_objects[j];
+								if (mobile_objects[i]->_type.compare("tower_shot") == 0) bala = (TowerShot*) mobile_objects[i];
+								if (mobile_objects[j]->_type.compare("tower_shot") == 0) bala = (TowerShot*) mobile_objects[j];
 
 								if (mobile_objects[i]->_type.compare("enemy") == 0) enemigo = mobile_objects[i];
 								if (mobile_objects[j]->_type.compare("enemy") == 0) enemigo = mobile_objects[j];
@@ -606,7 +618,7 @@ void HelloWorld::update(float dt)
 								bala->_health = 0;
 
 								// EL ENEMIGO SE HIERE
-								enemigo->_health -= 50;
+								enemigo->_health -= bala->_damage;
 								if (enemigo->_health > 0) { 
 									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
 									enemigo->_sprite->setColor(Color3B(255, 0, 0));
