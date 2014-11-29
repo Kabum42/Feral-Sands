@@ -44,7 +44,7 @@ float zoom = 1000.0f;
 
 Camera* camera;
 
-bool enabledLights = true;
+bool enabledLights = false;
 DirectionLight* sun;
 
 Sprite3D* green_tower;
