@@ -113,6 +113,10 @@ void Enemy::update(float dt)
 				}
 				else {
 
+					path = path->_nextPath;
+					auto action = CCBezierTo::create(seconds_enemy, path->bezier);
+					_sprite->runAction(action);
+
 				}
 
 			}

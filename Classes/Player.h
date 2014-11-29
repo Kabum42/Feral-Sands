@@ -13,6 +13,8 @@ public:
 	float position_z_player;
 	float dashing;
 	Vec2 dashingVector;
+	float speed;
+	float speed_cooldown;
 
 	Player(void);
 	Player(Point initial_point_Player2);

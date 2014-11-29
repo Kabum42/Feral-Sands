@@ -204,15 +204,29 @@ bool HelloWorld::init()
 	
 	p = Point(-2000, 0);
 	ccBezierConfig bezier;
-	bezier.controlPoint_1 = Point(point1_x, point1_y);
-	bezier.controlPoint_2 = Point(point2_x, point2_y);
-	bezier.endPosition = Point(pointend_x, pointend_y);
+	bezier.controlPoint_1 = Point(-1600, -1000);
+	bezier.controlPoint_2 = Point(-1300, 0);
+	bezier.endPosition = Point(-1000, 0);
 
 
 	PathStone* path = new PathStone(20, 1, p, bezier);
 	this->addChild(path->getLayer());
 	active_pathstones[num_active_pathstones] = path;
 	num_active_pathstones++;
+
+	
+	ccBezierConfig bezier3;
+	bezier3.controlPoint_1 = Point(-600, 0);
+	bezier3.controlPoint_2 = Point(-300, -1000);
+	bezier3.endPosition = Point(0, 0);
+
+	PathStone* path3 = new PathStone(20, 1, Point(-1000, 0), bezier3);
+	this->addChild(path3->getLayer());
+	active_pathstones[num_active_pathstones] = path3;
+	num_active_pathstones++;
+	
+	path->_nextPath = path3;
+	
 
 	Wave* w = new Wave(p, path);
 	w->addEnemy("grunt", 1.5);
@@ -230,14 +244,28 @@ bool HelloWorld::init()
 	//
 	p = Point(2000, 0);
 	ccBezierConfig bezier2;
-	bezier2.controlPoint_1 = Point(1500, 300);
-	bezier2.controlPoint_2 = Point(750, -700);
-	bezier2.endPosition = Point(0, 0);
-	
+	bezier2.controlPoint_1 = Point(1600, 1000);
+	bezier2.controlPoint_2 = Point(1300, 0);
+	bezier2.endPosition = Point(1000, 0);
+
+
 	PathStone* path2 = new PathStone(20, 1, p, bezier2);
 	this->addChild(path2->getLayer());
 	active_pathstones[num_active_pathstones] = path2;
 	num_active_pathstones++;
+
+	
+	ccBezierConfig bezier4;
+	bezier4.controlPoint_1 = Point(600, 0);
+	bezier4.controlPoint_2 = Point(300, 1000);
+	bezier4.endPosition = Point(0, 0);
+
+	PathStone* path4 = new PathStone(20, 1, Point(1000, 0), bezier4);
+	this->addChild(path4->getLayer());
+	active_pathstones[num_active_pathstones] = path4;
+	num_active_pathstones++;
+	
+	path2->_nextPath = path4;
 	
 	Wave* w2 = new Wave(p, path2);
 	w2->addEnemy("grunt", 1.5);
@@ -262,7 +290,7 @@ bool HelloWorld::init()
 	this->addChild(nexus->_sprite, 1);
 
 	Atrezzo* a;
-	a = new Atrezzo(Point(500, 500), "rock");
+	a = new Atrezzo(Point(300, 200), "rock");
 	static_objects [num_static_objects] = a;
 	num_static_objects++;
 	a->_sprite->setCameraMask(2);
@@ -418,7 +446,7 @@ void HelloWorld::update(float dt)
 			
 			// CONTROL DE PLAYER
 			if (boss->dashing == 0) {
-				boss->_sprite->setPosition3D(boss->_sprite->getPosition3D() + Vec3(state.Gamepad.sThumbLX*dt/70, state.Gamepad.sThumbLY*dt/70, 0));
+				boss->_sprite->setPosition3D(boss->_sprite->getPosition3D() + Vec3(state.Gamepad.sThumbLX*dt*boss->speed/70, state.Gamepad.sThumbLY*dt*boss->speed/70, 0));
 			}
 
 		
@@ -435,6 +463,7 @@ void HelloWorld::update(float dt)
 			// DISPARO
 		if(state.Gamepad.bRightTrigger != 0 && coolDownNow >= coolDownMax) {
 			coolDownNow = state.Gamepad.bRightTrigger/255 * coolDownMax/2;
+			boss->speed_cooldown = 2;
 			CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
 			WeaponShot* _shotInstance = new WeaponShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
 			addMobileObject(_shotInstance);
