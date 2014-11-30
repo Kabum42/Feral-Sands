@@ -137,7 +137,7 @@ bool HelloWorld::init()
     this->addChild(label, 1);
 
 
-
+	
 
 	_eventDispatcher->addCustomEventListener("object_collision", [=](EventCustom* event){
 		float* elements = static_cast<float*>(event->getUserData());
@@ -309,6 +309,7 @@ bool HelloWorld::init()
 		sun->setCameraMask(2);
 	}
 	
+	
 
 	/*
 	auto directionalLight = DirectionLight::create(Vec3(-1.0f, -1.0f, 0.0f), Color3B(200, 200, 200));
@@ -420,7 +421,8 @@ void HelloWorld::update(float dt)
 
 						Point p = Point(boss->_sprite->getPositionX() + rightThumbX/100, boss->_sprite->getPositionY() + rightThumbY/100);
 
-						Tower* t = new Tower("standard", p);
+						Tower* t = new Tower("slow", p);
+						t->_sprite->setRotation3D(boss->_sprite->getRotation3D());
 						static_objects [num_static_objects] = t;
 						num_static_objects++;
 						t->_sprite->setCameraMask(2);
@@ -461,24 +463,14 @@ void HelloWorld::update(float dt)
 			boss->_sprite->setRotation3D(Vec3(90, 0, -90 - atan2(rightThumbY, rightThumbX)*360/(2*M_PI)));
 
 			// DISPARO
-		if(state.Gamepad.bRightTrigger != 0 && coolDownNow >= coolDownMax) {
-			coolDownNow = state.Gamepad.bRightTrigger/255 * coolDownMax/2;
-			boss->speed_cooldown = 2;
-			CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
-			WeaponShot* _shotInstance = new WeaponShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
-			addMobileObject(_shotInstance);
-		}
 			if(state.Gamepad.bRightTrigger != 0 && coolDownNow >= coolDownMax) {
 				coolDownNow = state.Gamepad.bRightTrigger/255 * coolDownMax/2;
-				CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
+				boss->speed_cooldown = 2;
+				// ESTE SONIDO SE EJECUTA TAN RÁPIDO QUE CAUSA LAG
+				//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
 				WeaponShot* _shotInstance = new WeaponShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
-				mobile_objects[num_mobile_objects] = _shotInstance;
-				_shotInstance->_num_in_array = num_mobile_objects;
-				num_mobile_objects++;
-				_shotInstance->_sprite->setCameraMask(2);
-				this->addChild(_shotInstance->_sprite, 1);
-			}
-		
+				addMobileObject(_shotInstance);
+			}		
 
 			// ROTAR CAMARA
 			if (wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) cameraAngle += 0.1;
@@ -513,7 +505,7 @@ void HelloWorld::update(float dt)
 
 			if(wButtons & XINPUT_GAMEPAD_DPAD_UP) zoom -= 5;
 			if(wButtons & XINPUT_GAMEPAD_DPAD_DOWN) zoom += 5;
-
+			
 		
 
 			// VIBRACION
@@ -556,6 +548,7 @@ void HelloWorld::update(float dt)
 	
 		// SE COLOCA LA TORRE DE PRUEBA EN EL LUGAR AL QUE APUNTAS Y SE PONE EN VERDE
 		green_tower->setPosition3D(Vec3(boss->_sprite->getPositionX() + rightThumbX/100, boss->_sprite->getPositionY() + rightThumbY/100, 0.44*60));
+		green_tower->setRotation3D(boss->_sprite->getRotation3D());
 		green_tower->setColor(ccc3(0, 200, 0));
 
 		// SE COMPRUEBA QUE LA TORRE NO ESTÁ TOCANDO OTRO OBJETO ESTÁTICO
@@ -804,6 +797,7 @@ void HelloWorld::update(float dt)
 		camera->setPosition3D(Vec3(boss->_sprite->getPositionX(), boss->_sprite->getPositionY() - sin(cameraAngle*(2*M_PI)/360)*zoom, boss->_sprite->getPositionZ() + cos(cameraAngle*(2*M_PI)/360)*zoom ));
 
 	}
+	
 
 }
 

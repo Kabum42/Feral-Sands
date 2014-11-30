@@ -1,6 +1,5 @@
 #include "Tower.h"
 
-String s;
 Point initial_point_tower;
 int scale_tower;
 
@@ -8,30 +7,44 @@ Tower::Tower(void) {
 
 }
 
-Tower::Tower(String s2, Point initial_point_2) {
+Tower::Tower(String _subtype2, Point initial_point_2) {
 
 	_type = "tower";
+	_subtype = _subtype2;
 	_target = nullptr;
 	_cooldown = 0; // ARREGLAR: Tiempo que tarde en salir la torre
 
-	s = s2;
 	initial_point_tower = initial_point_2;
 
-	scale_tower = 60;
+	if (_subtype.compare("standard") == 0) {
+		scale_tower = 60;
 
-	// ESTE RADIO ES PERFECTO, NO TOCAR
-	_radius = scale_tower*1;
+		// ESTE RADIO ES PERFECTO, NO TOCAR
+		_radius = scale_tower*1;
 
 
-	// RANGO DE SELECCIÓN DE OBJETIVOS ENEMIGOS
-	_range = 500;
+		// RANGO DE SELECCIÓN DE OBJETIVOS ENEMIGOS
+		_range = 500;
 
-	position_z_tower = -0.44*scale_tower;
+		position_z_tower = -0.44*scale_tower;
 
-	_sprite = Sprite3D::create("Tower.obj", "stone.png");
-	_sprite->setPosition3D(Vec3(initial_point_tower.x, initial_point_tower.y, position_z_tower));
-	_sprite->setRotation3D(Vec3(90, 0, 270));
-	_sprite->setScale(scale_tower);
+		_sprite = Sprite3D::create("Tower.obj", "stone.png");
+		_sprite->setPosition3D(Vec3(initial_point_tower.x, initial_point_tower.y, position_z_tower));
+		_sprite->setRotation3D(Vec3(90, 0, 270));
+		_sprite->setScale(scale_tower);
+	}
+	else if (_subtype.compare("slow") == 0) {
+		scale_tower = 5;
+
+		_radius = scale_tower*20;
+
+		position_z_tower = 1;
+
+		_sprite = Sprite3D::create("floor.obj", "alquitran.png");
+		_sprite->setPosition3D(Vec3(initial_point_tower.x, initial_point_tower.y, position_z_tower));
+		_sprite->setRotation3D(Vec3(90, 0, 270));
+		_sprite->setScale(scale_tower);
+	}
 
 	
 	_eventDispatcher->addCustomEventListener("EnterFrame", [=](EventCustom* event) {
@@ -65,36 +78,42 @@ Tower::~Tower(void)
 
 void Tower::update(float dt)
 {
-	
-	if (position_z_tower < 0.44*scale_tower) {
 
-		position_z_tower += dt*scale_tower * 10;
-		_sprite->setPositionZ(position_z_tower);
-	}
-	else {
-		if (_cooldown > 0) {
-			_cooldown -= dt;
-			if (_cooldown < 0) { _cooldown = 0; }
-		}	
+	if (_subtype.compare("standard") == 0) {
 
-		if (_target != nullptr && _cooldown == 0)
-		{
-			_cooldown = 1; // ESTE ES EL COOLDOWN
-			Vec3 tower_position = _sprite->getPosition3D();
-			TowerShot* newTowerShot = new TowerShot(tower_position, _target);
-			EventCustom event_add_shot("add_mobile");
-			event_add_shot.setUserData(newTowerShot);
-			_eventDispatcher->dispatchEvent(&event_add_shot);
-			CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
+		if (position_z_tower < 0.44*scale_tower) {
+
+			position_z_tower += dt*scale_tower * 10;
+			_sprite->setPositionZ(position_z_tower);
 		}
-		
-		if(_target != nullptr && _target != NULL && _target->_sprite != nullptr && _target->_sprite != NULL && _target->_health > 0)
-		{
-			if(pow(_sprite->getPositionX() - _target->_sprite->getPositionX(), 2) + pow(_sprite->getPositionY() - _target->_sprite->getPositionY(), 2) > pow(_range, 2))
+		else {
+			if (_cooldown > 0) {
+				_cooldown -= dt;
+				if (_cooldown < 0) { _cooldown = 0; }
+			}	
+
+			if (_target != nullptr && _cooldown == 0)
 			{
-				_target = nullptr;
+				_cooldown = 1; // ESTE ES EL COOLDOWN
+				Vec3 tower_position = _sprite->getPosition3D();
+				TowerShot* newTowerShot = new TowerShot(tower_position, _target);
+				EventCustom event_add_shot("add_mobile");
+				event_add_shot.setUserData(newTowerShot);
+				_eventDispatcher->dispatchEvent(&event_add_shot);
+				CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
 			}
+		
+			if(_target != nullptr && _target != NULL && _target->_sprite != nullptr && _target->_sprite != NULL && _target->_health > 0)
+			{
+				if(pow(_sprite->getPositionX() - _target->_sprite->getPositionX(), 2) + pow(_sprite->getPositionY() - _target->_sprite->getPositionY(), 2) > pow(_range, 2))
+				{
+					_target = nullptr;
+				}
+			}
+			else { _target = nullptr; }
 		}
-		else { _target = nullptr; }
+
 	}
+	
+	
 }

@@ -9,6 +9,7 @@ class Tower : public Entity
 	float _cooldown;
 public:
 	float position_z_tower;
+	String _subtype;
 
 	Tower(void);
 	Tower(String s2, Point initial_point_2);
