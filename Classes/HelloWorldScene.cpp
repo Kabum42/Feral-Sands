@@ -48,6 +48,8 @@ bool enabledLights = false;
 DirectionLight* sun;
 
 Sprite3D* green_tower;
+Sprite3D* green_slow;
+Sprite3D* green_monster;
 
 float nomefio = 0;
 
@@ -194,13 +196,18 @@ bool HelloWorld::init()
 	this->addChild(boss->_sprite, 0);
 
 	green_tower = Sprite3D::create("Tower.obj", "stone.png");
-	green_tower->setPosition3D(Vec3(0, 0, 0.44*60));
-	green_tower->setRotation3D(Vec3(90, 0, 270));
 	green_tower->setScale(60);
 	green_tower->setCameraMask(2);
 	green_tower->setColor(ccc3(0, 200, 0));
 	green_tower->setVisible(false);
 	this->addChild(green_tower, 0);
+
+	green_slow = Sprite3D::create("floor.obj", "stone.png");
+	green_slow->setScale(5);
+	green_slow->setCameraMask(2);
+	green_slow->setColor(ccc3(0, 200, 0));
+	green_slow->setVisible(false);
+	this->addChild(green_slow, 0);
 	
 	p = Point(-2000, 0);
 	ccBezierConfig bezier;
@@ -414,19 +421,45 @@ void HelloWorld::update(float dt)
 			if(state.Gamepad.bLeftTrigger > 50) {
 				if (!leftTriggerPushed && menuTurrets) {
 				
-					if (green_tower->getColor().r == 200) {
+					if (green_tower->isVisible()) {
+
+						if (green_tower->getColor().r == 200) {
+
+						}
+						else if (green_tower->getColor().g == 200) {
+
+							Point p = Point(boss->_sprite->getPositionX() + rightThumbX/100, boss->_sprite->getPositionY() + rightThumbY/100);
+
+							Tower* t = new Tower("standard", p);
+							t->_sprite->setRotation3D(boss->_sprite->getRotation3D());
+							static_objects [num_static_objects] = t;
+							num_static_objects++;
+							t->_sprite->setCameraMask(2);
+							this->addChild(t->_sprite, 1);
+
+						}
 
 					}
-					else if (green_tower->getColor().g == 200) {
+					else if (green_slow->isVisible()) {
 
-						Point p = Point(boss->_sprite->getPositionX() + rightThumbX/100, boss->_sprite->getPositionY() + rightThumbY/100);
+						if (green_slow->getColor().r == 200) {
 
-						Tower* t = new Tower("slow", p);
-						t->_sprite->setRotation3D(boss->_sprite->getRotation3D());
-						static_objects [num_static_objects] = t;
-						num_static_objects++;
-						t->_sprite->setCameraMask(2);
-						this->addChild(t->_sprite, 1);
+						}
+						else if (green_slow->getColor().g == 200) {
+
+							Point p = Point(boss->_sprite->getPositionX() + rightThumbX/100, boss->_sprite->getPositionY() + rightThumbY/100);
+
+							Tower* t = new Tower("slow", p);
+							t->_sprite->setRotation3D(boss->_sprite->getRotation3D());
+							static_objects [num_static_objects] = t;
+							num_static_objects++;
+							t->_sprite->setCameraMask(2);
+							this->addChild(t->_sprite, 1);
+
+						}
+
+					}
+					else if (green_monster->isVisible()) {
 
 					}
 				
@@ -482,6 +515,20 @@ void HelloWorld::update(float dt)
 			
 				if (!leftShoulderPushed) {
 
+					if (!menuTurrets) {
+						menuTurrets = true;
+						green_tower->setVisible(true);
+					}
+					else if (menuTurrets && green_tower->isVisible()) {
+						green_tower->setVisible(false);
+						green_slow->setVisible(true);
+					}
+					else {
+						green_slow->setVisible(false);
+						menuTurrets = false;
+					}
+
+					/*
 					menuTurrets = !menuTurrets;
 
 					if (menuTurrets) {
@@ -490,6 +537,7 @@ void HelloWorld::update(float dt)
 					else {
 						green_tower->setVisible(false);
 					}
+					*/
 
 				}
 
@@ -551,6 +599,10 @@ void HelloWorld::update(float dt)
 		green_tower->setRotation3D(boss->_sprite->getRotation3D());
 		green_tower->setColor(ccc3(0, 200, 0));
 
+		green_slow->setPosition3D(Vec3(boss->_sprite->getPositionX() + rightThumbX/100, boss->_sprite->getPositionY() + rightThumbY/100, 1));
+		green_slow->setRotation3D(boss->_sprite->getRotation3D());
+		green_slow->setColor(ccc3(0, 200, 0));
+
 		// SE COMPRUEBA QUE LA TORRE NO ESTÁ TOCANDO OTRO OBJETO ESTÁTICO
 		for (int i = 0; i < num_static_objects; i++) {
 			// 60*1 es el radio de la futura torre
@@ -561,6 +613,15 @@ void HelloWorld::update(float dt)
 				green_tower->setColor(ccc3(200, 0, 0));
 
 			}
+
+			total_radius = static_objects[i]->_radius + (20*5);
+
+			if (pow(static_objects[i]->_sprite->getPositionX() - green_slow->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() -green_slow->getPositionY(), 2) < pow(total_radius, 2)) {
+
+				green_slow->setColor(ccc3(200, 0, 0));
+
+			}
+
 		}
 
 		// SE COMPRUEBA QUE LA TORRE NO ESTÁ TOCANDO NINGUNA DE LAS PIEDRAS DE UN CAMINO
@@ -612,12 +673,12 @@ void HelloWorld::update(float dt)
 								// EL ENEMIGO SE HIERE
 								enemigo->_health -= 20;
 								if (enemigo->_health > 0) { 
-									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
+									//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
 									enemigo->_sprite->setColor(Color3B(255, 0, 0));
 									enemigo->_injured = 0.1;
 								}
 								else {
-									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+									//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
 								}
 						
 							}
@@ -642,12 +703,12 @@ void HelloWorld::update(float dt)
 								// EL ENEMIGO SE HIERE
 								enemigo->_health -= bala->_damage;
 								if (enemigo->_health > 0) { 
-									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
+									//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
 									enemigo->_sprite->setColor(Color3B(255, 0, 0));
 									enemigo->_injured = 0.1;
 								}
 								else {
-									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+									//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
 								}
 						
 							}
@@ -672,12 +733,12 @@ void HelloWorld::update(float dt)
 								// EL JUGADOR SE HIERE
 								player->_health -= 20;
 								if (player->_health > 0) { 
-									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
+									//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
 									player->_sprite->setColor(Color3B(255, 0, 0));
 									player->_injured = 0.1;
 								}
 								else {
-									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+									//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
 									player->_health = 200;
 									player->_sprite->setPosition3D(Vec3(0, -500, player->_sprite->getPositionZ()));
 								}
@@ -716,21 +777,21 @@ void HelloWorld::update(float dt)
 						else if (mobile_objects[j]->_type.compare("tower_shot") == 0) {
 							// LOS TOWER_SHOT NO COLISIONAN CON NADA ESTATICO
 						}
+						else if (static_objects[i]->_type.compare("tower") == 0) {
+							
+							Tower* t = (Tower*) static_objects[i];
+
+							if (t->_subtype.compare("slow") == 0) {
+
+							}
+							else {
+								static_repulse(static_objects[i], mobile_objects[j]);
+							}
+
+						}
 						else {
 
-							float div = pow(total_radius, 2) / (pow(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2));
-
-							float* elements = new float[3];
-							elements[0] = 0.5 * (abs(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX())*div - abs(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX()));
-							if (static_objects[i]->_sprite->getPositionX() < mobile_objects[j]->_sprite->getPositionX()) elements[0] = -elements[0];
-							elements[1] = 0.5 * (abs(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY())*div - abs(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY()));
-							if (static_objects[i]->_sprite->getPositionY() < mobile_objects[j]->_sprite->getPositionY()) elements[1] = -elements[1];
-							elements[2] = j;
-
-							EventCustom event("object_collision");
-							event.setUserData(elements);
-
-							_eventDispatcher->dispatchEvent(&event);
+							static_repulse(static_objects[i], mobile_objects[j]);
 
 						}
 
@@ -883,6 +944,26 @@ void HelloWorld::repulse(Entity* e1, Entity* e2) {
 
 	_eventDispatcher->dispatchEvent(&event);
 	//FIN REPULSION
+
+}
+
+void HelloWorld::static_repulse(Entity* static_e, Entity* mobile_e) {
+
+	float total_radius = static_e->_radius + mobile_e->_radius;
+
+	float div = pow(total_radius, 2) / (pow(static_e->_sprite->getPositionX() - mobile_e->_sprite->getPositionX(), 2) + pow(static_e->_sprite->getPositionY() - mobile_e->_sprite->getPositionY(), 2));
+
+	float* elements = new float[3];
+	elements[0] = 0.5 * (abs(static_e->_sprite->getPositionX() - mobile_e->_sprite->getPositionX())*div - abs(static_e->_sprite->getPositionX() - mobile_e->_sprite->getPositionX()));
+	if (static_e->_sprite->getPositionX() < mobile_e->_sprite->getPositionX()) elements[0] = -elements[0];
+	elements[1] = 0.5 * (abs(static_e->_sprite->getPositionY() - mobile_e->_sprite->getPositionY())*div - abs(static_e->_sprite->getPositionY() - mobile_e->_sprite->getPositionY()));
+	if (static_e->_sprite->getPositionY() < mobile_e->_sprite->getPositionY()) elements[1] = -elements[1];
+	elements[2] = mobile_e->_num_in_array;
+
+	EventCustom event("object_collision");
+	event.setUserData(elements);
+
+	_eventDispatcher->dispatchEvent(&event);
 
 }
 

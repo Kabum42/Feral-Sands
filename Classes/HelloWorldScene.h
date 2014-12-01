@@ -40,6 +40,8 @@ public:
 
 	void HelloWorld::repulse(Entity* e1, Entity* e2);
 
+	void HelloWorld::static_repulse(Entity* static_e, Entity* mobile_e);
+
     
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);

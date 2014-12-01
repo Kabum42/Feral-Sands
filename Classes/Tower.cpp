@@ -59,7 +59,7 @@ Tower::Tower(String _subtype2, Point initial_point_2) {
 			Point* point_sprite = new Point(_sprite->getPositionX(), _sprite->getPositionY());
 			bool distance_bool = false;
 			if ((data->x - point_sprite->x) < 1750 && (data->x - point_sprite->x) > -1750 &&
-				(data->y - point_sprite->y) < 600 && (data->y - point_sprite->y) > -1750) { distance_bool = true; }
+				(data->y - point_sprite->y) < 700 && (data->y - point_sprite->y) > -1750) { distance_bool = true; }
 			if (distance_bool && !_sprite->isVisible()) {
 				_sprite->setVisible(true);
 			}
@@ -100,7 +100,7 @@ void Tower::update(float dt)
 				EventCustom event_add_shot("add_mobile");
 				event_add_shot.setUserData(newTowerShot);
 				_eventDispatcher->dispatchEvent(&event_add_shot);
-				CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
+				//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
 			}
 		
 			if(_target != nullptr && _target != NULL && _target->_sprite != nullptr && _target->_sprite != NULL && _target->_health > 0)
