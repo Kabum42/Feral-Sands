@@ -11,6 +11,8 @@ Enemy::Enemy(String s_enemy2, Point initial_point_enemy2, PathStone* path2, floa
 	_health = 200;
 	_injured = 0;
 	_type = "enemy";
+	num_location = -1;
+	established_location = false;
 	
 	s_enemy = s_enemy2;
 	initial_point_enemy = initial_point_enemy2;
@@ -92,47 +94,46 @@ void Enemy::update(float dt)
 
 		}
 		
-		if (_sprite->numberOfRunningActions() == 0) { 
+		if (!established_location) { 
 
-			if (_principio) {
-
-				auto action = CCBezierTo::create(seconds_enemy, path->bezier);
-				_sprite->runAction(action);
-				_principio = false;
-
+			if (num_location < (198) ) {
+				num_location++;
+				location = Point(path->invisible_points[num_location].x, path->invisible_points[num_location].y);
+				established_location = true;
 			}
-
+			else if (path->_nextPath != NULL) {
+				num_location = -1;
+				path = path->_nextPath;
+			}
 			else {
-
-				if (path->_nextPath == NULL) {
-
-					// HACERLE DAÑO AL NEXUS
-
-					harmNexus();
-
-				}
-				else {
-
-					path = path->_nextPath;
-					auto action = CCBezierTo::create(seconds_enemy, path->bezier);
-					_sprite->runAction(action);
-
-				}
-
+				harmNexus();
 			}
-
-
-			
 		
 		}
 		else {
 
-			position1 = position2;
-			position2 = Point(_sprite->getPositionX(), _sprite->getPositionY());
+			Vec2 v = Vec2(location.x - _sprite->getPositionX(), location.y - _sprite->getPositionY());
+			v.normalize();
+			_sprite->setPositionX(_sprite->getPositionX() +v.x*dt*200);
+			_sprite->setPositionY(_sprite->getPositionY() +v.y*dt*200);
 
-			rotateToVec2(_sprite, Vec2(position2.x - position1.x, position2.y - position1.y));
+			// ESTA COMPROBACION LO QUE VERIFICA ES QUE EL SIGNO DE LA DIRECCION TOMADA AHORA Y LA QUE SE TOMARIA EN UNA
+			// PROXIMA ITERACION SON EL MISMO, SI NO LO SON, ES QUE RETROCEDERÍA, Y POR TANTO, HA LLEGADO AL PUNTO
+			if (v.x * (location.x - _sprite->getPositionX()) < 0 || v.y * (location.y - _sprite->getPositionY()) < 0) {
+				established_location = false;
+			}
+			else if (location.x == _sprite->getPositionX() && location.y == _sprite->getPositionY()) {
+				established_location = false;
+			}
+			else {
+				position1 = position2;
+				position2 = Point(_sprite->getPositionX(), _sprite->getPositionY());
+
+				rotateToVec2(_sprite, Vec2(position2.x - position1.x, position2.y - position1.y));
+			}
 
 		}
+		
 
 	}
 

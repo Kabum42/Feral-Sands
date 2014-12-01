@@ -11,6 +11,10 @@ class PathStone : public Sprite3D
 public:
 	bool _active;
 	Sprite3D* tiles[50];
+	Sprite3D* invisible_helper;
+	Point invisible_points[200];
+	float seconds_invisible;
+	int paused_invisible;
 	Layer* layer;
 	int number_tiles;
 	int paused_current;

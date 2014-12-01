@@ -20,6 +20,9 @@ public:
 	Point position2;
 	String s_enemy;
 	int scale_enemy;
+	bool established_location;
+	Point location;
+	int num_location;
 
 	Enemy(void);
 	Enemy(String s_enemy2, Point initial_point_enemy2, PathStone* path2, float seconds_enemy2);
@@ -28,6 +31,7 @@ public:
 	void Enemy::update(float dt);
 	void Enemy::rotateToVec2(Sprite3D* s, Vec2 v);
 	void Enemy::harmNexus();
+	void Enemy::chooseLocation();
 
 	//Sprite3D* Enemy::sprite(void);
 };

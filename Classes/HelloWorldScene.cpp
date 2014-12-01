@@ -216,10 +216,11 @@ bool HelloWorld::init()
 	bezier.endPosition = Point(-1000, 0);
 
 
-	PathStone* path = new PathStone(20, 1, p, bezier);
+	PathStone* path = new PathStone(5, 5, p, bezier);
 	this->addChild(path->getLayer());
 	active_pathstones[num_active_pathstones] = path;
 	num_active_pathstones++;
+	path->_active = true;
 
 	
 	ccBezierConfig bezier3;
@@ -227,7 +228,7 @@ bool HelloWorld::init()
 	bezier3.controlPoint_2 = Point(-300, -1000);
 	bezier3.endPosition = Point(0, 0);
 
-	PathStone* path3 = new PathStone(20, 1, Point(-1000, 0), bezier3);
+	PathStone* path3 = new PathStone(5, 5, Point(-1000, 0), bezier3);
 	this->addChild(path3->getLayer());
 	active_pathstones[num_active_pathstones] = path3;
 	num_active_pathstones++;
@@ -256,10 +257,11 @@ bool HelloWorld::init()
 	bezier2.endPosition = Point(1000, 0);
 
 
-	PathStone* path2 = new PathStone(20, 1, p, bezier2);
+	PathStone* path2 = new PathStone(5, 5, p, bezier2);
 	this->addChild(path2->getLayer());
 	active_pathstones[num_active_pathstones] = path2;
 	num_active_pathstones++;
+	path2->_active = true;
 
 	
 	ccBezierConfig bezier4;
@@ -267,7 +269,7 @@ bool HelloWorld::init()
 	bezier4.controlPoint_2 = Point(300, 1000);
 	bezier4.endPosition = Point(0, 0);
 
-	PathStone* path4 = new PathStone(20, 1, Point(1000, 0), bezier4);
+	PathStone* path4 = new PathStone(5, 5, Point(1000, 0), bezier4);
 	this->addChild(path4->getLayer());
 	active_pathstones[num_active_pathstones] = path4;
 	num_active_pathstones++;
