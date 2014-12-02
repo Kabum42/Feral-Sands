@@ -4,19 +4,34 @@ Enemy::Enemy(void) {
 
 }
 
-Enemy::Enemy(String s_enemy2, Point initial_point_enemy2, PathStone* path2, float seconds_enemy2) {
+Enemy::Enemy(String s_enemy2, Point initial_point_enemy2, PathStone* path2, float seconds_enemy2, Player* player2) {
 
 	_principio = true;
 	_active = false;
 	_health = 200;
 	_injured = 0;
 	_type = "enemy";
+	_speed = 0;
 	num_location = -1;
 	established_location = false;
+	player = player2;
 	
-	s_enemy = s_enemy2;
+	_subtype = s_enemy2;
 	initial_point_enemy = initial_point_enemy2;
 	seconds_enemy = seconds_enemy2;
+
+	if (_subtype.compare("grunt") == 0) {
+		_speed = 200;
+	}
+	else if (_subtype.compare("dog") == 0) {
+		_speed = 200;
+	}
+	else if (_subtype.compare("tank") == 0) {
+		_speed = 200;
+	}
+	else if (_subtype.compare("ghost") == 0) {
+		_speed = 200;
+	}
 
 	scale_enemy = 20;
 	position_z_enemy = scale_enemy*4.7;
@@ -67,19 +82,13 @@ Enemy::Enemy(String s_enemy2, Point initial_point_enemy2, PathStone* path2, floa
 		}
 	});
 
-
-
-
-	
-		
-	
-	
-
 }
 
 Enemy::~Enemy(void)
 {
 	//delete _object;
+	// CAMBIAR TRANSPARENCIA (DE 0 a 255)
+	// _sprite->setOpacity(128);
 }
 
 void Enemy::update(float dt)
@@ -93,47 +102,27 @@ void Enemy::update(float dt)
 			if (_injured <= 0) { _sprite->setColor(Color3B(255, 255, 255)); }
 
 		}
-		
-		if (!established_location) { 
 
-			if (num_location < (198) ) {
-				num_location++;
-				location = Point(path->invisible_points[num_location].x, path->invisible_points[num_location].y);
-				established_location = true;
-			}
-			else if (path->_nextPath != NULL) {
-				num_location = -1;
-				path = path->_nextPath;
+		if (_subtype.compare("grunt") == 0) {
+
+			float total_radius = 400;
+			if ((_sprite->getPositionX() - player->_sprite->getPositionX(), 2) + pow(_sprite->getPositionY() - player->_sprite->getPositionY(), 2) < pow(total_radius, 2)) {
+				followPlayer(dt);
 			}
 			else {
-				harmNexus();
+				followPath(dt);
 			}
-		
+			
 		}
-		else {
-
-			Vec2 v = Vec2(location.x - _sprite->getPositionX(), location.y - _sprite->getPositionY());
-			v.normalize();
-			_sprite->setPositionX(_sprite->getPositionX() +v.x*dt*200);
-			_sprite->setPositionY(_sprite->getPositionY() +v.y*dt*200);
-
-			// ESTA COMPROBACION LO QUE VERIFICA ES QUE EL SIGNO DE LA DIRECCION TOMADA AHORA Y LA QUE SE TOMARIA EN UNA
-			// PROXIMA ITERACION SON EL MISMO, SI NO LO SON, ES QUE RETROCEDERÍA, Y POR TANTO, HA LLEGADO AL PUNTO
-			if (v.x * (location.x - _sprite->getPositionX()) < 0 || v.y * (location.y - _sprite->getPositionY()) < 0) {
-				established_location = false;
-			}
-			else if (location.x == _sprite->getPositionX() && location.y == _sprite->getPositionY()) {
-				established_location = false;
-			}
-			else {
-				position1 = position2;
-				position2 = Point(_sprite->getPositionX(), _sprite->getPositionY());
-
-				rotateToVec2(_sprite, Vec2(position2.x - position1.x, position2.y - position1.y));
-			}
-
+		else if (_subtype.compare("dog") == 0) {
+			followPath(dt);
 		}
-		
+		else if (_subtype.compare("tank") == 0) {
+			followPath(dt);
+		}
+		else if (_subtype.compare("ghost") == 0) {
+			followPath(dt);
+		}	
 
 	}
 
@@ -164,6 +153,68 @@ void Enemy::harmNexus() {
 	_eventDispatcher->removeEventListenersForTarget(this);
 			
 	// AQUI PROBABLEMENTE HACE FALTA ALGUNA FORMA DE DELETEAR DEL TODO ESTE OBJETO, PERO delete this NO FUNCIONA
+
+}
+
+void Enemy::followPath(float dt) {
+
+	if (!established_location) { 
+
+		if (num_location < (198) ) {
+			num_location++;
+			location = Point(path->invisible_points[num_location].x, path->invisible_points[num_location].y);
+			established_location = true;
+		}
+		else if (path->_nextPath != NULL) {
+			num_location = -1;
+			path = path->_nextPath;
+		}
+		else {
+			harmNexus();
+		}
+		
+	}
+	else {
+
+		Vec2 v = Vec2(location.x - _sprite->getPositionX(), location.y - _sprite->getPositionY());
+		v.normalize();
+		_sprite->setPositionX(_sprite->getPositionX() +v.x*dt*_speed);
+		_sprite->setPositionY(_sprite->getPositionY() +v.y*dt*_speed);
+
+		// ESTA COMPROBACION LO QUE VERIFICA ES QUE EL SIGNO DE LA DIRECCION TOMADA AHORA Y LA QUE SE TOMARIA EN UNA
+		// PROXIMA ITERACION SON EL MISMO, SI NO LO SON, ES QUE RETROCEDERÍA, Y POR TANTO, HA LLEGADO AL PUNTO
+		if (v.x * (location.x - _sprite->getPositionX()) < 0 || v.y * (location.y - _sprite->getPositionY()) < 0) {
+			established_location = false;
+		}
+		else if (location.x == _sprite->getPositionX() && location.y == _sprite->getPositionY()) {
+			established_location = false;
+		}
+		else {
+			position1 = position2;
+			position2 = Point(_sprite->getPositionX(), _sprite->getPositionY());
+
+			rotateToVec2(_sprite, Vec2(position2.x - position1.x, position2.y - position1.y));
+		}
+
+	}
+
+}
+
+void Enemy::followPlayer(float dt) {
+
+	Point location2 = Point(player->_sprite->getPositionX(), player->_sprite->getPositionY());
+
+	Vec2 v = Vec2(location2.x - _sprite->getPositionX(), location2.y - _sprite->getPositionY());
+	v.normalize();
+	_sprite->setPositionX(_sprite->getPositionX() +v.x*dt*_speed);
+	_sprite->setPositionY(_sprite->getPositionY() +v.y*dt*_speed);
+
+
+	position1 = position2;
+	position2 = Point(_sprite->getPositionX(), _sprite->getPositionY());
+
+	rotateToVec2(_sprite, Vec2(position2.x - position1.x, position2.y - position1.y));
+
 
 }
 

@@ -3,6 +3,9 @@ using namespace std;
 #include "Entity.h"
 USING_NS_CC;
 
+#ifndef PLAYER_H
+#define PLAYER_H
+
 class Player : public Entity
 {
 
@@ -24,3 +27,5 @@ public:
 
 	//Sprite3D* Player::sprite(void);
 };
+
+#endif

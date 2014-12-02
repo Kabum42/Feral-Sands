@@ -236,7 +236,7 @@ bool HelloWorld::init()
 	path->_nextPath = path3;
 	
 
-	Wave* w = new Wave(p, path);
+	Wave* w = new Wave(p, path, boss);
 	w->addEnemy("grunt", 1.5);
 	w->addEnemy("grunt", 1);
 	w->addEnemy("grunt", 2);
@@ -276,7 +276,7 @@ bool HelloWorld::init()
 	
 	path2->_nextPath = path4;
 	
-	Wave* w2 = new Wave(p, path2);
+	Wave* w2 = new Wave(p, path2, boss);
 	w2->addEnemy("grunt", 1.5);
 	w2->addEnemy("grunt", 1);
 	w2->addEnemy("grunt", 2);
@@ -329,7 +329,8 @@ bool HelloWorld::init()
 	//now the bezier config declaration
 
 	//SET BACKGROUND MUSIC
-	CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("sandstorm.wav", true);
+	// La background music al usarse junto a efectos de sonido da lagazos del copón
+	//CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("sandstorm.wav", true);
 
 	this->scheduleUpdate();
 
@@ -502,7 +503,7 @@ void HelloWorld::update(float dt)
 				coolDownNow = state.Gamepad.bRightTrigger/255 * coolDownMax/2;
 				boss->speed_cooldown = 2;
 				// ESTE SONIDO SE EJECUTA TAN RÁPIDO QUE CAUSA LAG
-				//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
+				CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
 				WeaponShot* _shotInstance = new WeaponShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
 				addMobileObject(_shotInstance);
 			}		
@@ -626,16 +627,16 @@ void HelloWorld::update(float dt)
 
 		}
 
-		// SE COMPRUEBA QUE LA TORRE NO ESTÁ TOCANDO NINGUNA DE LAS PIEDRAS DE UN CAMINO
+		// SE COMPRUEBA QUE LA TORRE NO ESTÁ TOCANDO NINGUNO DE LOS PUNTOS DE LA BEZIER DE UN CAMINO
 		for (int i = 0; i < num_active_pathstones; i++) {
 
-			for (int j = 0; j < active_pathstones[i]->number_tiles; j++) {
+			for (int j = 0; j < 200; j++) {
 
 				// 60*1 es el radio de la futura torre
 				float stone_radius = 60;
 				float total_radius = stone_radius + (60*1);
 
-				if (pow(active_pathstones[i]->tiles[j]->getPositionX() - green_tower->getPositionX(), 2) + pow(active_pathstones[i]->tiles[j]->getPositionY() -green_tower->getPositionY(), 2) < pow(total_radius, 2)) {
+				if (pow(active_pathstones[i]->invisible_points[j].x - green_tower->getPositionX(), 2) + pow(active_pathstones[i]->invisible_points[j].y -green_tower->getPositionY(), 2) < pow(total_radius, 2)) {
 
 					green_tower->setColor(ccc3(200, 0, 0));
 
@@ -675,12 +676,12 @@ void HelloWorld::update(float dt)
 								// EL ENEMIGO SE HIERE
 								enemigo->_health -= 20;
 								if (enemigo->_health > 0) { 
-									//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
+									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
 									enemigo->_sprite->setColor(Color3B(255, 0, 0));
 									enemigo->_injured = 0.1;
 								}
 								else {
-									//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
 								}
 						
 							}
@@ -705,12 +706,12 @@ void HelloWorld::update(float dt)
 								// EL ENEMIGO SE HIERE
 								enemigo->_health -= bala->_damage;
 								if (enemigo->_health > 0) { 
-									//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
+									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
 									enemigo->_sprite->setColor(Color3B(255, 0, 0));
 									enemigo->_injured = 0.1;
 								}
 								else {
-									//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
 								}
 						
 							}
@@ -735,12 +736,12 @@ void HelloWorld::update(float dt)
 								// EL JUGADOR SE HIERE
 								player->_health -= 20;
 								if (player->_health > 0) { 
-									//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
+									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
 									player->_sprite->setColor(Color3B(255, 0, 0));
 									player->_injured = 0.1;
 								}
 								else {
-									//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
 									player->_health = 200;
 									player->_sprite->setPosition3D(Vec3(0, -500, player->_sprite->getPositionZ()));
 								}
