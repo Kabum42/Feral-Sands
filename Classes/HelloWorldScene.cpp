@@ -320,9 +320,6 @@ void HelloWorld::update(float dt)
 
 	}
 	
-	
-
-	
 	XINPUT_STATE state;
 	ZeroMemory(&state, sizeof(XINPUT_STATE));
 	
@@ -363,12 +360,14 @@ void HelloWorld::update(float dt)
 				if (!startPushed) {
 					paused = !paused;
 					if (paused) {
-						EventCustom event_paused("paused");
-						_eventDispatcher->dispatchEvent(&event_paused);
+						//EventCustom event_paused("paused");
+						//_eventDispatcher->dispatchEvent(&event_paused);
+						Director::getInstance()->getRenderer()->pixelated = true;
 					}
 					else {
-						EventCustom event_unpaused("unpaused");
-						_eventDispatcher->dispatchEvent(&event_unpaused);
+						//EventCustom event_unpaused("unpaused");
+						//_eventDispatcher->dispatchEvent(&event_unpaused);
+						Director::getInstance()->getRenderer()->pixelated = false;
 					}
 				}
 				startPushed = true;
