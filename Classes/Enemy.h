@@ -14,6 +14,8 @@ class Enemy : public Entity
 public:
 	bool _principio;
 	PathStone* path;
+	PathStone* aux_path;
+	float aux_distance;
 	float seconds_enemy;
 	float position_z_enemy;
 	Point initial_point_enemy;
@@ -36,6 +38,7 @@ public:
 	void Enemy::harmNexus();
 	void Enemy::followPath(float dt);
 	void Enemy::followPlayer(float dt);
+	void Enemy::recursiveCompare(PathStone* p, bool first_iteration);
 
 	//Sprite3D* Enemy::sprite(void);
 };

@@ -21,7 +21,7 @@ public:
 	PathStone* path;
 	Player* player;
 
-	Wave(Point initial_point2, PathStone* path2, Player* player2);
+	Wave(PathStone* path2, Player* player2);
 	~Wave(void);
 
 	void update(float dt);

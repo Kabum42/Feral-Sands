@@ -1,10 +1,10 @@
 #include "Wave.h"
 
-Wave::Wave(Point initial_point2, PathStone* path2, Player* player2) {
+Wave::Wave(PathStone* path2, Player* player2) {
 	
 	_active = false;
 	current_delay = 0;
-	initial_point = initial_point2;
+	initial_point = path2->initial_point;
 	//bezier = bezier2;
 	path = path2;
 	num_enemies = 0;

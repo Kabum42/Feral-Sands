@@ -12,7 +12,7 @@ Enemy::Enemy(String s_enemy2, Point initial_point_enemy2, PathStone* path2, floa
 	_injured = 0;
 	_type = "enemy";
 	_speed = 0;
-	num_location = -1;
+	num_location = 0;
 	established_location = false;
 	player = player2;
 	
@@ -106,7 +106,7 @@ void Enemy::update(float dt)
 		if (_subtype.compare("grunt") == 0) {
 
 			float total_radius = 400;
-			if ((_sprite->getPositionX() - player->_sprite->getPositionX(), 2) + pow(_sprite->getPositionY() - player->_sprite->getPositionY(), 2) < pow(total_radius, 2)) {
+			if (pow(_sprite->getPositionX() - player->_sprite->getPositionX(), 2) + pow(_sprite->getPositionY() -player->_sprite->getPositionY(), 2) < pow(total_radius, 2)) {
 				followPlayer(dt);
 			}
 			else {
@@ -160,13 +160,20 @@ void Enemy::followPath(float dt) {
 
 	if (!established_location) { 
 
-		if (num_location < (198) ) {
-			num_location++;
+		if (num_location < (199)) {
+			//num_location++;
+			//location = Point(path->invisible_points[num_location].x, path->invisible_points[num_location].y);
+
+			aux_distance = NULL;
+			aux_path = path;
+			recursiveCompare(path, true);
+			path = aux_path;
+			
 			location = Point(path->invisible_points[num_location].x, path->invisible_points[num_location].y);
 			established_location = true;
 		}
 		else if (path->_nextPath != NULL) {
-			num_location = -1;
+			num_location = 0;
 			path = path->_nextPath;
 		}
 		else {
@@ -185,9 +192,11 @@ void Enemy::followPath(float dt) {
 		// PROXIMA ITERACION SON EL MISMO, SI NO LO SON, ES QUE RETROCEDERÍA, Y POR TANTO, HA LLEGADO AL PUNTO
 		if (v.x * (location.x - _sprite->getPositionX()) < 0 || v.y * (location.y - _sprite->getPositionY()) < 0) {
 			established_location = false;
+			num_location++;
 		}
 		else if (location.x == _sprite->getPositionX() && location.y == _sprite->getPositionY()) {
 			established_location = false;
+			num_location++;
 		}
 		else {
 			position1 = position2;
@@ -202,6 +211,8 @@ void Enemy::followPath(float dt) {
 
 void Enemy::followPlayer(float dt) {
 
+	established_location = false;
+
 	Point location2 = Point(player->_sprite->getPositionX(), player->_sprite->getPositionY());
 
 	Vec2 v = Vec2(location2.x - _sprite->getPositionX(), location2.y - _sprite->getPositionY());
@@ -215,6 +226,43 @@ void Enemy::followPlayer(float dt) {
 
 	rotateToVec2(_sprite, Vec2(position2.x - position1.x, position2.y - position1.y));
 
+
+}
+
+void Enemy::recursiveCompare(PathStone* p, bool first_iteration) {
+
+	if (first_iteration) {
+		for (int i = num_location; i < 199; i++) {
+			if (aux_distance == NULL) {
+				aux_distance = pow(_sprite->getPositionX() - p->invisible_points[i].x, 2) + pow(_sprite->getPositionY() -p->invisible_points[i].y, 2);
+				num_location = i;
+				aux_path = p;
+			}
+			else if (pow(_sprite->getPositionX() - p->invisible_points[i].x, 2) + pow(_sprite->getPositionY() -p->invisible_points[i].y, 2) < aux_distance) {
+				aux_distance = pow(_sprite->getPositionX() - p->invisible_points[i].x, 2) + pow(_sprite->getPositionY() -p->invisible_points[i].y, 2);
+				num_location = i;
+				aux_path = p;
+			}
+		}
+	}
+	else {
+		for (int i = 0; i < 199; i++) {
+			if (aux_distance == NULL) {
+				aux_distance = pow(_sprite->getPositionX() - p->invisible_points[i].x, 2) + pow(_sprite->getPositionY() -p->invisible_points[i].y, 2);
+				num_location = i;
+				aux_path = p;
+			}
+			else if (pow(_sprite->getPositionX() - p->invisible_points[i].x, 2) + pow(_sprite->getPositionY() -p->invisible_points[i].y, 2) < aux_distance) {
+				aux_distance = pow(_sprite->getPositionX() - p->invisible_points[i].x, 2) + pow(_sprite->getPositionY() -p->invisible_points[i].y, 2);
+				num_location = i;
+				aux_path = p;
+			}
+		}
+	}
+	
+	if (p->_nextPath != NULL) {
+		recursiveCompare(p->_nextPath, false);
+	}
 
 }
 

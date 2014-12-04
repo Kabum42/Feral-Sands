@@ -209,34 +209,42 @@ bool HelloWorld::init()
 	green_slow->setVisible(false);
 	this->addChild(green_slow, 0);
 	
-	p = Point(-2000, 0);
+	// ESTO NO FUNCIONA, TENGO QUE FABRICARME MI PROPIA CLASE PARA CREAR BEZIERS QUADRATICAS, USANDO LA FUNCION AQUELLA GUAY
+	// SERA UNA CLASE SIMPLE QUE SOLAMENTE TIENE 3 PARÁMETROS; PUNTO INICIAl, CONTROl POINT y PUNTO FINAL
+
+	/*
 	ccBezierConfig bezier;
-	bezier.controlPoint_1 = Point(-1600, -1000);
-	bezier.controlPoint_2 = Point(-1300, 0);
-	bezier.endPosition = Point(-1000, 0);
+	bezier.controlPoint_1 = Point(-1650, -500);
+	bezier.endPosition = Point(-1300, 0);
+	*/
 
+	QuadBezier* q = new QuadBezier(Point(-2000, 0), Point(-1650, -1000), Point(-1300, 0));
 
-	PathStone* path = new PathStone(5, 5, p, bezier);
+	PathStone* path = new PathStone(30, q);
 	this->addChild(path->getLayer());
 	active_pathstones[num_active_pathstones] = path;
 	num_active_pathstones++;
-	path->_active = true;
 
-	
-	ccBezierConfig bezier3;
-	bezier3.controlPoint_1 = Point(-600, 0);
-	bezier3.controlPoint_2 = Point(-300, -1000);
-	bezier3.endPosition = Point(0, 0);
 
-	PathStone* path3 = new PathStone(5, 5, Point(-1000, 0), bezier3);
+	q = new QuadBezier(Point(-1300, 0), Point(-1000, 1000), Point(-700, 0));
+
+	PathStone* path2 = new PathStone(30, q);
+	this->addChild(path2->getLayer());
+	active_pathstones[num_active_pathstones] = path2;
+	num_active_pathstones++;
+
+	q = new QuadBezier(Point(-700, 0), Point(-350, -1000), Point(0, 0));
+
+	PathStone* path3 = new PathStone(30, q);
 	this->addChild(path3->getLayer());
 	active_pathstones[num_active_pathstones] = path3;
 	num_active_pathstones++;
 	
-	path->_nextPath = path3;
+	path->_nextPath = path2;
+	path2->_nextPath = path3;
 	
 
-	Wave* w = new Wave(p, path, boss);
+	Wave* w = new Wave(path, boss);
 	w->addEnemy("grunt", 1.5);
 	w->addEnemy("grunt", 1);
 	w->addEnemy("grunt", 2);
@@ -249,46 +257,6 @@ bool HelloWorld::init()
 	total_enemies += w->num_enemies;
 	w->_active = true;
 
-	//
-	p = Point(2000, 0);
-	ccBezierConfig bezier2;
-	bezier2.controlPoint_1 = Point(1600, 1000);
-	bezier2.controlPoint_2 = Point(1300, 0);
-	bezier2.endPosition = Point(1000, 0);
-
-
-	PathStone* path2 = new PathStone(5, 5, p, bezier2);
-	this->addChild(path2->getLayer());
-	active_pathstones[num_active_pathstones] = path2;
-	num_active_pathstones++;
-	path2->_active = true;
-
-	
-	ccBezierConfig bezier4;
-	bezier4.controlPoint_1 = Point(600, 0);
-	bezier4.controlPoint_2 = Point(300, 1000);
-	bezier4.endPosition = Point(0, 0);
-
-	PathStone* path4 = new PathStone(5, 5, Point(1000, 0), bezier4);
-	this->addChild(path4->getLayer());
-	active_pathstones[num_active_pathstones] = path4;
-	num_active_pathstones++;
-	
-	path2->_nextPath = path4;
-	
-	Wave* w2 = new Wave(p, path2, boss);
-	w2->addEnemy("grunt", 1.5);
-	w2->addEnemy("grunt", 1);
-	w2->addEnemy("grunt", 2);
-	w2->addEnemy("grunt", 20);
-	w2->addEnemy("grunt", 2);
-	w2->addEnemy("grunt", 2);
-	w2->addEnemy("grunt", 2);
-	w2->addEnemy("grunt", 2);
-	w2->addEnemy("grunt", 2);
-	total_enemies += w2->num_enemies;
-	w2->_active = true;
-	
 
 	p = Point(0, 0);
 
@@ -747,6 +715,9 @@ void HelloWorld::update(float dt)
 								}
 							
 							}
+						}
+						else if (mobile_objects[i]->_type.compare("enemy") == 0 && mobile_objects[j]->_type.compare("enemy") == 0) {
+							//LOS DOS SON ENEMIGOS
 						}
 						else {
 						
