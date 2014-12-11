@@ -7,6 +7,7 @@
 #include "Tower.h"
 #include "TowerShot.h"
 #include "WeaponShot.h"
+#include "FireShot.h"
 #include "Enemy.h"
 #include "Player.h"
 #include "Nexus.h"

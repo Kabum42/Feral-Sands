@@ -13,6 +13,7 @@ public:
 	float position_z_player;
 	float dashing;
 	Vec2 dashingVector;
+	int _weapon;
 
 	Player(void);
 	Player(Point initial_point_Player2);

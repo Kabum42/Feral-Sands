@@ -65,12 +65,14 @@ bool menuTurrets = false;
 bool leftTriggerPushed = false;
 bool leftShoulderPushed = false;
 bool startPushed = false;
+bool changeWeapon = false;
 
 float rightThumbX = 0;
 float rightThumbY = 32767;
 
 float coolDownMax = 0.2;
 float coolDownNow = coolDownMax;
+float coolDownFireNow = coolDownMax;
 
 EventCustom event("EnterFrame");
 EventCustom event_add_mobile("add_mobile");
@@ -279,7 +281,7 @@ bool HelloWorld::init()
 	//now the bezier config declaration
 
 	//SET BACKGROUND MUSIC
-	CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("sandstorm.wav", true);
+	//CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("sandstorm.wav", true);
 
 	this->scheduleUpdate();
 
@@ -414,6 +416,19 @@ void HelloWorld::update(float dt)
 				//boss->_sprite->setPosition3D(Vec3(800 / 2 + (rand() % 2) - 1 * rand() % 1 * 800 / 2, 600 / 2 + (rand() % 2) - 1 * rand() % 1 * 600 / 2, 100));
 				boss->_sprite->setPosition3D(Vec3(0, -500, boss->_sprite->getPositionZ()));
 
+			if (wButtons & XINPUT_GAMEPAD_Y){
+				if (!changeWeapon){
+					boss->_weapon += 1;
+					if (boss->_weapon == 3) boss->_weapon = 0;
+					changeWeapon = true;
+				}
+			}
+			if (changeWeapon)
+				if (!(wButtons & XINPUT_GAMEPAD_Y))
+					changeWeapon = false;
+				
+				
+
 			// ROTACION DE PLAYER
 			if (state.Gamepad.sThumbRY != 0) rightThumbY = state.Gamepad.sThumbRY;
 			if (state.Gamepad.sThumbRX != 0) rightThumbX = state.Gamepad.sThumbRX;
@@ -421,21 +436,42 @@ void HelloWorld::update(float dt)
 			boss->_sprite->setRotation3D(Vec3(90, 0, -90 - atan2(rightThumbY, rightThumbX)*360/(2*M_PI)));
 
 			// DISPARO
-		if(state.Gamepad.bRightTrigger != 0 && coolDownNow >= coolDownMax) {
-			coolDownNow = state.Gamepad.bRightTrigger/255 * coolDownMax/2;
-			CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
-			WeaponShot* _shotInstance = new WeaponShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
-			addMobileObject(_shotInstance);
-		}
-			if(state.Gamepad.bRightTrigger != 0 && coolDownNow >= coolDownMax) {
-				coolDownNow = state.Gamepad.bRightTrigger/255 * coolDownMax/2;
-				CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
-				WeaponShot* _shotInstance = new WeaponShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
-				mobile_objects[num_mobile_objects] = _shotInstance;
-				_shotInstance->_num_in_array = num_mobile_objects;
-				num_mobile_objects++;
-				_shotInstance->_sprite->setCameraMask(2);
-				this->addChild(_shotInstance->_sprite, 1);
+			if (state.Gamepad.bRightTrigger != 0){
+				if (boss->_weapon == 0){ //NORMAL
+					if (coolDownNow >= coolDownMax) {
+						coolDownNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
+						CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
+						WeaponShot* _shotInstance = new WeaponShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
+						addMobileObject(_shotInstance);
+					}
+				}
+				else if (boss->_weapon == 1){ // FUEGO
+					if (coolDownFireNow >= coolDownMax){
+						//coolDownFireNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
+						coolDownFireNow = 0.14;
+						CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
+
+						Vec3 _playerMovement = Vec3(state.Gamepad.sThumbLX / 70, state.Gamepad.sThumbLY / 70, 0);
+
+						FireShot* _fireInstance = new FireShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -14 + (rand() % 14) - 7));
+						//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
+						_fireInstance->_displacement = _playerMovement;
+						addMobileObject(_fireInstance);
+
+						_fireInstance = new FireShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, (rand() % 14) - 7));
+						//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
+						_fireInstance->_displacement = _playerMovement;
+						addMobileObject(_fireInstance);
+
+						_fireInstance = new FireShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 14 + (rand() % 14) - 7));
+						//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
+						_fireInstance->_displacement = _playerMovement;
+						addMobileObject(_fireInstance);
+					}
+				}
+				else if (boss->_weapon == 2){ //AIRE
+
+				}
 			}
 		
 
@@ -507,6 +543,9 @@ void HelloWorld::update(float dt)
 
 		if (coolDownNow < coolDownMax) {
 			coolDownNow += dt;
+		}
+		if (coolDownFireNow < coolDownMax) {
+			coolDownFireNow += dt;
 		}
 
 		// BOSS 2 ROTATED TOWARDS BOSS 1
@@ -648,6 +687,33 @@ void HelloWorld::update(float dt)
 									player->_sprite->setPosition3D(Vec3(0, -500, player->_sprite->getPositionZ()));
 								}
 							
+							}
+						}
+						else if (mobile_objects[i]->_type.compare("fireshot") == 0 || mobile_objects[j]->_type.compare("fireshot") == 0) {
+							// UNO DE LOS DOS ES UNA PARTÍCULA DE FUEGO
+							if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
+								// EL OTRO ES UN ENEMY
+								FireShot* bala;
+								Entity* enemigo;
+
+								if (mobile_objects[i]->_type.compare("fireshot") == 0) bala = (FireShot*)mobile_objects[i];
+								if (mobile_objects[j]->_type.compare("fireshot") == 0) bala = (FireShot*)mobile_objects[j];
+
+								if (mobile_objects[i]->_type.compare("enemy") == 0) enemigo = mobile_objects[i];
+								if (mobile_objects[j]->_type.compare("enemy") == 0) enemigo = mobile_objects[j];
+
+								// LA BALA NO MUERE
+
+								// EL ENEMIGO SE HIERE
+								enemigo->_health -= bala->_damage;
+								if (enemigo->_health > 0) {
+									//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
+									enemigo->_sprite->setColor(Color3B(255, 0, 0));
+									enemigo->_injured = 0.1;
+								}
+								else {
+									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+								}
 							}
 						}
 						else {
