@@ -40,7 +40,7 @@ Tower::Tower(String _subtype2, Point initial_point_2) {
 
 		position_z_tower = 1;
 
-		_sprite = Sprite3D::create("floor.obj", "alquitran.png");
+		_sprite = Sprite3D::create("Floor.obj", "alquitran.png");
 		_sprite->setPosition3D(Vec3(initial_point_tower.x, initial_point_tower.y, position_z_tower));
 		_sprite->setRotation3D(Vec3(90, 0, 270));
 		_sprite->setScale(scale_tower);

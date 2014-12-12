@@ -207,7 +207,7 @@ bool HelloWorld::init()
 	green_tower->setVisible(false);
 	this->addChild(green_tower, 0);
 
-	green_slow = Sprite3D::create("floor.obj", "stone.png");
+	green_slow = Sprite3D::create("Floor.obj", "stone.png");
 	green_slow->setScale(5);
 	green_slow->setCameraMask(2);
 	green_slow->setColor(ccc3(0, 200, 0));
