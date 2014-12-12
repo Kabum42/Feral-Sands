@@ -4,11 +4,10 @@ using namespace std;
 #include <math.h>
 USING_NS_CC;
 
-class WeaponShot : public Entity
+class AirShot : public Entity
 {
 	Vec3 _origin;
-	Vec3 _direction;
-	int _speed;
+	
 	int _range;
 	float _time;
 	float _timeLimit;
@@ -16,11 +15,16 @@ class WeaponShot : public Entity
 	//Sprite3D* _sprite;
 public:
 	//Sprite3D* _sprite;
+	Vec3 _direction;
+	float _speed;
+	int _deacceleration;
+	int _shrink;
+	float _power;
+	float _damage;
+	AirShot(Vec3, Vec3, float);
+	~AirShot(void);
 
-	WeaponShot(Vec3, Vec3);
-	~WeaponShot(void);
-
-	void WeaponShot::update(float dt);
+	void AirShot::update(float dt);
 
 	//Sprite3D* WeaponShot::sprite(void);
 };

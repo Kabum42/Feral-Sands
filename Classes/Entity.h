@@ -20,6 +20,8 @@ public:
 	float _range;		//TOWER
 	Entity* _target;	//TOWER
 
+	Vec3 _displacement;
+
 	float _injured;
 
 	Entity(void);

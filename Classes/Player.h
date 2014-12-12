@@ -16,6 +16,8 @@ public:
 	float position_z_player;
 	float dashing;
 	Vec2 dashingVector;
+	int _weapon;
+
 	float speed;
 	float speed_cooldown;
 

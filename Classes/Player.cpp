@@ -10,6 +10,7 @@ Player::Player(Point initial_point_player2) {
 	_health = 200;
 	_injured = 0;
 	_type = "player";
+	_weapon = 0; // 0: Normal; 1: Fuego; 2: Aire;
 	dashing = 0;
 	speed = 1.5;
 	speed_cooldown = 0;
