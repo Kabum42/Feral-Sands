@@ -68,6 +68,7 @@ void WeaponShot::update(float dt)
 			_eventDispatcher->removeEventListenersForTarget(this);
 			
 			// AQUI PROBABLEMENTE HACE FALTA ALGUNA FORMA DE DELETEAR DEL TODO ESTE OBJETO, PERO delete this NO FUNCIONA
+			this->removeAllComponents();
 			
 		}
 

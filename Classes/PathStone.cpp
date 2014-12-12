@@ -6,35 +6,57 @@ PathStone::PathStone() {
 }
 
 
-PathStone::PathStone(int number_tiles_2, float seconds_total_2, Point initial_point_2, ccBezierConfig bezier_2) {
+PathStone::PathStone(int number_tiles_2, QuadBezier* bezier_2) {
 
 	_active = true;
 	layer = Layer::create();
-	paused_current = 0;
-	seconds_current = 0;
 	number_tiles = number_tiles_2;
-	seconds_total = seconds_total_2;
-	initial_point = initial_point_2;
 	bezier = bezier_2;
+	initial_point = bezier->initial_point;
 	_nextPath = NULL;
 
 
 	for (int i = 0; i < number_tiles; i++) {
 
-		Sprite3D* stone = Sprite3D::create("floor.obj", "stone.png");
-		stone->setPosition3D(Vec3(initial_point.x, initial_point.y, 0));
-		stone->setRotation3D(Vec3(90, 0, 270));
-		stone->setScale(3);
-		auto action = CCBezierTo::create(seconds_total, bezier);
-		stone->runAction(action);
+			float t = (float)i/(float)number_tiles;
 
-		layer->addChild(stone, 0, ""+i);
+			float aux_x = (float)bezier->initial_point.x*(float)pow((float)(1 - t), 2)
+				+ (float)bezier->control_point.x*2*(float)(1 - t)*t
+				+ (float)bezier->end_point.x*(float)pow(t, 2);
 
-		tiles[i] = stone;
+			float aux_y = (float)bezier->initial_point.y*(float)pow((float)(1 - t), 2)
+				+ (float)bezier->control_point.y*2*(float)(1 - t)*t
+				+ (float)bezier->end_point.y*(float)pow(t, 2);
+		
+			Sprite3D* stone = Sprite3D::create("floor.obj", "stone.png");
+			stone->setPosition3D(Vec3(aux_x, aux_y, 0));
+			stone->setRotation3D(Vec3(90, 0, 270));
+			stone->setScale(3);
 
-	}
+			layer->addChild(stone, 0);
+
+			tiles[i] = stone;
+
+		}
 
 	layer->setCameraMask(2);
+
+	for (int i = 0; i < 200; i++) {
+
+			float t = (float)i/(float)200;
+
+			float aux_x = (float)bezier->initial_point.x*(float)pow((float)(1 - t), 2)
+				+ (float)bezier->control_point.x*2*(float)(1 - t)*t
+				+ (float)bezier->end_point.x*(float)pow(t, 2);
+
+			float aux_y = (float)bezier->initial_point.y*(float)pow((float)(1 - t), 2)
+				+ (float)bezier->control_point.y*2*(float)(1 - t)*t
+				+ (float)bezier->end_point.y*(float)pow(t, 2);
+		
+			Point p = Point(aux_x, aux_y);
+			invisible_points[i] = p;
+
+		}
 
 	_eventDispatcher->addCustomEventListener("EnterFrame", [=](EventCustom* event) {
 		float* data = static_cast<float*>(event->getUserData());
@@ -69,26 +91,6 @@ PathStone::PathStone(int number_tiles_2, float seconds_total_2, Point initial_po
 
 
 void PathStone::update(float dt) {
-
-	if (paused_current != number_tiles) {
-		
-		if (paused_current == 0) {
-			tiles[paused_current]->pauseSchedulerAndActions();
-			paused_current++;
-		}
-		
-		seconds_current += dt;
-
-		float aux = (seconds_total/(number_tiles-1))*(paused_current);
-
-		if (seconds_current >= aux) {
-
-			tiles[paused_current]->pauseSchedulerAndActions();
-			paused_current++;
-
-		}
-		
-	}
 
 }
 

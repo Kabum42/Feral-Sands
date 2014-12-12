@@ -3,6 +3,9 @@ using namespace std;
 #include "Entity.h"
 USING_NS_CC;
 
+#ifndef PLAYER_H
+#define PLAYER_H
+
 class Player : public Entity
 {
 
@@ -15,6 +18,9 @@ public:
 	Vec2 dashingVector;
 	int _weapon;
 
+	float speed;
+	float speed_cooldown;
+
 	Player(void);
 	Player(Point initial_point_Player2);
 	~Player(void);
@@ -23,3 +29,5 @@ public:
 
 	//Sprite3D* Player::sprite(void);
 };
+
+#endif

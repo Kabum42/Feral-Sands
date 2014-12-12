@@ -14,6 +14,7 @@
 #include "Nexus.h"
 #include "Wave.h"
 #include "Atrezzo.h"
+#include "QuadBezier.h"
 
 class HelloWorld : public cocos2d::Layer
 {
@@ -41,6 +42,8 @@ public:
 	void HelloWorld::addShot(Entity* e);
 
 	void HelloWorld::repulse(Entity* e1, Entity* e2);
+
+	void HelloWorld::static_repulse(Entity* static_e, Entity* mobile_e);
 
     
     // a selector callback

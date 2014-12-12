@@ -48,6 +48,8 @@ bool enabledLights = false;
 DirectionLight* sun;
 
 Sprite3D* green_tower;
+Sprite3D* green_slow;
+Sprite3D* green_monster;
 
 float nomefio = 0;
 
@@ -142,7 +144,7 @@ bool HelloWorld::init()
     this->addChild(label, 1);
 
 
-
+	
 
 	_eventDispatcher->addCustomEventListener("object_collision", [=](EventCustom* event){
 		float* elements = static_cast<float*>(event->getUserData());
@@ -181,7 +183,7 @@ bool HelloWorld::init()
 
 	
 	auto floor = Sprite3D::create("floor.obj", "sand.png");
-	floor->setScale(100);
+	floor->setScale(1000);
 	Vec3 corners_floor[8] = {};
 	floor->getAABB().getCorners(corners_floor);
 	floor->setPosition3D(Vec3(0, 0, -1));
@@ -199,52 +201,67 @@ bool HelloWorld::init()
 	this->addChild(boss->_sprite, 0);
 
 	green_tower = Sprite3D::create("Tower.obj", "stone.png");
-	green_tower->setPosition3D(Vec3(0, 0, 0.44*60));
-	green_tower->setRotation3D(Vec3(90, 0, 270));
 	green_tower->setScale(60);
 	green_tower->setCameraMask(2);
 	green_tower->setColor(ccc3(0, 200, 0));
 	green_tower->setVisible(false);
 	this->addChild(green_tower, 0);
+
+	green_slow = Sprite3D::create("floor.obj", "stone.png");
+	green_slow->setScale(5);
+	green_slow->setCameraMask(2);
+	green_slow->setColor(ccc3(0, 200, 0));
+	green_slow->setVisible(false);
+	this->addChild(green_slow, 0);
 	
-	p = Point(-2000, 0);
+	// ESTO NO FUNCIONA, TENGO QUE FABRICARME MI PROPIA CLASE PARA CREAR BEZIERS QUADRATICAS, USANDO LA FUNCION AQUELLA GUAY
+	// SERA UNA CLASE SIMPLE QUE SOLAMENTE TIENE 3 PARÁMETROS; PUNTO INICIAl, CONTROl POINT y PUNTO FINAL
+
+	/*
 	ccBezierConfig bezier;
-	bezier.controlPoint_1 = Point(point1_x, point1_y);
-	bezier.controlPoint_2 = Point(point2_x, point2_y);
-	bezier.endPosition = Point(pointend_x, pointend_y);
+	bezier.controlPoint_1 = Point(-1650, -500);
+	bezier.endPosition = Point(-1300, 0);
+	*/
 
+	QuadBezier* q = new QuadBezier(Point(-2000, 0), Point(-1650, -1000), Point(-1300, 0));
 
-	PathStone* path = new PathStone(20, 1, p, bezier);
+	PathStone* path = new PathStone(30, q);
 	this->addChild(path->getLayer());
 	active_pathstones[num_active_pathstones] = path;
 	num_active_pathstones++;
 
-	Wave* w = new Wave(p, path);
+
+	q = new QuadBezier(Point(-1300, 0), Point(-1000, 1000), Point(-700, 0));
+
+	PathStone* path2 = new PathStone(30, q);
+	this->addChild(path2->getLayer());
+	active_pathstones[num_active_pathstones] = path2;
+	num_active_pathstones++;
+
+	q = new QuadBezier(Point(-700, 0), Point(-350, -1000), Point(0, 0));
+
+	PathStone* path3 = new PathStone(30, q);
+	this->addChild(path3->getLayer());
+	active_pathstones[num_active_pathstones] = path3;
+	num_active_pathstones++;
+	
+	path->_nextPath = path2;
+	path2->_nextPath = path3;
+	
+
+	Wave* w = new Wave(path, boss);
 	w->addEnemy("grunt", 1.5);
 	w->addEnemy("grunt", 1);
+	w->addEnemy("grunt", 2);
+	w->addEnemy("grunt", 20);
+	w->addEnemy("grunt", 2);
+	w->addEnemy("grunt", 2);
+	w->addEnemy("grunt", 2);
+	w->addEnemy("grunt", 2);
 	w->addEnemy("grunt", 2);
 	total_enemies += w->num_enemies;
 	w->_active = true;
 
-	//
-	p = Point(2000, 0);
-	ccBezierConfig bezier2;
-	bezier2.controlPoint_1 = Point(1500, 300);
-	bezier2.controlPoint_2 = Point(750, -700);
-	bezier2.endPosition = Point(0, 0);
-	
-	PathStone* path2 = new PathStone(20, 1, p, bezier2);
-	this->addChild(path2->getLayer());
-	active_pathstones[num_active_pathstones] = path2;
-	num_active_pathstones++;
-	
-	Wave* w2 = new Wave(p, path2);
-	w2->addEnemy("grunt", 1.5);
-	w2->addEnemy("grunt", 1);
-	w2->addEnemy("grunt", 2);
-	total_enemies += w2->num_enemies;
-	w2->_active = true;
-	
 
 	p = Point(0, 0);
 
@@ -255,7 +272,7 @@ bool HelloWorld::init()
 	this->addChild(nexus->_sprite, 1);
 
 	Atrezzo* a;
-	a = new Atrezzo(Point(500, 500), "rock");
+	a = new Atrezzo(Point(300, 200), "rock");
 	static_objects [num_static_objects] = a;
 	num_static_objects++;
 	a->_sprite->setCameraMask(2);
@@ -274,6 +291,7 @@ bool HelloWorld::init()
 		sun->setCameraMask(2);
 	}
 	
+	
 
 	/*
 	auto directionalLight = DirectionLight::create(Vec3(-1.0f, -1.0f, 0.0f), Color3B(200, 200, 200));
@@ -284,6 +302,7 @@ bool HelloWorld::init()
 	//now the bezier config declaration
 
 	//SET BACKGROUND MUSIC
+	// La background music al usarse junto a efectos de sonido da lagazos del copón
 	//CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("sandstorm.wav", true);
 
 	this->scheduleUpdate();
@@ -372,40 +391,71 @@ void HelloWorld::update(float dt)
 			}
 
 			if (!paused) {
-
-				// COLOCAR TORRETA
-
+			// COLOCAR TORRETA
+		
 				if (state.Gamepad.bLeftTrigger > 50) {
 					if (!leftTriggerPushed && menuTurrets) {
 
-						if (green_tower->getColor().r == 200) {
+						if (green_tower->isVisible()) {
+
+							if (green_tower->getColor().r == 200) {
+
+							}
+							else if (green_tower->getColor().g == 200) {
+
+								Point p = Point(boss->_sprite->getPositionX() + rightThumbX / 100, boss->_sprite->getPositionY() + rightThumbY / 100);
+
+								Tower* t = new Tower("standard", p);
+								t->_sprite->setRotation3D(boss->_sprite->getRotation3D());
+								static_objects[num_static_objects] = t;
+								num_static_objects++;
+								t->_sprite->setCameraMask(2);
+								this->addChild(t->_sprite, 1);
+
+							}
 
 						}
-						else if (green_tower->getColor().g == 200) {
 
-							Point p = Point(boss->_sprite->getPositionX() + rightThumbX / 100, boss->_sprite->getPositionY() + rightThumbY / 100);
+						else if (green_slow->isVisible()) {
 
-							Tower* t = new Tower("standard", p);
-							static_objects[num_static_objects] = t;
-							num_static_objects++;
-							t->_sprite->setCameraMask(2);
-							this->addChild(t->_sprite, 1);
+							if (green_slow->getColor().r == 200) {
+
+							}
+							else if (green_slow->getColor().g == 200) {
+
+								Point p = Point(boss->_sprite->getPositionX() + rightThumbX / 100, boss->_sprite->getPositionY() + rightThumbY / 100);
+
+								Tower* t = new Tower("slow", p);
+								t->_sprite->setRotation3D(boss->_sprite->getRotation3D());
+								static_objects[num_static_objects] = t;
+								num_static_objects++;
+								t->_sprite->setCameraMask(2);
+								this->addChild(t->_sprite, 1);
+
+							}
+
+						}
+						else if (green_monster->isVisible()) {
 
 						}
 
-					}
-					else if (!leftTriggerPushed && !menuTurrets && boss->dashing == 0 && (state.Gamepad.sThumbLX != 0 || state.Gamepad.sThumbLY != 0)) {
+						else if (!leftTriggerPushed && !menuTurrets && boss->dashing == 0 && (state.Gamepad.sThumbLX != 0 || state.Gamepad.sThumbLY != 0)) {
 
-						Vec2 v = Vec2(state.Gamepad.sThumbLX, state.Gamepad.sThumbLY);
-						v.normalize();
-						boss->dashingVector = v;
-						boss->dashing = 0.5;
+							Vec2 v = Vec2(state.Gamepad.sThumbLX, state.Gamepad.sThumbLY);
+							v.normalize();
+							boss->dashingVector = v;
+							boss->dashing = 0.5;
 
+						}
+						
+						
+						
+						if (!leftTriggerPushed) leftTriggerPushed = true;
+						
 					}
-					if (!leftTriggerPushed) leftTriggerPushed = true;
-				}
-				else {
-					if (leftTriggerPushed) leftTriggerPushed = false;
+					else {
+						if (leftTriggerPushed) leftTriggerPushed = false;
+					}
 				}
 
 
@@ -480,6 +530,7 @@ void HelloWorld::update(float dt)
 
 					}
 				}
+				
 				if (state.Gamepad.bRightTrigger == 0) {
 					if (boss->_weapon == 2){ //AIRE
 						if (airCharging){
@@ -610,6 +661,39 @@ void HelloWorld::update(float dt)
 				}
 		
 
+			if (!leftTriggerPushed) leftTriggerPushed = true;
+			}
+			else {
+				if (leftTriggerPushed) leftTriggerPushed = false;
+			}
+		
+			
+			// CONTROL DE PLAYER
+			if (boss->dashing == 0) {
+				boss->_sprite->setPosition3D(boss->_sprite->getPosition3D() + Vec3(state.Gamepad.sThumbLX*dt*boss->speed/70, state.Gamepad.sThumbLY*dt*boss->speed/70, 0));
+			}
+
+		
+			if (wButtons & XINPUT_GAMEPAD_A)
+				//boss->_sprite->setPosition3D(Vec3(800 / 2 + (rand() % 2) - 1 * rand() % 1 * 800 / 2, 600 / 2 + (rand() % 2) - 1 * rand() % 1 * 600 / 2, 100));
+				boss->_sprite->setPosition3D(Vec3(0, -500, boss->_sprite->getPositionZ()));
+
+			// ROTACION DE PLAYER
+			if (state.Gamepad.sThumbRY != 0) rightThumbY = state.Gamepad.sThumbRY;
+			if (state.Gamepad.sThumbRX != 0) rightThumbX = state.Gamepad.sThumbRX;
+
+			boss->_sprite->setRotation3D(Vec3(90, 0, -90 - atan2(rightThumbY, rightThumbX)*360/(2*M_PI)));
+
+			// DISPARO
+			/*if(state.Gamepad.bRightTrigger != 0 && coolDownNow >= coolDownMax) {
+				coolDownNow = state.Gamepad.bRightTrigger/255 * coolDownMax/2;
+				boss->speed_cooldown = 2;
+				// ESTE SONIDO SE EJECUTA TAN RÁPIDO QUE CAUSA LAG
+				CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
+				WeaponShot* _shotInstance = new WeaponShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
+				addMobileObject(_shotInstance);
+			}*/
+
 			// ROTAR CAMARA
 			if (wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) cameraAngle += 0.1;
 			if (wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) cameraAngle -= 0.1;
@@ -620,6 +704,20 @@ void HelloWorld::update(float dt)
 			
 				if (!leftShoulderPushed) {
 
+					if (!menuTurrets) {
+						menuTurrets = true;
+						green_tower->setVisible(true);
+					}
+					else if (menuTurrets && green_tower->isVisible()) {
+						green_tower->setVisible(false);
+						green_slow->setVisible(true);
+					}
+					else {
+						green_slow->setVisible(false);
+						menuTurrets = false;
+					}
+
+					/*
 					menuTurrets = !menuTurrets;
 
 					if (menuTurrets) {
@@ -628,6 +726,7 @@ void HelloWorld::update(float dt)
 					else {
 						green_tower->setVisible(false);
 					}
+					*/
 
 				}
 
@@ -638,12 +737,11 @@ void HelloWorld::update(float dt)
 			else {
 
 				leftShoulderPushed = false;
-
 			}
 
 			if(wButtons & XINPUT_GAMEPAD_DPAD_UP) zoom -= 5;
 			if(wButtons & XINPUT_GAMEPAD_DPAD_DOWN) zoom += 5;
-
+			
 		
 
 			// VIBRACION
@@ -664,13 +762,10 @@ void HelloWorld::update(float dt)
 
 		}
 
-
-	}
-
-	else
+	/*else
 	{
 		// Controller is not connected 
-	}
+	}*/
 
 	// Irrelevant if controlles is connected
 
@@ -692,7 +787,12 @@ void HelloWorld::update(float dt)
 	
 		// SE COLOCA LA TORRE DE PRUEBA EN EL LUGAR AL QUE APUNTAS Y SE PONE EN VERDE
 		green_tower->setPosition3D(Vec3(boss->_sprite->getPositionX() + rightThumbX/100, boss->_sprite->getPositionY() + rightThumbY/100, 0.44*60));
+		green_tower->setRotation3D(boss->_sprite->getRotation3D());
 		green_tower->setColor(ccc3(0, 200, 0));
+
+		green_slow->setPosition3D(Vec3(boss->_sprite->getPositionX() + rightThumbX/100, boss->_sprite->getPositionY() + rightThumbY/100, 1));
+		green_slow->setRotation3D(boss->_sprite->getRotation3D());
+		green_slow->setColor(ccc3(0, 200, 0));
 
 		// SE COMPRUEBA QUE LA TORRE NO ESTÁ TOCANDO OTRO OBJETO ESTÁTICO
 		for (int i = 0; i < num_static_objects; i++) {
@@ -704,18 +804,27 @@ void HelloWorld::update(float dt)
 				green_tower->setColor(ccc3(200, 0, 0));
 
 			}
+
+			total_radius = static_objects[i]->_radius + (20*5);
+
+			if (pow(static_objects[i]->_sprite->getPositionX() - green_slow->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() -green_slow->getPositionY(), 2) < pow(total_radius, 2)) {
+
+				green_slow->setColor(ccc3(200, 0, 0));
+
+			}
+
 		}
 
-		// SE COMPRUEBA QUE LA TORRE NO ESTÁ TOCANDO NINGUNA DE LAS PIEDRAS DE UN CAMINO
+		// SE COMPRUEBA QUE LA TORRE NO ESTÁ TOCANDO NINGUNO DE LOS PUNTOS DE LA BEZIER DE UN CAMINO
 		for (int i = 0; i < num_active_pathstones; i++) {
 
-			for (int j = 0; j < active_pathstones[i]->number_tiles; j++) {
+			for (int j = 0; j < 200; j++) {
 
 				// 60*1 es el radio de la futura torre
 				float stone_radius = 60;
 				float total_radius = stone_radius + (60*1);
 
-				if (pow(active_pathstones[i]->tiles[j]->getPositionX() - green_tower->getPositionX(), 2) + pow(active_pathstones[i]->tiles[j]->getPositionY() -green_tower->getPositionY(), 2) < pow(total_radius, 2)) {
+				if (pow(active_pathstones[i]->invisible_points[j].x - green_tower->getPositionX(), 2) + pow(active_pathstones[i]->invisible_points[j].y -green_tower->getPositionY(), 2) < pow(total_radius, 2)) {
 
 					green_tower->setColor(ccc3(200, 0, 0));
 
@@ -770,11 +879,11 @@ void HelloWorld::update(float dt)
 							// UNO DE LOS DOS ES UN TOWER_SHOT
 							if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
 								// EL OTRO ES UN ENEMY
-								Entity* bala;
+								TowerShot* bala;
 								Entity* enemigo;
 
-								if (mobile_objects[i]->_type.compare("tower_shot") == 0) bala = mobile_objects[i];
-								if (mobile_objects[j]->_type.compare("tower_shot") == 0) bala = mobile_objects[j];
+								if (mobile_objects[i]->_type.compare("tower_shot") == 0) bala = (TowerShot*) mobile_objects[i];
+								if (mobile_objects[j]->_type.compare("tower_shot") == 0) bala = (TowerShot*) mobile_objects[j];
 
 								if (mobile_objects[i]->_type.compare("enemy") == 0) enemigo = mobile_objects[i];
 								if (mobile_objects[j]->_type.compare("enemy") == 0) enemigo = mobile_objects[j];
@@ -783,7 +892,7 @@ void HelloWorld::update(float dt)
 								bala->_health = 0;
 
 								// EL ENEMIGO SE HIERE
-								enemigo->_health -= 50;
+								enemigo->_health -= bala->_damage;
 								if (enemigo->_health > 0) { 
 									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
 									enemigo->_sprite->setColor(Color3B(255, 0, 0));
@@ -827,6 +936,7 @@ void HelloWorld::update(float dt)
 							
 							}
 						}
+
 						else if (mobile_objects[i]->_type.compare("fireshot") == 0 || mobile_objects[j]->_type.compare("fireshot") == 0) {
 							// UNO DE LOS DOS ES UNA PARTÍCULA DE FUEGO
 							if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
@@ -881,6 +991,9 @@ void HelloWorld::update(float dt)
 								}
 							}
 						}
+						else if (mobile_objects[i]->_type.compare("enemy") == 0 && mobile_objects[j]->_type.compare("enemy") == 0) {
+							//LOS DOS SON ENEMIGOS
+						}
 						else {
 						
 							repulse(mobile_objects[i], mobile_objects[j]);
@@ -913,21 +1026,21 @@ void HelloWorld::update(float dt)
 						else if (mobile_objects[j]->_type.compare("tower_shot") == 0) {
 							// LOS TOWER_SHOT NO COLISIONAN CON NADA ESTATICO
 						}
+						else if (static_objects[i]->_type.compare("tower") == 0) {
+							
+							Tower* t = (Tower*) static_objects[i];
+
+							if (t->_subtype.compare("slow") == 0) {
+
+							}
+							else {
+								static_repulse(static_objects[i], mobile_objects[j]);
+							}
+
+						}
 						else {
 
-							float div = pow(total_radius, 2) / (pow(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2));
-
-							float* elements = new float[3];
-							elements[0] = 0.5 * (abs(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX())*div - abs(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX()));
-							if (static_objects[i]->_sprite->getPositionX() < mobile_objects[j]->_sprite->getPositionX()) elements[0] = -elements[0];
-							elements[1] = 0.5 * (abs(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY())*div - abs(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY()));
-							if (static_objects[i]->_sprite->getPositionY() < mobile_objects[j]->_sprite->getPositionY()) elements[1] = -elements[1];
-							elements[2] = j;
-
-							EventCustom event("object_collision");
-							event.setUserData(elements);
-
-							_eventDispatcher->dispatchEvent(&event);
+							static_repulse(static_objects[i], mobile_objects[j]);
 
 						}
 
@@ -1079,6 +1192,26 @@ void HelloWorld::repulse(Entity* e1, Entity* e2) {
 
 	_eventDispatcher->dispatchEvent(&event);
 	//FIN REPULSION
+
+}
+
+void HelloWorld::static_repulse(Entity* static_e, Entity* mobile_e) {
+
+	float total_radius = static_e->_radius + mobile_e->_radius;
+
+	float div = pow(total_radius, 2) / (pow(static_e->_sprite->getPositionX() - mobile_e->_sprite->getPositionX(), 2) + pow(static_e->_sprite->getPositionY() - mobile_e->_sprite->getPositionY(), 2));
+
+	float* elements = new float[3];
+	elements[0] = 0.5 * (abs(static_e->_sprite->getPositionX() - mobile_e->_sprite->getPositionX())*div - abs(static_e->_sprite->getPositionX() - mobile_e->_sprite->getPositionX()));
+	if (static_e->_sprite->getPositionX() < mobile_e->_sprite->getPositionX()) elements[0] = -elements[0];
+	elements[1] = 0.5 * (abs(static_e->_sprite->getPositionY() - mobile_e->_sprite->getPositionY())*div - abs(static_e->_sprite->getPositionY() - mobile_e->_sprite->getPositionY()));
+	if (static_e->_sprite->getPositionY() < mobile_e->_sprite->getPositionY()) elements[1] = -elements[1];
+	elements[2] = mobile_e->_num_in_array;
+
+	EventCustom event("object_collision");
+	event.setUserData(elements);
+
+	_eventDispatcher->dispatchEvent(&event);
 
 }
 

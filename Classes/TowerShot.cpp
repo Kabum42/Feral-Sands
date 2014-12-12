@@ -10,7 +10,7 @@ TowerShot::TowerShot(Vec3 origin, Entity* enemy)
 	_injured = 0;
 	
 	_speed = 15;
-	_damage = 50;
+	_damage = 20;
 
 	_range = NULL;
 	
