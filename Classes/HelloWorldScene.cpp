@@ -73,6 +73,9 @@ float rightThumbY = 32767;
 float coolDownMax = 0.2;
 float coolDownNow = coolDownMax;
 float coolDownFireNow = coolDownMax;
+float coolDownAirNow = coolDownMax;
+float airPower = 0;
+bool  airCharging;
 
 EventCustom event("EnterFrame");
 EventCustom event_add_mobile("add_mobile");
@@ -368,111 +371,243 @@ void HelloWorld::update(float dt)
 				startPushed = false;
 			}
 
-		if (!paused) {
+			if (!paused) {
 
-			// COLOCAR TORRETA
-		
-			if(state.Gamepad.bLeftTrigger > 50) {
-				if (!leftTriggerPushed && menuTurrets) {
-				
-					if (green_tower->getColor().r == 200) {
+				// COLOCAR TORRETA
+
+				if (state.Gamepad.bLeftTrigger > 50) {
+					if (!leftTriggerPushed && menuTurrets) {
+
+						if (green_tower->getColor().r == 200) {
+
+						}
+						else if (green_tower->getColor().g == 200) {
+
+							Point p = Point(boss->_sprite->getPositionX() + rightThumbX / 100, boss->_sprite->getPositionY() + rightThumbY / 100);
+
+							Tower* t = new Tower("standard", p);
+							static_objects[num_static_objects] = t;
+							num_static_objects++;
+							t->_sprite->setCameraMask(2);
+							this->addChild(t->_sprite, 1);
+
+						}
 
 					}
-					else if (green_tower->getColor().g == 200) {
+					else if (!leftTriggerPushed && !menuTurrets && boss->dashing == 0 && (state.Gamepad.sThumbLX != 0 || state.Gamepad.sThumbLY != 0)) {
 
-						Point p = Point(boss->_sprite->getPositionX() + rightThumbX/100, boss->_sprite->getPositionY() + rightThumbY/100);
-
-						Tower* t = new Tower("standard", p);
-						static_objects [num_static_objects] = t;
-						num_static_objects++;
-						t->_sprite->setCameraMask(2);
-						this->addChild(t->_sprite, 1);
+						Vec2 v = Vec2(state.Gamepad.sThumbLX, state.Gamepad.sThumbLY);
+						v.normalize();
+						boss->dashingVector = v;
+						boss->dashing = 0.5;
 
 					}
-				
+					if (!leftTriggerPushed) leftTriggerPushed = true;
 				}
-				else if (!leftTriggerPushed && !menuTurrets && boss->dashing == 0 && (state.Gamepad.sThumbLX != 0 || state.Gamepad.sThumbLY != 0)) {
-
-					Vec2 v = Vec2(state.Gamepad.sThumbLX, state.Gamepad.sThumbLY);
-					v.normalize();
-					boss->dashingVector = v;
-					boss->dashing = 0.5;
-
+				else {
+					if (leftTriggerPushed) leftTriggerPushed = false;
 				}
-				if (!leftTriggerPushed) leftTriggerPushed = true;
-			}
-			else {
-				if (leftTriggerPushed) leftTriggerPushed = false;
-			}
-		
-			
-			// CONTROL DE PLAYER
-			if (boss->dashing == 0) {
-				boss->_sprite->setPosition3D(boss->_sprite->getPosition3D() + Vec3(state.Gamepad.sThumbLX*dt/70, state.Gamepad.sThumbLY*dt/70, 0));
-			}
 
-		
-			if (wButtons & XINPUT_GAMEPAD_A)
-				//boss->_sprite->setPosition3D(Vec3(800 / 2 + (rand() % 2) - 1 * rand() % 1 * 800 / 2, 600 / 2 + (rand() % 2) - 1 * rand() % 1 * 600 / 2, 100));
-				boss->_sprite->setPosition3D(Vec3(0, -500, boss->_sprite->getPositionZ()));
 
-			if (wButtons & XINPUT_GAMEPAD_Y){
-				if (!changeWeapon){
-					boss->_weapon += 1;
-					if (boss->_weapon == 3) boss->_weapon = 0;
-					changeWeapon = true;
+				// CONTROL DE PLAYER
+				if (boss->dashing == 0) {
+					boss->_sprite->setPosition3D(boss->_sprite->getPosition3D() + Vec3(state.Gamepad.sThumbLX*dt / 70, state.Gamepad.sThumbLY*dt / 70, 0));
 				}
-			}
-			if (changeWeapon)
-				if (!(wButtons & XINPUT_GAMEPAD_Y))
-					changeWeapon = false;
-				
-				
 
-			// ROTACION DE PLAYER
-			if (state.Gamepad.sThumbRY != 0) rightThumbY = state.Gamepad.sThumbRY;
-			if (state.Gamepad.sThumbRX != 0) rightThumbX = state.Gamepad.sThumbRX;
 
-			boss->_sprite->setRotation3D(Vec3(90, 0, -90 - atan2(rightThumbY, rightThumbX)*360/(2*M_PI)));
+				if (wButtons & XINPUT_GAMEPAD_A)
+					//boss->_sprite->setPosition3D(Vec3(800 / 2 + (rand() % 2) - 1 * rand() % 1 * 800 / 2, 600 / 2 + (rand() % 2) - 1 * rand() % 1 * 600 / 2, 100));
+					boss->_sprite->setPosition3D(Vec3(0, -500, boss->_sprite->getPositionZ()));
 
-			// DISPARO
-			if (state.Gamepad.bRightTrigger != 0){
-				if (boss->_weapon == 0){ //NORMAL
-					if (coolDownNow >= coolDownMax) {
-						coolDownNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
-						CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
-						WeaponShot* _shotInstance = new WeaponShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
-						addMobileObject(_shotInstance);
+				if (wButtons & XINPUT_GAMEPAD_Y){
+					if (!changeWeapon){
+						boss->_weapon += 1;
+						if (boss->_weapon == 3) boss->_weapon = 0;
+						changeWeapon = true;
 					}
 				}
-				else if (boss->_weapon == 1){ // FUEGO
-					if (coolDownFireNow >= coolDownMax){
-						//coolDownFireNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
-						coolDownFireNow = 0.14;
-						CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
+				if (changeWeapon)
+					if (!(wButtons & XINPUT_GAMEPAD_Y))
+						changeWeapon = false;
 
-						Vec3 _playerMovement = Vec3(state.Gamepad.sThumbLX / 70, state.Gamepad.sThumbLY / 70, 0);
 
-						FireShot* _fireInstance = new FireShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -14 + (rand() % 14) - 7));
-						//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
-						_fireInstance->_displacement = _playerMovement;
-						addMobileObject(_fireInstance);
 
-						_fireInstance = new FireShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, (rand() % 14) - 7));
-						//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
-						_fireInstance->_displacement = _playerMovement;
-						addMobileObject(_fireInstance);
+				// ROTACION DE PLAYER
+				if (state.Gamepad.sThumbRY != 0) rightThumbY = state.Gamepad.sThumbRY;
+				if (state.Gamepad.sThumbRX != 0) rightThumbX = state.Gamepad.sThumbRX;
 
-						_fireInstance = new FireShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 14 + (rand() % 14) - 7));
-						//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
-						_fireInstance->_displacement = _playerMovement;
-						addMobileObject(_fireInstance);
+				boss->_sprite->setRotation3D(Vec3(90, 0, -90 - atan2(rightThumbY, rightThumbX) * 360 / (2 * M_PI)));
+
+				// DISPARO
+				if (state.Gamepad.bRightTrigger != 0){
+					if (boss->_weapon == 0){ //NORMAL
+						if (coolDownNow >= coolDownMax) {
+							coolDownNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
+							CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
+							WeaponShot* _shotInstance = new WeaponShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
+							addMobileObject(_shotInstance);
+						}
+					}
+					else if (boss->_weapon == 1){ // FUEGO
+						if (coolDownFireNow >= coolDownMax){
+							//coolDownFireNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
+							coolDownFireNow = 0.14;
+							CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
+
+							Vec3 _playerMovement = Vec3(state.Gamepad.sThumbLX / 70, state.Gamepad.sThumbLY / 70, 0);
+
+							FireShot* _fireInstance = new FireShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -14 + (rand() % 14) - 7));
+							//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
+							_fireInstance->_displacement = _playerMovement;
+							addMobileObject(_fireInstance);
+
+							_fireInstance = new FireShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, (rand() % 14) - 7));
+							//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
+							_fireInstance->_displacement = _playerMovement;
+							addMobileObject(_fireInstance);
+
+							_fireInstance = new FireShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 14 + (rand() % 14) - 7));
+							//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
+							_fireInstance->_displacement = _playerMovement;
+							addMobileObject(_fireInstance);
+						}
+					}
+					else if (boss->_weapon == 2){ //AIRE
+						if (coolDownAirNow >= coolDownMax){
+							airCharging = true;
+							if (airPower < 5) airPower += dt;
+						}
+
 					}
 				}
-				else if (boss->_weapon == 2){ //AIRE
+				if (state.Gamepad.bRightTrigger == 0) {
+					if (boss->_weapon == 2){ //AIRE
+						if (airCharging){
+							
+							airPower = log(airPower + 0.6) * 4 + 1;
+							if (airPower >= 3.99) airPower = 8;
 
+							airCharging = false;
+							coolDownAirNow = 0;
+							
+							CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
+
+
+							AirShot* _airInstance;
+							
+							if (airPower == 8){
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -30 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+							}
+							
+							if (airPower >= 3){
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -24 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+
+							}
+
+							if (airPower >= 2){
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -18 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+							}
+
+							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+							addMobileObject(_airInstance);
+							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+							addMobileObject(_airInstance);
+							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+							addMobileObject(_airInstance);
+							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+							addMobileObject(_airInstance);
+							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+							addMobileObject(_airInstance);
+
+							if (airPower >= 2){
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 18 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+							}
+
+							if (airPower >= 3){
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 24 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+							}
+
+							if (airPower == 8) {
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 30 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+							}
+
+
+							airPower = 0;
+						}
+					}
 				}
-			}
 		
 
 			// ROTAR CAMARA
@@ -546,6 +681,9 @@ void HelloWorld::update(float dt)
 		}
 		if (coolDownFireNow < coolDownMax) {
 			coolDownFireNow += dt;
+		}
+		if (coolDownAirNow < coolDownMax){
+			coolDownAirNow += dt;
 		}
 
 		// BOSS 2 ROTATED TOWARDS BOSS 1
@@ -704,6 +842,33 @@ void HelloWorld::update(float dt)
 
 								// LA BALA NO MUERE
 
+								// EL ENEMIGO SE HIERE
+								enemigo->_health -= bala->_damage;
+								if (enemigo->_health > 0) {
+									//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
+									enemigo->_sprite->setColor(Color3B(255, 0, 0));
+									enemigo->_injured = 0.1;
+								}
+								else {
+									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+								}
+							}
+						}
+						else if (mobile_objects[i]->_type.compare("airshot") == 0 || mobile_objects[j]->_type.compare("fireshot") == 0) {
+							// UNO DE LOS DOS ES UNA PARTÍCULA DE FUEGO
+							if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
+								// EL OTRO ES UN ENEMY
+								AirShot* bala;
+								Entity* enemigo;
+
+								if (mobile_objects[i]->_type.compare("airshot") == 0) bala = (AirShot*)mobile_objects[i];
+								if (mobile_objects[j]->_type.compare("airshot") == 0) bala = (AirShot*)mobile_objects[j];
+
+								if (mobile_objects[i]->_type.compare("enemy") == 0) enemigo = mobile_objects[i];
+								if (mobile_objects[j]->_type.compare("enemy") == 0) enemigo = mobile_objects[j];
+
+								// LA BALA NO MUERE
+								repulse(bala, enemigo);
 								// EL ENEMIGO SE HIERE
 								enemigo->_health -= bala->_damage;
 								if (enemigo->_health > 0) {
