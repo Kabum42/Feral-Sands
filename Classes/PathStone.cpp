@@ -28,10 +28,10 @@ PathStone::PathStone(int number_tiles_2, QuadBezier* bezier_2) {
 				+ (float)bezier->control_point.y*2*(float)(1 - t)*t
 				+ (float)bezier->end_point.y*(float)pow(t, 2);
 		
-			Sprite3D* stone = Sprite3D::create("floor.obj", "stone.png");
+			Sprite3D* stone = Sprite3D::create("Floor.obj", "stone.png");
 			stone->setPosition3D(Vec3(aux_x, aux_y, 0));
 			stone->setRotation3D(Vec3(90, 0, 270));
-			stone->setScale(3);
+			stone->setScale(100);
 
 			layer->addChild(stone, 0);
 

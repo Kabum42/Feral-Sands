@@ -177,8 +177,8 @@ bool HelloWorld::init()
 
 
 	
-	auto floor = Sprite3D::create("floor.obj", "sand.png");
-	floor->setScale(1000);
+	auto floor = Sprite3D::create("Floor.obj", "sand.png");
+	floor->setScale(1024*10);
 	Vec3 corners_floor[8] = {};
 	floor->getAABB().getCorners(corners_floor);
 	floor->setPosition3D(Vec3(0, 0, -1));
