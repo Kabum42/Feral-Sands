@@ -20,6 +20,7 @@ class HelloWorld : public cocos2d::Layer
 {
 
 public:
+	int floorSize;
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::Scene* createScene();
 
@@ -44,6 +45,8 @@ public:
 	void HelloWorld::repulse(Entity* e1, Entity* e2);
 
 	void HelloWorld::static_repulse(Entity* static_e, Entity* mobile_e);
+
+	void HelloWorld::readMapFromFile(const std::string nameOfFile);
 
     
     // a selector callback

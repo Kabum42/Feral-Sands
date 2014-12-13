@@ -10,7 +10,7 @@ class Player : public Entity
 {
 
 public:
-
+	int floorSize;
 	Point initial_point_player;
 	int scale_player;
 	float position_z_player;
@@ -22,7 +22,7 @@ public:
 	float speed_cooldown;
 
 	Player(void);
-	Player(Point initial_point_Player2);
+	Player(int floorSize2, Point initial_point_Player2);
 	~Player(void);
 
 	void Player::update(float dt);

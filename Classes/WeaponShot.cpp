@@ -18,7 +18,7 @@ WeaponShot::WeaponShot(Vec3 start, Vec3 aim)
 	_sprite = Sprite3D::create("Shot.obj", "stone.png");
 	_sprite->setPosition3D(_origin);
 	_sprite->setRotation3D(_direction);
-	_sprite->setScale(15);
+	_sprite->setScale(15/5);
 
 	_radius = 20;
 

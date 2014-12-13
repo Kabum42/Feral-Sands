@@ -21,7 +21,7 @@ FireShot::FireShot(Vec3 start, Vec3 aim)
 	_sprite = Sprite3D::create("Shot.obj", "fire.jpg");
 	_sprite->setPosition3D(_origin);
 	_sprite->setRotation3D(_direction);
-	_sprite->setScale(15);
+	_sprite->setScale(15/5);
 	_shrink = 15;
 
 	_radius = 20;

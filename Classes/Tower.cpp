@@ -17,7 +17,7 @@ Tower::Tower(String _subtype2, Point initial_point_2) {
 	initial_point_tower = initial_point_2;
 
 	if (_subtype.compare("standard") == 0) {
-		scale_tower = 60;
+		scale_tower = 60/5;
 
 		// ESTE RADIO ES PERFECTO, NO TOCAR
 		_radius = scale_tower*1;
@@ -34,9 +34,10 @@ Tower::Tower(String _subtype2, Point initial_point_2) {
 		_sprite->setScale(scale_tower);
 	}
 	else if (_subtype.compare("slow") == 0) {
-		scale_tower = 5;
+		
+		scale_tower = 150/5;
 
-		_radius = scale_tower*20;
+		_radius = scale_tower*0.5;
 
 		position_z_tower = 1;
 

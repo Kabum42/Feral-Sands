@@ -24,7 +24,7 @@ AirShot::AirShot(Vec3 start, Vec3 aim, float pow)
 	_sprite = Sprite3D::create("Shot.obj", "airShot.jpg");
 	_sprite->setPosition3D(_origin);
 	_sprite->setRotation3D(_direction);
-	_sprite->setScale(30);
+	_sprite->setScale(30/5);
 	_shrink = 60;
 
 	_radius = 35;

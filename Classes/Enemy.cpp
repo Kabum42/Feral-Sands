@@ -33,7 +33,7 @@ Enemy::Enemy(String s_enemy2, Point initial_point_enemy2, PathStone* path2, floa
 		_speed = 200;
 	}
 
-	scale_enemy = 20;
+	scale_enemy = 20/5;
 	position_z_enemy = scale_enemy*4.7;
 
 	_radius = scale_enemy*1.0;

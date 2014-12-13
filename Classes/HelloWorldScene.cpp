@@ -8,11 +8,14 @@ TO DO:
 -Crear el physicsworld que contenga todos los elementos y compruebe sus colisiones.
 -Meter dentro del Character todo lo que sea pulsación de botones.
 */
+
 #include "HelloWorldScene.h"
 
 #include "XInput.h"
 
 #include "SimpleAudioEngine.h"
+
+#define COCOS2D_DEBUG 1
 
 
 USING_NS_CC;
@@ -106,6 +109,8 @@ bool HelloWorld::init()
     {
         return false;
     }
+
+	floorSize = 2048*5;
     
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -183,7 +188,7 @@ bool HelloWorld::init()
 
 	
 	auto floor = Sprite3D::create("Floor.obj", "sand.png");
-	floor->setScale(1024*10);
+	floor->setScale(floorSize);
 	Vec3 corners_floor[8] = {};
 	floor->getAABB().getCorners(corners_floor);
 	floor->setPosition3D(Vec3(0, 0, -1));
@@ -193,7 +198,7 @@ bool HelloWorld::init()
 	
 	Point p = Point(0, -500);
 
-	boss = new Player(p);
+	boss = new Player(floorSize, p);
 	mobile_objects [num_mobile_objects] = boss;
 	boss->_num_in_array = num_mobile_objects;
 	num_mobile_objects++;
@@ -201,14 +206,14 @@ bool HelloWorld::init()
 	this->addChild(boss->_sprite, 0);
 
 	green_tower = Sprite3D::create("Tower.obj", "stone.png");
-	green_tower->setScale(60);
+	green_tower->setScale(60/5);
 	green_tower->setCameraMask(2);
 	green_tower->setColor(ccc3(0, 200, 0));
 	green_tower->setVisible(false);
 	this->addChild(green_tower, 0);
 
 	green_slow = Sprite3D::create("Floor.obj", "stone.png");
-	green_slow->setScale(5);
+	green_slow->setScale(150/5);
 	green_slow->setCameraMask(2);
 	green_slow->setColor(ccc3(0, 200, 0));
 	green_slow->setVisible(false);
@@ -262,21 +267,21 @@ bool HelloWorld::init()
 	total_enemies += w->num_enemies;
 	w->_active = true;
 
-
 	p = Point(0, 0);
 
-	nexus = new Nexus(p);
+	nexus = new Nexus(floorSize, p);
 	static_objects [num_static_objects] = nexus;
 	num_static_objects++;
 	nexus->_sprite->setCameraMask(2);
 	this->addChild(nexus->_sprite, 1);
-
+	/*
 	Atrezzo* a;
 	a = new Atrezzo(Point(300, 200), "rock");
 	static_objects [num_static_objects] = a;
 	num_static_objects++;
 	a->_sprite->setCameraMask(2);
 	this->addChild(a->_sprite, 1);
+	*/
 
 	camera = Camera::createPerspective(60, visibleSize.width/visibleSize.height, 1, 2000);
 	camera->setCameraFlag(CameraFlag::USER1);
@@ -290,6 +295,10 @@ bool HelloWorld::init()
 		addChild(sun);
 		sun->setCameraMask(2);
 	}
+	
+	// EXPERIMENTOS AL LEER UNA IMAGEN
+	readMapFromFile("sourceMap.png");
+
 	
 	
 
@@ -1175,6 +1184,51 @@ void HelloWorld::static_repulse(Entity* static_e, Entity* mobile_e) {
 	event.setUserData(elements);
 
 	_eventDispatcher->dispatchEvent(&event);
+
+}
+
+void HelloWorld::readMapFromFile(const std::string nameOfFile) {
+
+	CCImage *img=  new CCImage();
+	img->initWithImageFile(nameOfFile);
+
+	int x=3;
+    if(img->hasAlpha())
+        x=4;
+
+    unsigned char *data = new unsigned char[img->getDataLen()*x];   
+    data = img->getData();
+    // [0][0] => Left-Top Pixel !
+    // But cocos2d Location Y-axis is Bottom(0) to Top(max)
+	CCLOG("This is a madafacking number: %d", 23);
+
+	Color3B* rock1 = new Color3B(0, 0, 0);
+
+    for(int i=0; i<img->getWidth(); i++)
+    {
+        for(int j=0; j<img->getHeight(); j++)
+        {
+            unsigned char *pixel = data + (i + j * img->getWidth()) * x;
+
+           // You can see/change pixels' RGBA value(0-255) here !
+            unsigned char r = *pixel;
+            unsigned char g = *(pixel + 1);
+            unsigned char b = *(pixel + 2) ;
+            unsigned char a = *(pixel + 3);
+			
+			if (r == rock1->r && g == rock1->g && b == rock1->b) {
+				// ES UN PIXEL NIGGA
+				Atrezzo* a;
+				a = new Atrezzo(Point(300, 200), "rock");
+				static_objects [num_static_objects] = a;
+				num_static_objects++;
+				a->_sprite->setCameraMask(2);
+				this->addChild(a->_sprite, 1);
+			}
+			
+			
+        }
+    }
 
 }
 

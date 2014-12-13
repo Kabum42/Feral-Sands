@@ -12,7 +12,7 @@ Atrezzo::Atrezzo(Point initial_point_2, String type2) {
 
 
 	if (type2.compare("rock") == 0) {
-		scale = 200;
+		scale = 200/5;
 		_radius = scale*0.5;
 		_sprite = Sprite3D::create("Rock.obj", "stone.png");
 	}

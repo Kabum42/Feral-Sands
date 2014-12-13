@@ -4,8 +4,9 @@ Player::Player(void) {
 
 }
 
-Player::Player(Point initial_point_player2) {
+Player::Player(int floorSize2, Point initial_point_player2) {
 
+	floorSize = floorSize2;
 	_active = true;
 	_health = 200;
 	_injured = 0;
@@ -17,7 +18,7 @@ Player::Player(Point initial_point_player2) {
 
 	initial_point_player = initial_point_player2;
 
-	scale_player = 20;
+	scale_player = 4*(floorSize/2048);
 	position_z_player = scale_player*4.7;
 
 	_radius = scale_player*1.0;

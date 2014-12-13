@@ -8,14 +8,15 @@ Nexus::Nexus(void) {
 
 }
 
-Nexus::Nexus(Point initial_point_2) {
+Nexus::Nexus(int floorSize2, Point initial_point_2) {
 	
+	floorSize = floorSize2;
 	_life = 5;
 	_type = "nexus";
 
 	initial_point_nexus = initial_point_2;
 
-	scale_nexus = 100;
+	scale_nexus = 20*(floorSize/2048);
 
 	// ESTE RADIO ES PERFECTO, NO TOCAR
 	_radius = scale_nexus*1;
