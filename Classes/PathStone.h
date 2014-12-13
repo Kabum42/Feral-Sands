@@ -10,6 +10,7 @@ class PathStone : public Sprite3D
 {
 
 public:
+	int floorSize;
 	bool _active;
 	Sprite3D* tiles[50];
 	Point invisible_points[200];
@@ -20,7 +21,7 @@ public:
 	PathStone* _nextPath;
 	
 	PathStone(void);
-	PathStone(int number_tiles_2, QuadBezier* bezier_2);
+	PathStone(int floorSize2, int number_tiles_2, QuadBezier* bezier_2);
 
 	void PathStone::update(float dt);
 	

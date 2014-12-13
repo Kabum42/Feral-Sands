@@ -1,9 +1,10 @@
 #include "FireShot.h"
 
 
-FireShot::FireShot(Vec3 start, Vec3 aim)
+FireShot::FireShot(int floorSize2, Vec3 start, Vec3 aim)
 {
 
+	floorSize = floorSize2;
 	_active = false;
 	_health = 200;
 	_injured = 0;
@@ -21,7 +22,7 @@ FireShot::FireShot(Vec3 start, Vec3 aim)
 	_sprite = Sprite3D::create("Shot.obj", "fire.jpg");
 	_sprite->setPosition3D(_origin);
 	_sprite->setRotation3D(_direction);
-	_sprite->setScale(15/5);
+	_sprite->setScale(3*(floorSize/2048));
 	_shrink = 15;
 
 	_radius = 20;

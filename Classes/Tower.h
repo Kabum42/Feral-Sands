@@ -6,13 +6,16 @@ USING_NS_CC;
 
 class Tower : public Entity
 {
-	float _cooldown;
+	
 public:
+
+	int floorSize;
+	float _cooldown;
 	float position_z_tower;
 	String _subtype;
 
 	Tower(void);
-	Tower(String s2, Point initial_point_2);
+	Tower(int floorSize2, String s2, Point initial_point_2);
 	~Tower(void);
 
 	void Tower::update(float dt);

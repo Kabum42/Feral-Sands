@@ -1,9 +1,10 @@
 #include "WeaponShot.h"
 
 
-WeaponShot::WeaponShot(Vec3 start, Vec3 aim)
+WeaponShot::WeaponShot(int floorSize2, Vec3 start, Vec3 aim)
 {
 
+	floorSize = floorSize2;
 	_active = false;
 	_health = 200;
 	_injured = 0;
@@ -18,7 +19,7 @@ WeaponShot::WeaponShot(Vec3 start, Vec3 aim)
 	_sprite = Sprite3D::create("Shot.obj", "stone.png");
 	_sprite->setPosition3D(_origin);
 	_sprite->setRotation3D(_direction);
-	_sprite->setScale(15/5);
+	_sprite->setScale(5*(floorSize/2048));
 
 	_radius = 20;
 

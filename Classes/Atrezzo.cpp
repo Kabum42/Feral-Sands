@@ -6,13 +6,14 @@ Atrezzo::Atrezzo(void) {
 
 }
 
-Atrezzo::Atrezzo(Point initial_point_2, String type2) {
+Atrezzo::Atrezzo(int floorSize2, Point initial_point_2, String type2) {
 	
+	floorSize = floorSize2;
 	_type = "atrezzo";
 
 
 	if (type2.compare("rock") == 0) {
-		scale = 200/5;
+		scale = 40*(floorSize/2048);
 		_radius = scale*0.5;
 		_sprite = Sprite3D::create("Rock.obj", "stone.png");
 	}

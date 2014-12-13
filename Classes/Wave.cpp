@@ -1,7 +1,8 @@
 #include "Wave.h"
 
-Wave::Wave(PathStone* path2, Player* player2) {
+Wave::Wave(int floorSize2, PathStone* path2, Player* player2) {
 	
+	floorSize = floorSize2;
 	_active = false;
 	current_delay = 0;
 	initial_point = path2->initial_point;
@@ -12,7 +13,7 @@ Wave::Wave(PathStone* path2, Player* player2) {
 	player = player2;
 
 	// ESTO NO SE USA PARA NADA; SOLO PARA CREAR UN ENEMIGO AL VUELO DESDE WAVE Y QUE NO HAYA UN DELAY A POSTERIORI
-	Enemy* e = new Enemy(enemies_type[current_enemy], initial_point, path, 20, player);
+	Enemy* e = new Enemy(floorSize, enemies_type[current_enemy], initial_point, path, 20, player);
 	
 	_eventDispatcher->addCustomEventListener("EnterFrame", [=](EventCustom* event) {
 		float* data = static_cast<float*>(event->getUserData());
@@ -36,7 +37,7 @@ void Wave::update(float dt)
 	
 		if (current_delay >= enemies_delay[current_enemy]) {
 	
-			Enemy* e = new Enemy(enemies_type[current_enemy], initial_point, path, 20, player);
+			Enemy* e = new Enemy(floorSize, enemies_type[current_enemy], initial_point, path, 20, player);
 			EventCustom event_add_mobile("add_mobile");
 			event_add_mobile.setUserData(e);
 			_eventDispatcher->dispatchEvent(&event_add_mobile);

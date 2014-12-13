@@ -6,8 +6,9 @@ PathStone::PathStone() {
 }
 
 
-PathStone::PathStone(int number_tiles_2, QuadBezier* bezier_2) {
+PathStone::PathStone(int floorSize2, int number_tiles_2, QuadBezier* bezier_2) {
 
+	floorSize = floorSize2;
 	_active = true;
 	layer = Layer::create();
 	number_tiles = number_tiles_2;
@@ -31,7 +32,7 @@ PathStone::PathStone(int number_tiles_2, QuadBezier* bezier_2) {
 			Sprite3D* stone = Sprite3D::create("Floor.obj", "stone.png");
 			stone->setPosition3D(Vec3(aux_x, aux_y, 0));
 			stone->setRotation3D(Vec3(90, 0, 270));
-			stone->setScale(100/5);
+			stone->setScale(20*(floorSize/2048));
 
 			layer->addChild(stone, 0);
 

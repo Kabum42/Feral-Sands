@@ -1,9 +1,10 @@
 #include "AirShot.h"
 
 
-AirShot::AirShot(Vec3 start, Vec3 aim, float pow)
+AirShot::AirShot(int floorSize2, Vec3 start, Vec3 aim, float pow)
 {
 
+	floorSize = floorSize2;
 	_active = false;
 	_health = 200;
 	_injured = 0;
@@ -24,7 +25,7 @@ AirShot::AirShot(Vec3 start, Vec3 aim, float pow)
 	_sprite = Sprite3D::create("Shot.obj", "airShot.jpg");
 	_sprite->setPosition3D(_origin);
 	_sprite->setRotation3D(_direction);
-	_sprite->setScale(30/5);
+	_sprite->setScale(6*(floorSize/2048));
 	_shrink = 60;
 
 	_radius = 35;

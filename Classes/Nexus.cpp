@@ -47,7 +47,7 @@ Nexus::~Nexus(void)
 void Nexus::update(float dt)
 {
 	
-	if (position_z_nexus < 0.44*scale_nexus) {
+	if (position_z_nexus < 0) {
 
 		position_z_nexus += dt*scale_nexus*10;
 		_sprite->setPositionZ(position_z_nexus);

@@ -206,14 +206,14 @@ bool HelloWorld::init()
 	this->addChild(boss->_sprite, 0);
 
 	green_tower = Sprite3D::create("Tower.obj", "stone.png");
-	green_tower->setScale(60/5);
+	green_tower->setScale(12*(floorSize/2048));
 	green_tower->setCameraMask(2);
 	green_tower->setColor(ccc3(0, 200, 0));
 	green_tower->setVisible(false);
 	this->addChild(green_tower, 0);
 
 	green_slow = Sprite3D::create("Floor.obj", "stone.png");
-	green_slow->setScale(150/5);
+	green_slow->setScale(30*(floorSize/2048));
 	green_slow->setCameraMask(2);
 	green_slow->setColor(ccc3(0, 200, 0));
 	green_slow->setVisible(false);
@@ -230,7 +230,7 @@ bool HelloWorld::init()
 
 	QuadBezier* q = new QuadBezier(Point(-2000, 0), Point(-1650, -1000), Point(-1300, 0));
 
-	PathStone* path = new PathStone(30, q);
+	PathStone* path = new PathStone(floorSize, 30, q);
 	this->addChild(path->getLayer());
 	active_pathstones[num_active_pathstones] = path;
 	num_active_pathstones++;
@@ -238,14 +238,14 @@ bool HelloWorld::init()
 
 	q = new QuadBezier(Point(-1300, 0), Point(-1000, 1000), Point(-700, 0));
 
-	PathStone* path2 = new PathStone(30, q);
+	PathStone* path2 = new PathStone(floorSize, 30, q);
 	this->addChild(path2->getLayer());
 	active_pathstones[num_active_pathstones] = path2;
 	num_active_pathstones++;
 
 	q = new QuadBezier(Point(-700, 0), Point(-350, -1000), Point(0, 0));
 
-	PathStone* path3 = new PathStone(30, q);
+	PathStone* path3 = new PathStone(floorSize, 30, q);
 	this->addChild(path3->getLayer());
 	active_pathstones[num_active_pathstones] = path3;
 	num_active_pathstones++;
@@ -254,7 +254,7 @@ bool HelloWorld::init()
 	path2->_nextPath = path3;
 	
 
-	Wave* w = new Wave(path, boss);
+	Wave* w = new Wave(floorSize, path, boss);
 	w->addEnemy("grunt", 1.5);
 	w->addEnemy("grunt", 1);
 	w->addEnemy("grunt", 2);
@@ -415,7 +415,7 @@ void HelloWorld::update(float dt)
 
 							Point p = Point(boss->_sprite->getPositionX() + rightThumbX / 100, boss->_sprite->getPositionY() + rightThumbY / 100);
 
-							Tower* t = new Tower("standard", p);
+							Tower* t = new Tower(floorSize, "standard", p);
 							t->_sprite->setRotation3D(boss->_sprite->getRotation3D());
 							static_objects[num_static_objects] = t;
 							num_static_objects++;
@@ -434,7 +434,7 @@ void HelloWorld::update(float dt)
 
 							Point p = Point(boss->_sprite->getPositionX() + rightThumbX / 100, boss->_sprite->getPositionY() + rightThumbY / 100);
 
-							Tower* t = new Tower("slow", p);
+							Tower* t = new Tower(floorSize, "slow", p);
 							t->_sprite->setRotation3D(boss->_sprite->getRotation3D());
 							static_objects[num_static_objects] = t;
 							num_static_objects++;
@@ -499,7 +499,7 @@ void HelloWorld::update(float dt)
 					if (coolDownNow >= coolDownMax) {
 						coolDownNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
 						CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
-						WeaponShot* _shotInstance = new WeaponShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
+						WeaponShot* _shotInstance = new WeaponShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
 						addMobileObject(_shotInstance);
 					}
 				}
@@ -511,17 +511,17 @@ void HelloWorld::update(float dt)
 
 						Vec3 _playerMovement = Vec3(state.Gamepad.sThumbLX / 70, state.Gamepad.sThumbLY / 70, 0);
 
-						FireShot* _fireInstance = new FireShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -14 + (rand() % 14) - 7));
+						FireShot* _fireInstance = new FireShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -14 + (rand() % 14) - 7));
 						//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
 						_fireInstance->_displacement = _playerMovement;
 						addMobileObject(_fireInstance);
 
-						_fireInstance = new FireShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, (rand() % 14) - 7));
+						_fireInstance = new FireShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, (rand() % 14) - 7));
 						//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
 						_fireInstance->_displacement = _playerMovement;
 						addMobileObject(_fireInstance);
 
-						_fireInstance = new FireShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 14 + (rand() % 14) - 7));
+						_fireInstance = new FireShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 14 + (rand() % 14) - 7));
 						//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
 						_fireInstance->_displacement = _playerMovement;
 						addMobileObject(_fireInstance);
@@ -552,110 +552,110 @@ void HelloWorld::update(float dt)
 						AirShot* _airInstance;
 
 						if (airPower == 8){
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -30 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -30 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
 
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
 						}
 
 						if (airPower >= 3){
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -24 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -24 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
 
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
 
 						}
 
 						if (airPower >= 2){
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -18 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -18 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
 
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
 						}
 
-						_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+						_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
 						addMobileObject(_airInstance);
-						_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+						_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
 						addMobileObject(_airInstance);
-						_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+						_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
 						addMobileObject(_airInstance);
-						_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+						_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
 						addMobileObject(_airInstance);
-						_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+						_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
 						addMobileObject(_airInstance);
 
 						if (airPower >= 2){
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 18 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 18 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
 
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
 						}
 
 						if (airPower >= 3){
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 24 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 24 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
 
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
 						}
 
 						if (airPower == 8) {
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 30 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 30 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
 
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
-							_airInstance = new AirShot(boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
 							addMobileObject(_airInstance);
 						}
 
@@ -758,7 +758,7 @@ void HelloWorld::update(float dt)
 		//rotateToPoint(boss2, p);
 	
 		// SE COLOCA LA TORRE DE PRUEBA EN EL LUGAR AL QUE APUNTAS Y SE PONE EN VERDE
-		green_tower->setPosition3D(Vec3(boss->_sprite->getPositionX() + rightThumbX/100, boss->_sprite->getPositionY() + rightThumbY/100, 0.44*60));
+		green_tower->setPosition3D(Vec3(boss->_sprite->getPositionX() + rightThumbX/100, boss->_sprite->getPositionY() + rightThumbY/100, 0));
 		green_tower->setRotation3D(boss->_sprite->getRotation3D());
 		green_tower->setColor(ccc3(0, 200, 0));
 
@@ -1200,7 +1200,7 @@ void HelloWorld::readMapFromFile(const std::string nameOfFile) {
     data = img->getData();
     // [0][0] => Left-Top Pixel !
     // But cocos2d Location Y-axis is Bottom(0) to Top(max)
-	CCLOG("This is a madafacking number: %d", 23);
+	//CCLOG("This is a madafacking number: %d", 23);
 
 	Color3B* rock1 = new Color3B(0, 0, 0);
 
@@ -1218,8 +1218,14 @@ void HelloWorld::readMapFromFile(const std::string nameOfFile) {
 			
 			if (r == rock1->r && g == rock1->g && b == rock1->b) {
 				// ES UN PIXEL NIGGA
+				float aux_w = float(i)/float(img->getWidth());
+				float aux_h = 1 -(float(j)/float(img->getHeight()));
+
+				CCLOG("This is a madafacking number: %f", aux_w);
+				CCLOG("This is a madafacking number: %f", aux_h);
+
 				Atrezzo* a;
-				a = new Atrezzo(Point(300, 200), "rock");
+				a = new Atrezzo(floorSize, Point( (aux_w*float(floorSize))-floorSize/2, (aux_h*float(floorSize))-floorSize/2), "rock");
 				static_objects [num_static_objects] = a;
 				num_static_objects++;
 				a->_sprite->setCameraMask(2);

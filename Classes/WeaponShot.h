@@ -6,6 +6,7 @@ USING_NS_CC;
 
 class WeaponShot : public Entity
 {
+	int floorSize;
 	Vec3 _origin;
 	Vec3 _direction;
 	int _speed;
@@ -17,7 +18,7 @@ class WeaponShot : public Entity
 public:
 	//Sprite3D* _sprite;
 
-	WeaponShot(Vec3, Vec3);
+	WeaponShot(int floorSize2, Vec3, Vec3);
 	~WeaponShot(void);
 
 	void WeaponShot::update(float dt);

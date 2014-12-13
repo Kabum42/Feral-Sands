@@ -12,6 +12,7 @@ class Enemy : public Entity
 {
 
 public:
+	int floorSize;
 	bool _principio;
 	PathStone* path;
 	PathStone* aux_path;
@@ -30,7 +31,7 @@ public:
 	Player* player;
 
 	Enemy(void);
-	Enemy(String s_enemy2, Point initial_point_enemy2, PathStone* path2, float seconds_enemy2, Player* player2);
+	Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathStone* path2, float seconds_enemy2, Player* player2);
 	~Enemy(void);
 
 	void Enemy::update(float dt);

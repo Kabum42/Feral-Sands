@@ -4,8 +4,9 @@ Enemy::Enemy(void) {
 
 }
 
-Enemy::Enemy(String s_enemy2, Point initial_point_enemy2, PathStone* path2, float seconds_enemy2, Player* player2) {
+Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathStone* path2, float seconds_enemy2, Player* player2) {
 
+	floorSize = floorSize2;
 	_principio = true;
 	_active = false;
 	_health = 200;
@@ -33,7 +34,7 @@ Enemy::Enemy(String s_enemy2, Point initial_point_enemy2, PathStone* path2, floa
 		_speed = 200;
 	}
 
-	scale_enemy = 20/5;
+	scale_enemy = 4*(floorSize/2048);
 	position_z_enemy = scale_enemy*4.7;
 
 	_radius = scale_enemy*1.0;

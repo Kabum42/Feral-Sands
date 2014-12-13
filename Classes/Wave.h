@@ -11,6 +11,7 @@ class Wave : public Sprite3D
 {
 
 public:
+	int floorSize;
 	bool _active;
 	String enemies_type [50];
 	float enemies_delay [50];
@@ -21,7 +22,7 @@ public:
 	PathStone* path;
 	Player* player;
 
-	Wave(PathStone* path2, Player* player2);
+	Wave(int floorSize2, PathStone* path2, Player* player2);
 	~Wave(void);
 
 	void update(float dt);

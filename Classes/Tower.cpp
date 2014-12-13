@@ -7,8 +7,9 @@ Tower::Tower(void) {
 
 }
 
-Tower::Tower(String _subtype2, Point initial_point_2) {
+Tower::Tower(int floorSize2, String _subtype2, Point initial_point_2) {
 
+	floorSize = floorSize2;
 	_type = "tower";
 	_subtype = _subtype2;
 	_target = nullptr;
@@ -17,7 +18,7 @@ Tower::Tower(String _subtype2, Point initial_point_2) {
 	initial_point_tower = initial_point_2;
 
 	if (_subtype.compare("standard") == 0) {
-		scale_tower = 60/5;
+		scale_tower = 12*(floorSize/2048);
 
 		// ESTE RADIO ES PERFECTO, NO TOCAR
 		_radius = scale_tower*1;
@@ -26,7 +27,7 @@ Tower::Tower(String _subtype2, Point initial_point_2) {
 		// RANGO DE SELECCIÓN DE OBJETIVOS ENEMIGOS
 		_range = 500;
 
-		position_z_tower = -0.44*scale_tower;
+		position_z_tower = -1*scale_tower;
 
 		_sprite = Sprite3D::create("Tower.obj", "stone.png");
 		_sprite->setPosition3D(Vec3(initial_point_tower.x, initial_point_tower.y, position_z_tower));
@@ -35,7 +36,7 @@ Tower::Tower(String _subtype2, Point initial_point_2) {
 	}
 	else if (_subtype.compare("slow") == 0) {
 		
-		scale_tower = 150/5;
+		scale_tower = 30*(floorSize/2048);
 
 		_radius = scale_tower*0.5;
 
@@ -82,7 +83,7 @@ void Tower::update(float dt)
 
 	if (_subtype.compare("standard") == 0) {
 
-		if (position_z_tower < 0.44*scale_tower) {
+		if (position_z_tower < 0) {
 
 			position_z_tower += dt*scale_tower * 10;
 			_sprite->setPositionZ(position_z_tower);
