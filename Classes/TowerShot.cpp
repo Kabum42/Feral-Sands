@@ -1,7 +1,8 @@
 #include "TowerShot.h"
 
-TowerShot::TowerShot(Vec3 origin, Entity* enemy)
+TowerShot::TowerShot(float floorSize2, Vec3 origin, Entity* enemy)
 {
+	floorSize = floorSize2;
 	_active = false;
 	_radius = 20;
 	_num_in_array = NULL;
@@ -27,6 +28,23 @@ TowerShot::TowerShot(Vec3 origin, Entity* enemy)
 		float* data = static_cast<float*>(event_enter_frame->getUserData());
 		update(data[0]);
 	});
+
+	_eventDispatcher->addCustomEventListener("checkVisible", [=](EventCustom* event) {
+		if (_active) {
+
+			Point* data = static_cast<Point*>(event->getUserData());
+			Point* point_sprite = new Point(_sprite->getPositionX(), _sprite->getPositionY());
+			bool distance_bool = false;
+			if ((data->x - point_sprite->x) < (350*(floorSize/2048)) && (data->x - point_sprite->x) > -(350*(floorSize/2048)) &&
+				(data->y - point_sprite->y) < (120*(floorSize/2048)) && (data->y - point_sprite->y) > -(350*(floorSize/2048))) { distance_bool = true; }
+			if (distance_bool && !_sprite->isVisible()) {
+				_sprite->setVisible(true);
+			}
+			else if (!distance_bool && _sprite->isVisible()) {
+				_sprite->setVisible(false);
+			}
+		}
+	});
 }
 
 
@@ -43,6 +61,7 @@ void TowerShot::update(float dt)
 
 		if (_target != NULL && _target->_sprite == NULL) {
 			// AUTODESTRUCCION
+			_active = false;
 			_sprite->removeFromParentAndCleanup(true);
 			_sprite = NULL;
 			_eventDispatcher->removeEventListenersForTarget(this);

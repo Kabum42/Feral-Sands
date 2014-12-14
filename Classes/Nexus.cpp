@@ -8,14 +8,15 @@ Nexus::Nexus(void) {
 
 }
 
-Nexus::Nexus(Point initial_point_2) {
+Nexus::Nexus(int floorSize2, Point initial_point_2) {
 	
+	floorSize = floorSize2;
 	_life = 5;
 	_type = "nexus";
 
 	initial_point_nexus = initial_point_2;
 
-	scale_nexus = 100;
+	scale_nexus = 20*(floorSize/2048);
 
 	// ESTE RADIO ES PERFECTO, NO TOCAR
 	_radius = scale_nexus*1;
@@ -33,6 +34,23 @@ Nexus::Nexus(Point initial_point_2) {
 		float* data = static_cast<float*>(event->getUserData());
 		update(data[0]);
 	});
+
+	_eventDispatcher->addCustomEventListener("checkVisible", [=](EventCustom* event) {
+		if (true) {
+
+			Point* data = static_cast<Point*>(event->getUserData());
+			Point* point_sprite = new Point(_sprite->getPositionX(), _sprite->getPositionY());
+			bool distance_bool = false;
+			if ((data->x - point_sprite->x) < (350*(floorSize/2048)) && (data->x - point_sprite->x) > -(350*(floorSize/2048)) &&
+				(data->y - point_sprite->y) < (120*(floorSize/2048)) && (data->y - point_sprite->y) > -(350*(floorSize/2048))) { distance_bool = true; }
+			if (distance_bool && !_sprite->isVisible()) {
+				_sprite->setVisible(true);
+			}
+			else if (!distance_bool && _sprite->isVisible()) {
+				_sprite->setVisible(false);
+			}
+		}
+	});
 	
 	
 
@@ -46,7 +64,7 @@ Nexus::~Nexus(void)
 void Nexus::update(float dt)
 {
 	
-	if (position_z_nexus < 0.44*scale_nexus) {
+	if (position_z_nexus < 0) {
 
 		position_z_nexus += dt*scale_nexus*10;
 		_sprite->setPositionZ(position_z_nexus);

@@ -7,16 +7,20 @@
 #include "Tower.h"
 #include "TowerShot.h"
 #include "WeaponShot.h"
+#include "FireShot.h"
+#include "AirShot.h"
 #include "Enemy.h"
 #include "Player.h"
 #include "Nexus.h"
 #include "Wave.h"
 #include "Atrezzo.h"
+#include "QuadBezier.h"
 
 class HelloWorld : public cocos2d::Layer
 {
 
 public:
+	float floorSize;
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::Scene* createScene();
 
@@ -39,6 +43,10 @@ public:
 	void HelloWorld::addShot(Entity* e);
 
 	void HelloWorld::repulse(Entity* e1, Entity* e2);
+
+	void HelloWorld::static_repulse(Entity* static_e, Entity* mobile_e);
+
+	void HelloWorld::readMapFromFile(const std::string nameOfFile);
 
     
     // a selector callback

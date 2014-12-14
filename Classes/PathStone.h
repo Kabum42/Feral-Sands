@@ -3,25 +3,25 @@
 
 using namespace std;
 #include "cocos2d.h"
+#include "QuadBezier.h"
 USING_NS_CC;
 
 class PathStone : public Sprite3D
 {
 
 public:
+	float floorSize;
 	bool _active;
 	Sprite3D* tiles[50];
+	Point invisible_points[200];
 	Layer* layer;
 	int number_tiles;
-	int paused_current;
-	float seconds_total;
-	float seconds_current;
 	Point initial_point;
-	ccBezierConfig bezier;
+	QuadBezier* bezier;
 	PathStone* _nextPath;
 	
 	PathStone(void);
-	PathStone(int number_tiles_2, float seconds_total_2, cocos2d::Point initial_point_2, cocos2d::ccBezierConfig bezier_2);
+	PathStone(int floorSize2, int number_tiles_2, QuadBezier* bezier_2);
 
 	void PathStone::update(float dt);
 	

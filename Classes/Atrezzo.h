@@ -8,10 +8,11 @@ class Atrezzo : public Entity
 
 public:
 
+	float floorSize;
 	//int _life;
 
 	Atrezzo(void);
-	Atrezzo(Point initial_point_2, String type2);
+	Atrezzo(int floorSize2, Point initial_point_2, String type2);
 	~Atrezzo(void);
 
 };

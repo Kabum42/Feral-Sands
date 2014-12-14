@@ -8,11 +8,12 @@ class Nexus : public Entity
 
 public:
 
+	float floorSize;
 	float position_z_nexus;
 	int _life;
 
 	Nexus(void);
-	Nexus(Point initial_point_2);
+	Nexus(int floorSize2, Point initial_point_2);
 	~Nexus(void);
 
 	void Nexus::update(float dt);

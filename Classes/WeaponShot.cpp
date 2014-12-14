@@ -1,9 +1,10 @@
 #include "WeaponShot.h"
 
 
-WeaponShot::WeaponShot(Vec3 start, Vec3 aim)
+WeaponShot::WeaponShot(int floorSize2, Vec3 start, Vec3 aim)
 {
 
+	floorSize = floorSize2;
 	_active = false;
 	_health = 200;
 	_injured = 0;
@@ -18,11 +19,12 @@ WeaponShot::WeaponShot(Vec3 start, Vec3 aim)
 	_sprite = Sprite3D::create("Shot.obj", "stone.png");
 	_sprite->setPosition3D(_origin);
 	_sprite->setRotation3D(_direction);
-	_sprite->setScale(15);
+	_sprite->setScale(5*(floorSize/2048));
 
 	_radius = 20;
 
 	_time = 0;
+	_timeLimit = 2;
 
 	_direction.z += 90;
 	_direction = Vec3(cos(_direction.z*M_PI/180),-sin(_direction.z*M_PI/180),0);
@@ -43,7 +45,7 @@ WeaponShot::~WeaponShot(void/*WeaponShot _object*/)
 void WeaponShot::update(float dt)
 {
 
-	if (_time < 2) {
+	if (_time < _timeLimit) {
 
 		_time += dt;
 
@@ -53,7 +55,7 @@ void WeaponShot::update(float dt)
 
 		_sprite->setPosition3D(_sprite->getPosition3D() + _speed*_direction*dt);
 
-		if (_time >= 2) {
+		if (_time >= _timeLimit) {
 			
 			float* data = new float[1];
 			data[0] = _num_in_array;
@@ -67,6 +69,7 @@ void WeaponShot::update(float dt)
 			_eventDispatcher->removeEventListenersForTarget(this);
 			
 			// AQUI PROBABLEMENTE HACE FALTA ALGUNA FORMA DE DELETEAR DEL TODO ESTE OBJETO, PERO delete this NO FUNCIONA
+			this->removeAllComponents();
 			
 		}
 
