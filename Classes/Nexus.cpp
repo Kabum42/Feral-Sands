@@ -23,7 +23,7 @@ Nexus::Nexus(int floorSize2, Point initial_point_2) {
 
 	position_z_nexus = -0.44*scale_nexus;
 
-	_sprite = Sprite3D::create("Tower.obj", "stone.png");
+	_sprite = Sprite3D::create("Shield.obj", "stone.png");
 	_sprite->setPosition3D(Vec3(initial_point_nexus.x, initial_point_nexus.y, position_z_nexus));
 	_sprite->setRotation3D(Vec3(90, 0, 270));
 	_sprite->setScale(scale_nexus);

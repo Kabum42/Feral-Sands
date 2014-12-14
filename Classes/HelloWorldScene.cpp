@@ -110,8 +110,8 @@ bool HelloWorld::init()
         return false;
     }
 
-	//floorSize = 2048*5;
-	floorSize = 1024;
+	floorSize = 2048*5;
+	//floorSize = 1024;
 	zoom = 200*(floorSize/2048);
     
     Size visibleSize = Director::getInstance()->getVisibleSize();
@@ -197,6 +197,13 @@ bool HelloWorld::init()
 	floor->setRotation3D(Vec3(90, 0, 0));
 	floor->setCameraMask(2);
 	this->addChild(floor, 0);
+
+	auto walls = Sprite3D::create("Mountains.obj", "stone.png");
+	walls->setScale(100 * (floorSize / 2048));
+	walls->setRotation3D(Vec3(90, 0, 0));
+	walls->setCameraMask(2);
+	this->addChild(walls, 0);
+
 	
 	Point p = Point(0, -100*(floorSize/2048));
 
