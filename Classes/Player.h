@@ -10,7 +10,7 @@ class Player : public Entity
 {
 
 public:
-	int floorSize;
+	float floorSize;
 	Point initial_point_player;
 	int scale_player;
 	float position_z_player;

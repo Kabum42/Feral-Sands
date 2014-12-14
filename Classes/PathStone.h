@@ -10,7 +10,7 @@ class PathStone : public Sprite3D
 {
 
 public:
-	int floorSize;
+	float floorSize;
 	bool _active;
 	Sprite3D* tiles[50];
 	Point invisible_points[200];

@@ -32,7 +32,7 @@ Sprite3D* boss1;
 int total_enemies = 0;
 int dead_enemies = 0;
 
-Entity* static_objects [200] = { };
+Entity* static_objects [400] = { };
 int num_static_objects = 0;
 Entity* mobile_objects [200] = { };
 int num_mobile_objects = 0;
@@ -43,7 +43,7 @@ int num_active_pathstones = 0;
 bool paused = false;
 
 float cameraAngle = 34;
-float zoom = 1000.0f;
+float zoom;
 
 Camera* camera;
 
@@ -110,7 +110,9 @@ bool HelloWorld::init()
         return false;
     }
 
-	floorSize = 2048*5;
+	//floorSize = 2048*5;
+	floorSize = 1024;
+	zoom = 200*(floorSize/2048);
     
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -196,7 +198,7 @@ bool HelloWorld::init()
 	floor->setCameraMask(2);
 	this->addChild(floor, 0);
 	
-	Point p = Point(0, -500);
+	Point p = Point(0, -100*(floorSize/2048));
 
 	boss = new Player(floorSize, p);
 	mobile_objects [num_mobile_objects] = boss;
@@ -228,7 +230,7 @@ bool HelloWorld::init()
 	bezier.endPosition = Point(-1300, 0);
 	*/
 
-	QuadBezier* q = new QuadBezier(Point(-2000, 0), Point(-1650, -1000), Point(-1300, 0));
+	QuadBezier* q = new QuadBezier(Point(-400*(floorSize/2048), 0), Point(-330*(floorSize/2048), -200*(floorSize/2048)), Point(-260*(floorSize/2048), 0));
 
 	PathStone* path = new PathStone(floorSize, 30, q);
 	this->addChild(path->getLayer());
@@ -236,14 +238,14 @@ bool HelloWorld::init()
 	num_active_pathstones++;
 
 
-	q = new QuadBezier(Point(-1300, 0), Point(-1000, 1000), Point(-700, 0));
+	q = new QuadBezier(Point(-260*(floorSize/2048), 0), Point(-200*(floorSize/2048), 200*(floorSize/2048)), Point(-140*(floorSize/2048), 0));
 
 	PathStone* path2 = new PathStone(floorSize, 30, q);
 	this->addChild(path2->getLayer());
 	active_pathstones[num_active_pathstones] = path2;
 	num_active_pathstones++;
 
-	q = new QuadBezier(Point(-700, 0), Point(-350, -1000), Point(0, 0));
+	q = new QuadBezier(Point(-140*(floorSize/2048), 0), Point(-70*(floorSize/2048), -200*(floorSize/2048)), Point(0, 0));
 
 	PathStone* path3 = new PathStone(floorSize, 30, q);
 	this->addChild(path3->getLayer());
@@ -413,7 +415,7 @@ void HelloWorld::update(float dt)
 						}
 						else if (green_tower->getColor().g == 200) {
 
-							Point p = Point(boss->_sprite->getPositionX() + rightThumbX / 100, boss->_sprite->getPositionY() + rightThumbY / 100);
+							Point p = Point(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + (rightThumbY/500)*(floorSize/2048));
 
 							Tower* t = new Tower(floorSize, "standard", p);
 							t->_sprite->setRotation3D(boss->_sprite->getRotation3D());
@@ -432,7 +434,7 @@ void HelloWorld::update(float dt)
 						}
 						else if (green_slow->getColor().g == 200) {
 
-							Point p = Point(boss->_sprite->getPositionX() + rightThumbX / 100, boss->_sprite->getPositionY() + rightThumbY / 100);
+							Point p = Point(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + (rightThumbY/500)*(floorSize/2048));
 
 							Tower* t = new Tower(floorSize, "slow", p);
 							t->_sprite->setRotation3D(boss->_sprite->getRotation3D());
@@ -472,7 +474,7 @@ void HelloWorld::update(float dt)
 
 			if (wButtons & XINPUT_GAMEPAD_A)
 				//boss->_sprite->setPosition3D(Vec3(800 / 2 + (rand() % 2) - 1 * rand() % 1 * 800 / 2, 600 / 2 + (rand() % 2) - 1 * rand() % 1 * 600 / 2, 100));
-				boss->_sprite->setPosition3D(Vec3(0, -500, boss->_sprite->getPositionZ()));
+				boss->_sprite->setPosition3D(Vec3(0, -100*(floorSize/2048), boss->_sprite->getPositionZ()));
 
 			// CHANGE WEAPON
 			if (wButtons & XINPUT_GAMEPAD_Y){
@@ -758,18 +760,18 @@ void HelloWorld::update(float dt)
 		//rotateToPoint(boss2, p);
 	
 		// SE COLOCA LA TORRE DE PRUEBA EN EL LUGAR AL QUE APUNTAS Y SE PONE EN VERDE
-		green_tower->setPosition3D(Vec3(boss->_sprite->getPositionX() + rightThumbX/100, boss->_sprite->getPositionY() + rightThumbY/100, 0));
+		green_tower->setPosition3D(Vec3(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + (rightThumbY/500)*(floorSize/2048), 0));
 		green_tower->setRotation3D(boss->_sprite->getRotation3D());
 		green_tower->setColor(ccc3(0, 200, 0));
 
-		green_slow->setPosition3D(Vec3(boss->_sprite->getPositionX() + rightThumbX/100, boss->_sprite->getPositionY() + rightThumbY/100, 1));
+		green_slow->setPosition3D(Vec3(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + + (rightThumbY/500)*(floorSize/2048), 1));
 		green_slow->setRotation3D(boss->_sprite->getRotation3D());
 		green_slow->setColor(ccc3(0, 200, 0));
 
 		// SE COMPRUEBA QUE LA TORRE NO ESTÁ TOCANDO OTRO OBJETO ESTÁTICO
 		for (int i = 0; i < num_static_objects; i++) {
 			// 60*1 es el radio de la futura torre
-			float total_radius = static_objects[i]->_radius + (60*1);
+			float total_radius = static_objects[i]->_radius + 12*(floorSize/2048);
 
 			if (pow(static_objects[i]->_sprite->getPositionX() - green_tower->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() -green_tower->getPositionY(), 2) < pow(total_radius, 2)) {
 
@@ -777,7 +779,7 @@ void HelloWorld::update(float dt)
 
 			}
 
-			total_radius = static_objects[i]->_radius + (20*5);
+			total_radius = static_objects[i]->_radius + 20*(floorSize/2048);
 
 			if (pow(static_objects[i]->_sprite->getPositionX() - green_slow->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() -green_slow->getPositionY(), 2) < pow(total_radius, 2)) {
 
@@ -793,8 +795,8 @@ void HelloWorld::update(float dt)
 			for (int j = 0; j < 200; j++) {
 
 				// 60*1 es el radio de la futura torre
-				float stone_radius = 60;
-				float total_radius = stone_radius + (60*1);
+				float stone_radius = 12*(floorSize/2048);
+				float total_radius = stone_radius + 12*(floorSize/2048);
 
 				if (pow(active_pathstones[i]->invisible_points[j].x - green_tower->getPositionX(), 2) + pow(active_pathstones[i]->invisible_points[j].y -green_tower->getPositionY(), 2) < pow(total_radius, 2)) {
 
@@ -1048,6 +1050,8 @@ void HelloWorld::update(float dt)
 			for (int i = 0; i < num_mobile_objects; i++) {
 
 				if (mobile_objects[i]->_health <= 0) {
+
+					mobile_objects[i]->_active = false;
 
 					if (mobile_objects[i]->_type.compare("enemy") == 0) {
 						EventCustom event_dead("enemy_dead");

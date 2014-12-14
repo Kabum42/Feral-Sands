@@ -8,7 +8,7 @@ class Nexus : public Entity
 
 public:
 
-	int floorSize;
+	float floorSize;
 	float position_z_nexus;
 	int _life;
 

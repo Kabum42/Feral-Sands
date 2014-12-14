@@ -34,6 +34,23 @@ Nexus::Nexus(int floorSize2, Point initial_point_2) {
 		float* data = static_cast<float*>(event->getUserData());
 		update(data[0]);
 	});
+
+	_eventDispatcher->addCustomEventListener("checkVisible", [=](EventCustom* event) {
+		if (true) {
+
+			Point* data = static_cast<Point*>(event->getUserData());
+			Point* point_sprite = new Point(_sprite->getPositionX(), _sprite->getPositionY());
+			bool distance_bool = false;
+			if ((data->x - point_sprite->x) < (350*(floorSize/2048)) && (data->x - point_sprite->x) > -(350*(floorSize/2048)) &&
+				(data->y - point_sprite->y) < (120*(floorSize/2048)) && (data->y - point_sprite->y) > -(350*(floorSize/2048))) { distance_bool = true; }
+			if (distance_bool && !_sprite->isVisible()) {
+				_sprite->setVisible(true);
+			}
+			else if (!distance_bool && _sprite->isVisible()) {
+				_sprite->setVisible(false);
+			}
+		}
+	});
 	
 	
 

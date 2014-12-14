@@ -8,7 +8,7 @@ class Atrezzo : public Entity
 
 public:
 
-	int floorSize;
+	float floorSize;
 	//int _life;
 
 	Atrezzo(void);

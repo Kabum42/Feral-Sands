@@ -60,8 +60,8 @@ Tower::Tower(int floorSize2, String _subtype2, Point initial_point_2) {
 			Point* data = static_cast<Point*>(event->getUserData());
 			Point* point_sprite = new Point(_sprite->getPositionX(), _sprite->getPositionY());
 			bool distance_bool = false;
-			if ((data->x - point_sprite->x) < 1750 && (data->x - point_sprite->x) > -1750 &&
-				(data->y - point_sprite->y) < 700 && (data->y - point_sprite->y) > -1750) { distance_bool = true; }
+			if ((data->x - point_sprite->x) < (350*(floorSize/2048)) && (data->x - point_sprite->x) > -(350*(floorSize/2048)) &&
+				(data->y - point_sprite->y) < (120*(floorSize/2048)) && (data->y - point_sprite->y) > -(350*(floorSize/2048))) { distance_bool = true; }
 			if (distance_bool && !_sprite->isVisible()) {
 				_sprite->setVisible(true);
 			}
@@ -98,7 +98,7 @@ void Tower::update(float dt)
 			{
 				_cooldown = 1; // ESTE ES EL COOLDOWN
 				Vec3 tower_position = _sprite->getPosition3D();
-				TowerShot* newTowerShot = new TowerShot(tower_position, _target);
+				TowerShot* newTowerShot = new TowerShot(floorSize, tower_position, _target);
 				EventCustom event_add_shot("add_mobile");
 				event_add_shot.setUserData(newTowerShot);
 				_eventDispatcher->dispatchEvent(&event_add_shot);

@@ -12,7 +12,7 @@ class Enemy : public Entity
 {
 
 public:
-	int floorSize;
+	float floorSize;
 	bool _principio;
 	PathStone* path;
 	PathStone* aux_path;

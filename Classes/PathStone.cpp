@@ -73,8 +73,8 @@ PathStone::PathStone(int floorSize2, int number_tiles_2, QuadBezier* bezier_2) {
 
 				Point* point_sprite = new Point(tiles[i]->getPositionX(), tiles[i]->getPositionY());
 				bool distance_bool = false;
-				if ((data->x - point_sprite->x) < 1750 && (data->x - point_sprite->x) > -1750 &&
-					(data->y - point_sprite->y) < 600 && (data->y - point_sprite->y) > -1750) { distance_bool = true; }
+				if ((data->x - point_sprite->x) < (350*(floorSize/2048)) && (data->x - point_sprite->x) > -(350*(floorSize/2048)) &&
+				(data->y - point_sprite->y) < (120*(floorSize/2048)) && (data->y - point_sprite->y) > -(350*(floorSize/2048))) { distance_bool = true; }
 				if (distance_bool && !tiles[i]->isVisible()) {
 					tiles[i]->setVisible(true);
 				}

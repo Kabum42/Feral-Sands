@@ -6,7 +6,7 @@ USING_NS_CC;
 
 class WeaponShot : public Entity
 {
-	int floorSize;
+	float floorSize;
 	Vec3 _origin;
 	Vec3 _direction;
 	int _speed;

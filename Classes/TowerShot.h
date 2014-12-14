@@ -12,12 +12,13 @@ class TowerShot : public Entity
 {
 public:
 
+	float floorSize;
 	int _speed;
 	Vec3 _direction;
 	float _distance;
 	int _damage;
 
-	TowerShot(Vec3, Entity*);
+	TowerShot(float floorSize2, Vec3, Entity*);
 	~TowerShot(void);
 	
 	void TowerShot::update(float dt);

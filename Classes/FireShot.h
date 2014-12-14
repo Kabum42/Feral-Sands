@@ -9,7 +9,7 @@ class FireShot : public Entity
 
 public:
 	
-	int floorSize;
+	float floorSize;
 	Vec3 _origin;
 	int _range;
 	float _time;

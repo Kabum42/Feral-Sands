@@ -11,7 +11,7 @@ class Wave : public Sprite3D
 {
 
 public:
-	int floorSize;
+	float floorSize;
 	bool _active;
 	String enemies_type [50];
 	float enemies_delay [50];

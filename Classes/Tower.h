@@ -9,7 +9,7 @@ class Tower : public Entity
 	
 public:
 
-	int floorSize;
+	float floorSize;
 	float _cooldown;
 	float position_z_tower;
 	String _subtype;
