@@ -204,8 +204,22 @@ bool HelloWorld::init()
 	walls->setCameraMask(2);
 	this->addChild(walls, 0);
 
+	auto lake = Sprite3D::create("Lake.obj");
+	lake->setScale(100 * (floorSize / 2048));
+	lake->setRotation3D(Vec3(90, 0, 0));
+	lake->setPosition3D(Vec3(-5*(floorSize/2048), -520*(floorSize/2048), 0));
+	lake->setCameraMask(2);
+	this->addChild(lake, 0);
+
+	auto ruin1 = Sprite3D::create("RuinStructure.obj", "stone.png");
+	ruin1->setScale(25 * (floorSize / 2048));
+	ruin1->setRotation3D(Vec3(90, 0, 0));
+	ruin1->setPosition3D(Vec3(0*(floorSize/2048), -150*(floorSize/2048), 0));
+	ruin1->setCameraMask(2);
+	this->addChild(ruin1, 0);
+
 	
-	Point p = Point(0, -100*(floorSize/2048));
+	Point p = Point(0, 0);
 
 	boss = new Player(floorSize, p);
 	mobile_objects [num_mobile_objects] = boss;
@@ -469,7 +483,6 @@ void HelloWorld::update(float dt)
 				if (leftTriggerPushed) leftTriggerPushed = false;
 			}
 
-
 			// CONTROL DE PLAYER
 			if (boss->dashing == 0) {
 				boss->_sprite->setPosition3D(boss->_sprite->getPosition3D() + Vec3(state.Gamepad.sThumbLX*dt*boss->speed / 70, state.Gamepad.sThumbLY*dt*boss->speed / 70, 0));
@@ -478,7 +491,15 @@ void HelloWorld::update(float dt)
 
 			if (wButtons & XINPUT_GAMEPAD_A)
 				//boss->_sprite->setPosition3D(Vec3(800 / 2 + (rand() % 2) - 1 * rand() % 1 * 800 / 2, 600 / 2 + (rand() % 2) - 1 * rand() % 1 * 600 / 2, 100));
-				boss->_sprite->setPosition3D(Vec3(0, -100*(floorSize/2048), boss->_sprite->getPositionZ()));
+				boss->_sprite->setPosition3D(Vec3(0, 0, boss->_sprite->getPositionZ()));
+
+			float aux_distance_player = sqrt(pow(boss->_sprite->getPositionX(), 2) + pow(boss->_sprite->getPositionY(), 2));
+			float radius_mountains = 930;
+			if (aux_distance_player > radius_mountains*(floorSize/2048)) {
+				Vec2 distance_from_center = Vec2(boss->_sprite->getPositionX(), boss->_sprite->getPositionY());
+				distance_from_center.normalize();
+				boss->_sprite->setPosition3D(Vec3(distance_from_center.x*radius_mountains*(floorSize/2048), distance_from_center.y*radius_mountains*(floorSize/2048), boss->_sprite->getPositionZ()));
+			}
 
 			// CHANGE WEAPON
 			if (wButtons & XINPUT_GAMEPAD_Y){
@@ -909,7 +930,7 @@ void HelloWorld::update(float dt)
 								else {
 									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
 									player->_health = 200;
-									player->_sprite->setPosition3D(Vec3(0, -500, player->_sprite->getPositionZ()));
+									player->_sprite->setPosition3D(Vec3(0, 0, player->_sprite->getPositionZ()));
 								}
 							
 							}
@@ -1000,6 +1021,12 @@ void HelloWorld::update(float dt)
 							Enemy* e = (Enemy*)mobile_objects[j];
 							e->harmNexus();
 
+						}
+						else if (mobile_objects[j]->_type.compare("player") == 0 && static_objects[i]->_type.compare("nexus") == 0) {
+							// EL PLAYER PUEDE ATRAVESAR EL NEXO
+						}
+						else if ((mobile_objects[j]->_type.compare("shot") == 0 || mobile_objects[j]->_type.compare("airshot") == 0 || mobile_objects[j]->_type.compare("fireshot") == 0) && static_objects[i]->_type.compare("nexus") == 0) {
+							// LOS SHOTS ATRAVIESAN EL NEXO
 						}
 						else if (mobile_objects[j]->_type.compare("tower_shot") == 0) {
 							// LOS TOWER_SHOT NO COLISIONAN CON NADA ESTATICO
@@ -1210,7 +1237,13 @@ void HelloWorld::readMapFromFile(const std::string nameOfFile) {
     // But cocos2d Location Y-axis is Bottom(0) to Top(max)
 	//CCLOG("This is a madafacking number: %d", 23);
 
-	Color3B* rock1 = new Color3B(0, 0, 0);
+	Color3B* rock = new Color3B(0, 0, 0);
+	Color3B* rock2 = new Color3B(50, 50, 50);
+	Color3B* rock3 = new Color3B(100, 100, 100);
+	Color3B* rock4 = new Color3B(150, 150, 150);
+	Color3B* palmTree = new Color3B(0, 255, 0);
+	Color3B* pilar = new Color3B(255, 255, 0);
+	Color3B* pilar2 = new Color3B(255, 200, 0);
 
     for(int i=0; i<img->getWidth(); i++)
     {
@@ -1224,16 +1257,88 @@ void HelloWorld::readMapFromFile(const std::string nameOfFile) {
             unsigned char b = *(pixel + 2) ;
             unsigned char a = *(pixel + 3);
 			
-			if (r == rock1->r && g == rock1->g && b == rock1->b) {
+			if (r == rock->r && g == rock->g && b == rock->b) {
 				// ES UN PIXEL NIGGA
 				float aux_w = float(i)/float(img->getWidth());
 				float aux_h = 1 -(float(j)/float(img->getHeight()));
 
-				CCLOG("This is a madafacking number: %f", aux_w);
-				CCLOG("This is a madafacking number: %f", aux_h);
+				//CCLOG("This is a madafacking number: %f", aux_w);
+				//CCLOG("This is a madafacking number: %f", aux_h);
 
 				Atrezzo* a;
 				a = new Atrezzo(floorSize, Point( (aux_w*float(floorSize))-floorSize/2, (aux_h*float(floorSize))-floorSize/2), "rock");
+				static_objects [num_static_objects] = a;
+				num_static_objects++;
+				a->_sprite->setCameraMask(2);
+				this->addChild(a->_sprite, 1);
+			}
+			else if (r == rock2->r && g == rock2->g && b == rock2->b) {
+
+				float aux_w = float(i)/float(img->getWidth());
+				float aux_h = 1 -(float(j)/float(img->getHeight()));
+
+				Atrezzo* a;
+				a = new Atrezzo(floorSize, Point( (aux_w*float(floorSize))-floorSize/2, (aux_h*float(floorSize))-floorSize/2), "rock2");
+				static_objects [num_static_objects] = a;
+				num_static_objects++;
+				a->_sprite->setCameraMask(2);
+				this->addChild(a->_sprite, 1);
+			}
+			else if (r == rock3->r && g == rock3->g && b == rock3->b) {
+
+				float aux_w = float(i)/float(img->getWidth());
+				float aux_h = 1 -(float(j)/float(img->getHeight()));
+
+				Atrezzo* a;
+				a = new Atrezzo(floorSize, Point( (aux_w*float(floorSize))-floorSize/2, (aux_h*float(floorSize))-floorSize/2), "rock3");
+				static_objects [num_static_objects] = a;
+				num_static_objects++;
+				a->_sprite->setCameraMask(2);
+				this->addChild(a->_sprite, 1);
+			}
+			else if (r == rock4->r && g == rock4->g && b == rock4->b) {
+
+				float aux_w = float(i)/float(img->getWidth());
+				float aux_h = 1 -(float(j)/float(img->getHeight()));
+
+				Atrezzo* a;
+				a = new Atrezzo(floorSize, Point( (aux_w*float(floorSize))-floorSize/2, (aux_h*float(floorSize))-floorSize/2), "rock4");
+				static_objects [num_static_objects] = a;
+				num_static_objects++;
+				a->_sprite->setCameraMask(2);
+				this->addChild(a->_sprite, 1);
+			}
+			else if (r == palmTree->r && g == palmTree->g && b == palmTree->b) {
+
+				float aux_w = float(i)/float(img->getWidth());
+				float aux_h = 1 -(float(j)/float(img->getHeight()));
+
+				Atrezzo* a;
+				a = new Atrezzo(floorSize, Point( (aux_w*float(floorSize))-floorSize/2, (aux_h*float(floorSize))-floorSize/2), "palmTree");
+				static_objects [num_static_objects] = a;
+				num_static_objects++;
+				a->_sprite->setCameraMask(2);
+				this->addChild(a->_sprite, 1);
+			}
+			else if (r == pilar->r && g == pilar->g && b == pilar->b) {
+
+				float aux_w = float(i)/float(img->getWidth());
+				float aux_h = 1 -(float(j)/float(img->getHeight()));
+
+				Atrezzo* a;
+				a = new Atrezzo(floorSize, Point( (aux_w*float(floorSize))-floorSize/2, (aux_h*float(floorSize))-floorSize/2), "pilar");
+				static_objects [num_static_objects] = a;
+				num_static_objects++;
+				a->_sprite->setCameraMask(2);
+				this->addChild(a->_sprite, 1);
+			}
+			else if (r == pilar2->r && g == pilar2->g && b == pilar2->b) {
+
+				float aux_w = float(i)/float(img->getWidth());
+				float aux_h = 1 -(float(j)/float(img->getHeight()));
+
+				Atrezzo* a;
+				a = new Atrezzo(floorSize, Point( (aux_w*float(floorSize))-floorSize/2, (aux_h*float(floorSize))-floorSize/2), "pilar2");
 				static_objects [num_static_objects] = a;
 				num_static_objects++;
 				a->_sprite->setCameraMask(2);

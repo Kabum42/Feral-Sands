@@ -34,6 +34,23 @@ WeaponShot::WeaponShot(int floorSize2, Vec3 start, Vec3 aim)
 		float* data = static_cast<float*>(event->getUserData());
 		update(data[0]);
 	});
+
+	_eventDispatcher->addCustomEventListener("checkVisible", [=](EventCustom* event) {
+		if (_active) {
+
+			Point* data = static_cast<Point*>(event->getUserData());
+			Point* point_sprite = new Point(_sprite->getPositionX(), _sprite->getPositionY());
+			bool distance_bool = false;
+			if ((data->x - point_sprite->x) < (350*(floorSize/2048)) && (data->x - point_sprite->x) > -(350*(floorSize/2048)) &&
+				(data->y - point_sprite->y) < (120*(floorSize/2048)) && (data->y - point_sprite->y) > -(350*(floorSize/2048))) { distance_bool = true; }
+			if (distance_bool && !_sprite->isVisible()) {
+				_sprite->setVisible(true);
+			}
+			else if (!distance_bool && _sprite->isVisible()) {
+				_sprite->setVisible(false);
+			}
+		}
+	});
 }
 
 WeaponShot::~WeaponShot(void/*WeaponShot _object*/)
@@ -57,6 +74,7 @@ void WeaponShot::update(float dt)
 
 		if (_time >= _timeLimit) {
 			
+			_active = false;
 			float* data = new float[1];
 			data[0] = _num_in_array;
 			EventCustom event("remove_mobile");

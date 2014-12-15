@@ -16,7 +16,7 @@ Nexus::Nexus(int floorSize2, Point initial_point_2) {
 
 	initial_point_nexus = initial_point_2;
 
-	scale_nexus = 20*(floorSize/2048);
+	scale_nexus = 80*(floorSize/2048);
 
 	// ESTE RADIO ES PERFECTO, NO TOCAR
 	_radius = scale_nexus*1;
@@ -28,6 +28,8 @@ Nexus::Nexus(int floorSize2, Point initial_point_2) {
 	_sprite->setRotation3D(Vec3(90, 0, 270));
 	_sprite->setScale(scale_nexus);
 	_sprite->setColor(Color3B(0, 0, 200));
+	GLubyte ubyteComponent = static_cast<GLubyte>(0.4f * 255.f); 
+	_sprite->setOpacity(ubyteComponent);
 
 	
 	_eventDispatcher->addCustomEventListener("EnterFrame", [=](EventCustom* event) {
@@ -42,7 +44,7 @@ Nexus::Nexus(int floorSize2, Point initial_point_2) {
 			Point* point_sprite = new Point(_sprite->getPositionX(), _sprite->getPositionY());
 			bool distance_bool = false;
 			if ((data->x - point_sprite->x) < (350*(floorSize/2048)) && (data->x - point_sprite->x) > -(350*(floorSize/2048)) &&
-				(data->y - point_sprite->y) < (120*(floorSize/2048)) && (data->y - point_sprite->y) > -(350*(floorSize/2048))) { distance_bool = true; }
+				(data->y - point_sprite->y) < (200*(floorSize/2048)) && (data->y - point_sprite->y) > -(350*(floorSize/2048))) { distance_bool = true; }
 			if (distance_bool && !_sprite->isVisible()) {
 				_sprite->setVisible(true);
 			}
