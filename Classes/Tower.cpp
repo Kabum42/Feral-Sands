@@ -47,6 +47,19 @@ Tower::Tower(int floorSize2, String _subtype2, Point initial_point_2) {
 		_sprite->setRotation3D(Vec3(90, 0, 270));
 		_sprite->setScale(scale_tower);
 	}
+	else if (_subtype.compare("monster") == 0) {
+		
+		scale_tower = 30*(floorSize/2048);
+
+		_radius = scale_tower*0.5;
+
+		position_z_tower = 1;
+
+		_sprite = Sprite3D::create("Floor.obj", "monster.png");
+		_sprite->setPosition3D(Vec3(initial_point_tower.x, initial_point_tower.y, position_z_tower));
+		_sprite->setRotation3D(Vec3(90, 0, 270));
+		_sprite->setScale(scale_tower);
+	}
 
 	
 	_eventDispatcher->addCustomEventListener("EnterFrame", [=](EventCustom* event) {

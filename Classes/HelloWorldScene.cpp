@@ -241,6 +241,13 @@ bool HelloWorld::init()
 	green_slow->setColor(ccc3(0, 200, 0));
 	green_slow->setVisible(false);
 	this->addChild(green_slow, 0);
+
+	green_monster = Sprite3D::create("Floor.obj", "monster.png");
+	green_monster->setScale(30*(floorSize/2048));
+	green_monster->setCameraMask(2);
+	green_monster->setColor(ccc3(0, 200, 0));
+	green_monster->setVisible(false);
+	this->addChild(green_monster, 0);
 	
 	// ESTO NO FUNCIONA, TENGO QUE FABRICARME MI PROPIA CLASE PARA CREAR BEZIERS QUADRATICAS, USANDO LA FUNCION AQUELLA GUAY
 	// SERA UNA CLASE SIMPLE QUE SOLAMENTE TIENE 3 PARÁMETROS; PUNTO INICIAl, CONTROl POINT y PUNTO FINAL
@@ -465,6 +472,22 @@ void HelloWorld::update(float dt)
 
 					}
 					else if (green_monster->isVisible()) {
+
+						if (green_monster->getColor().r == 200) {
+
+						}
+						else if (green_monster->getColor().g == 200) {
+
+							Point p = Point(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + (rightThumbY/500)*(floorSize/2048));
+
+							Tower* t = new Tower(floorSize, "monster", p);
+							t->_sprite->setRotation3D(boss->_sprite->getRotation3D());
+							static_objects[num_static_objects] = t;
+							num_static_objects++;
+							t->_sprite->setCameraMask(2);
+							this->addChild(t->_sprite, 1);
+
+						}
 
 					}
 
@@ -710,8 +733,12 @@ void HelloWorld::update(float dt)
 						green_tower->setVisible(false);
 						green_slow->setVisible(true);
 					}
-					else {
+					else if (menuTurrets && green_slow->isVisible()) {
 						green_slow->setVisible(false);
+						green_monster->setVisible(true);
+					}
+					else {
+						green_monster->setVisible(false);
 						menuTurrets = false;
 					}
 
@@ -789,9 +816,13 @@ void HelloWorld::update(float dt)
 		green_tower->setRotation3D(boss->_sprite->getRotation3D());
 		green_tower->setColor(ccc3(0, 200, 0));
 
-		green_slow->setPosition3D(Vec3(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + + (rightThumbY/500)*(floorSize/2048), 1));
+		green_slow->setPosition3D(Vec3(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + + (rightThumbY/500)*(floorSize/2048), 2));
 		green_slow->setRotation3D(boss->_sprite->getRotation3D());
 		green_slow->setColor(ccc3(0, 200, 0));
+
+		green_monster->setPosition3D(Vec3(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + + (rightThumbY/500)*(floorSize/2048), 2));
+		green_monster->setRotation3D(boss->_sprite->getRotation3D());
+		green_monster->setColor(ccc3(0, 200, 0));
 
 		// SE COMPRUEBA QUE LA TORRE NO ESTÁ TOCANDO OTRO OBJETO ESTÁTICO
 		for (int i = 0; i < num_static_objects; i++) {
@@ -809,6 +840,14 @@ void HelloWorld::update(float dt)
 			if (pow(static_objects[i]->_sprite->getPositionX() - green_slow->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() -green_slow->getPositionY(), 2) < pow(total_radius, 2)) {
 
 				green_slow->setColor(ccc3(200, 0, 0));
+
+			}
+
+			total_radius = static_objects[i]->_radius + 20*(floorSize/2048);
+
+			if (pow(static_objects[i]->_sprite->getPositionX() - green_monster->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() -green_monster->getPositionY(), 2) < pow(total_radius, 2)) {
+
+				green_monster->setColor(ccc3(200, 0, 0));
 
 			}
 
@@ -1036,6 +1075,9 @@ void HelloWorld::update(float dt)
 							Tower* t = (Tower*) static_objects[i];
 
 							if (t->_subtype.compare("slow") == 0) {
+
+							}
+							else if (t->_subtype.compare("monster") == 0) {
 
 							}
 							else {
