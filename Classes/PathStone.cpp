@@ -68,7 +68,22 @@ PathStone::PathStone(int floorSize2, int number_tiles_2, QuadBezier* bezier_2) {
 
 		rotateToPoint(tiles[i], invisible_points[invisible_point_similar]);
 
+		/*
+		// VARIACIONES
+
+		// VARIACION DE TAMAÑO
+		int size_variation = 20;
+		int aux_scale = tiles[i]->getScale()*float((100 - size_variation) + rand() % (size_variation*2))/100;
+		tiles[i]->setScale(aux_scale);
+
+		// VARIACION DE ROTACION
+		int angle_variation = 10;
+		int aux_angle = tiles[i]->getRotation3D().z - angle_variation + rand()%(angle_variation*2);
+		tiles[i]->setRotation3D(Vec3(90, 0, aux_angle));
+		*/
+
 	}
+
 
 	_eventDispatcher->addCustomEventListener("EnterFrame", [=](EventCustom* event) {
 		float* data = static_cast<float*>(event->getUserData());
