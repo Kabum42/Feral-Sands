@@ -19,45 +19,56 @@ PathStone::PathStone(int floorSize2, int number_tiles_2, QuadBezier* bezier_2) {
 
 	for (int i = 0; i < number_tiles; i++) {
 
-			float t = (float)i/(float)number_tiles;
+		float t = (float)i/(float)number_tiles;
 
-			float aux_x = (float)bezier->initial_point.x*(float)pow((float)(1 - t), 2)
-				+ (float)bezier->control_point.x*2*(float)(1 - t)*t
-				+ (float)bezier->end_point.x*(float)pow(t, 2);
+		float aux_x = (float)bezier->initial_point.x*(float)pow((float)(1 - t), 2)
+			+ (float)bezier->control_point.x*2*(float)(1 - t)*t
+			+ (float)bezier->end_point.x*(float)pow(t, 2);
 
-			float aux_y = (float)bezier->initial_point.y*(float)pow((float)(1 - t), 2)
-				+ (float)bezier->control_point.y*2*(float)(1 - t)*t
-				+ (float)bezier->end_point.y*(float)pow(t, 2);
-		
-			Sprite3D* stone = Sprite3D::create("Floor.obj", "stone.png");
-			stone->setPosition3D(Vec3(aux_x, aux_y, 0));
-			stone->setRotation3D(Vec3(90, 0, 270));
-			stone->setScale(20*(floorSize/2048));
+		float aux_y = (float)bezier->initial_point.y*(float)pow((float)(1 - t), 2)
+			+ (float)bezier->control_point.y*2*(float)(1 - t)*t
+			+ (float)bezier->end_point.y*(float)pow(t, 2);
 
-			layer->addChild(stone, 0);
+		Sprite3D* stone = Sprite3D::create("Floor.obj", "stone.png");
+		stone->setPosition3D(Vec3(aux_x, aux_y, 0));
+		stone->setRotation3D(Vec3(90, 0, 270));
+		stone->setScale(20*(floorSize/2048));
 
-			tiles[i] = stone;
+		layer->addChild(stone, 0);
 
-		}
+		tiles[i] = stone;
+
+	}
 
 	layer->setCameraMask(2);
 
 	for (int i = 0; i < 200; i++) {
 
-			float t = (float)i/(float)200;
+		float t = (float)i/(float)200;
 
-			float aux_x = (float)bezier->initial_point.x*(float)pow((float)(1 - t), 2)
-				+ (float)bezier->control_point.x*2*(float)(1 - t)*t
-				+ (float)bezier->end_point.x*(float)pow(t, 2);
+		float aux_x = (float)bezier->initial_point.x*(float)pow((float)(1 - t), 2)
+			+ (float)bezier->control_point.x*2*(float)(1 - t)*t
+			+ (float)bezier->end_point.x*(float)pow(t, 2);
 
-			float aux_y = (float)bezier->initial_point.y*(float)pow((float)(1 - t), 2)
-				+ (float)bezier->control_point.y*2*(float)(1 - t)*t
-				+ (float)bezier->end_point.y*(float)pow(t, 2);
+		float aux_y = (float)bezier->initial_point.y*(float)pow((float)(1 - t), 2)
+			+ (float)bezier->control_point.y*2*(float)(1 - t)*t
+			+ (float)bezier->end_point.y*(float)pow(t, 2);
 		
-			Point p = Point(aux_x, aux_y);
-			invisible_points[i] = p;
+		Point p = Point(aux_x, aux_y);
+		invisible_points[i] = p;
 
-		}
+	}
+
+	// ESTO SIRVE PARA ORIENTAR LOS TILES
+	for (int i = 0; i < number_tiles; i++) {
+
+		int invisible_point_similar = ceil((float(float(i)/float(number_tiles))*200)+1);
+		if (invisible_point_similar > 200) { invisible_point_similar = 200; }
+		//CCLOG("This is a madafacking number: %d", invisible_point_similar);
+
+		rotateToPoint(tiles[i], invisible_points[invisible_point_similar]);
+
+	}
 
 	_eventDispatcher->addCustomEventListener("EnterFrame", [=](EventCustom* event) {
 		float* data = static_cast<float*>(event->getUserData());
@@ -113,4 +124,13 @@ void PathStone::setNextPath(PathStone* nextPath2) {
 
 PathStone::~PathStone(void)
 {
+}
+
+void PathStone::rotateToPoint(Sprite3D* s, Point p) {
+
+	float vec_x = p.x - s->getPositionX();
+	float vec_y = p.y - s->getPositionY();
+
+	s->setRotation3D(Vec3(90, 0, -90 - atan2(vec_y, vec_x)*360/(2*M_PI)));
+
 }
