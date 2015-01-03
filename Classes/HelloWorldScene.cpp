@@ -32,8 +32,9 @@ bool pressed_LEFT = false;
 bool pressed_DOWN = false;
 bool pressed_RIGHT = false;
 
-float mouse_X = 0;
-float mouse_Y = 0;
+bool pressed_SPACE = false;
+
+Vec2 mouse_position = Vec2(0, 0);
 bool mouse_clicked = false;
 
 DWORD dwResult;
@@ -169,6 +170,17 @@ bool HelloWorld::init()
 	keyboardListener->onKeyPressed = CC_CALLBACK_2(HelloWorld::keyPressed, this);
 	keyboardListener->onKeyReleased = CC_CALLBACK_2(HelloWorld::keyReleased, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(keyboardListener, this);
+
+	auto mouseListener = EventListenerMouse::create();
+    mouseListener->onMouseMove = [=](Event* event){
+        auto mouse = (EventMouse*)event;
+		mouse_position = Vec2(mouse->getCursorX(), mouse->getCursorY());
+		CCLOG("LOL %f", mouse->getCursorX());
+    };
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
+
+	
+	
 
 	_eventDispatcher->addCustomEventListener("object_collision", [=](EventCustom* event){
 		float* elements = static_cast<float*>(event->getUserData());
@@ -829,9 +841,17 @@ void HelloWorld::update(float dt)
 				boss->_sprite->setPosition3D(boss->_sprite->getPosition3D() + Vec3(virtual_vec.x*32767*dt*boss->speed / 70, -virtual_vec.y*32767*dt*boss->speed / 70, 0));
 		}
 
+		Vec2 virtual_vec_mouse = (mouse_position - Vec2(960/2, -640/2));
+		CCLOG("X : %f", virtual_vec_mouse.x);
+		CCLOG("Y : %f", virtual_vec_mouse.y);
+		virtual_vec_mouse.normalize();
+
+		boss->_sprite->setRotation3D(Vec3(90, 0, -90 - atan2(virtual_vec_mouse.y*32767, virtual_vec_mouse.x*32767) * 360 / (2 * M_PI)));
+
+
 	}
 
-	// Irrelevant if controlles is connected
+	// Irrelevant if controller is connected
 
 	if (!paused) {
 
@@ -1458,6 +1478,9 @@ void HelloWorld::keyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Ev
 	else if (keyCode == EventKeyboard::KeyCode::KEY_RIGHT_ARROW) {
 		pressed_RIGHT = true;
 	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_SPACE) {
+		pressed_SPACE = true;
+	}
 
 }
 
@@ -1489,6 +1512,9 @@ void HelloWorld::keyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
 	}
 	else if (keyCode == EventKeyboard::KeyCode::KEY_RIGHT_ARROW) {
 		pressed_RIGHT = false;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_SPACE) {
+		pressed_SPACE = false;
 	}
 
 }

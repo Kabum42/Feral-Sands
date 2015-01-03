@@ -49,7 +49,6 @@ public:
 	void HelloWorld::readMapFromFile(const std::string nameOfFile);
 
 	void HelloWorld::keyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event);
-
 	void HelloWorld::keyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event);
 
     
