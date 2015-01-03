@@ -5,3 +5,10 @@ proj.linux/
 proj.win32/
 proj.wp8-xaml/
 .cocos-project.json
+build/
+cmake/
+cocos/
+extensions/
+external/
+docs/
+.gitignore

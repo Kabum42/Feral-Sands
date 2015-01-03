@@ -22,6 +22,20 @@ USING_NS_CC;
 
 #define INPUT_DEADZONE  ( 0.24f * FLOAT(0x7FFF) )  // Default to 24% of the +/- 32767 range.   This is a reasonable default value but can be altered if needed.
 
+bool pressed_W = false;
+bool pressed_A = false;
+bool pressed_S = false;
+bool pressed_D = false;
+
+bool pressed_UP = false;
+bool pressed_LEFT = false;
+bool pressed_DOWN = false;
+bool pressed_RIGHT = false;
+
+float mouse_X = 0;
+float mouse_Y = 0;
+bool mouse_clicked = false;
+
 DWORD dwResult;
 float data [1] = { };
 
@@ -151,7 +165,10 @@ bool HelloWorld::init()
     this->addChild(label, 1);
 
 
-	
+	auto keyboardListener = EventListenerKeyboard::create();
+	keyboardListener->onKeyPressed = CC_CALLBACK_2(HelloWorld::keyPressed, this);
+	keyboardListener->onKeyReleased = CC_CALLBACK_2(HelloWorld::keyReleased, this);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(keyboardListener, this);
 
 	_eventDispatcher->addCustomEventListener("object_collision", [=](EventCustom* event){
 		float* elements = static_cast<float*>(event->getUserData());
@@ -342,7 +359,7 @@ bool HelloWorld::init()
 
 	//SET BACKGROUND MUSIC
 	// La background music al usarse junto a efectos de sonido da lagazos del copón
-	//CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("sandstorm.wav", true);
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("sandstorm.wav", true);
 
 	this->scheduleUpdate();
 
@@ -791,6 +808,27 @@ void HelloWorld::update(float dt)
 	else
 	{
 		// Controller is not connected 
+
+		Vec2 virtual_vec = Vec2(0, 0);
+
+		if (pressed_W || pressed_UP) {
+			virtual_vec.y -= 1;
+		}
+		if (pressed_S || pressed_DOWN) {
+			virtual_vec.y += 1;
+		}
+		if (pressed_A || pressed_LEFT) {
+			virtual_vec.x -= 1;
+		}
+		if (pressed_D || pressed_RIGHT) {
+			virtual_vec.x += 1;
+		}
+		virtual_vec.normalize();
+
+		if (boss->dashing == 0) {
+				boss->_sprite->setPosition3D(boss->_sprite->getPosition3D() + Vec3(virtual_vec.x*32767*dt*boss->speed / 70, -virtual_vec.y*32767*dt*boss->speed / 70, 0));
+		}
+
 	}
 
 	// Irrelevant if controlles is connected
@@ -1392,6 +1430,69 @@ void HelloWorld::readMapFromFile(const std::string nameOfFile) {
     }
 
 }
+
+void HelloWorld::keyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
+{
+	if (keyCode == EventKeyboard::KeyCode::KEY_W) { 
+		//CCLOG("W key was pressed"); 
+		pressed_W = true;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_A) {
+		pressed_A = true;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_S) {
+		pressed_S = true;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_D) {
+		pressed_D = true;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_UP_ARROW) {
+		pressed_UP = true;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_LEFT_ARROW) {
+		pressed_LEFT = true;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_DOWN_ARROW) {
+		pressed_DOWN = true;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_RIGHT_ARROW) {
+		pressed_RIGHT = true;
+	}
+
+}
+
+
+void HelloWorld::keyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
+{
+
+	if (keyCode == EventKeyboard::KeyCode::KEY_W) { 
+		//CCLOG("W key was released"); 
+		pressed_W = false;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_A) {
+		pressed_A = false;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_S) {
+		pressed_S = false;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_D) {
+		pressed_D = false;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_UP_ARROW) {
+		pressed_UP = false;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_LEFT_ARROW) {
+		pressed_LEFT = false;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_DOWN_ARROW) {
+		pressed_DOWN = false;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_RIGHT_ARROW) {
+		pressed_RIGHT = false;
+	}
+
+}
+
 
 void HelloWorld::menuCloseCallback(Ref* pSender)
 {
