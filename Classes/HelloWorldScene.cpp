@@ -33,6 +33,7 @@ bool pressed_DOWN = false;
 bool pressed_RIGHT = false;
 
 bool pressed_SPACE = false;
+bool pressed_SPACE_PUSHED = false;
 
 Vec2 mouse_position = Vec2(0, 0);
 bool mouse_clicked = false;
@@ -175,7 +176,6 @@ bool HelloWorld::init()
     mouseListener->onMouseMove = [=](Event* event){
         auto mouse = (EventMouse*)event;
 		mouse_position = Vec2(mouse->getCursorX(), mouse->getCursorY());
-		CCLOG("LOL %f", mouse->getCursorX());
     };
     _eventDispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
 
@@ -545,13 +545,6 @@ void HelloWorld::update(float dt)
 				//boss->_sprite->setPosition3D(Vec3(800 / 2 + (rand() % 2) - 1 * rand() % 1 * 800 / 2, 600 / 2 + (rand() % 2) - 1 * rand() % 1 * 600 / 2, 100));
 				boss->_sprite->setPosition3D(Vec3(0, 0, boss->_sprite->getPositionZ()));
 
-			float aux_distance_player = sqrt(pow(boss->_sprite->getPositionX(), 2) + pow(boss->_sprite->getPositionY(), 2));
-			float radius_mountains = 930;
-			if (aux_distance_player > radius_mountains*(floorSize/2048)) {
-				Vec2 distance_from_center = Vec2(boss->_sprite->getPositionX(), boss->_sprite->getPositionY());
-				distance_from_center.normalize();
-				boss->_sprite->setPosition3D(Vec3(distance_from_center.x*radius_mountains*(floorSize/2048), distance_from_center.y*radius_mountains*(floorSize/2048), boss->_sprite->getPositionZ()));
-			}
 
 			// CHANGE WEAPON
 			if (wButtons & XINPUT_GAMEPAD_Y){
@@ -837,17 +830,29 @@ void HelloWorld::update(float dt)
 		}
 		virtual_vec.normalize();
 
+		// CONTROLA EL MOVIMIENTO
 		if (boss->dashing == 0) {
 				boss->_sprite->setPosition3D(boss->_sprite->getPosition3D() + Vec3(virtual_vec.x*32767*dt*boss->speed / 70, -virtual_vec.y*32767*dt*boss->speed / 70, 0));
 		}
 
+		// CONTROLA EL DASHING
+		if (pressed_SPACE_PUSHED && boss->dashing == 0 && (virtual_vec.x != 0 || virtual_vec.y != 0)) {
+
+			Vec2 v = Vec2(virtual_vec.x, -virtual_vec.y);
+			v.normalize();
+			boss->dashingVector = v;
+			boss->dashing = 0.5;
+
+		}
+
+		// CONTROLA LA ORIENTACION
 		Vec2 virtual_vec_mouse = (mouse_position - Vec2(960/2, -640/2));
-		CCLOG("X : %f", virtual_vec_mouse.x);
-		CCLOG("Y : %f", virtual_vec_mouse.y);
 		virtual_vec_mouse.normalize();
 
 		boss->_sprite->setRotation3D(Vec3(90, 0, -90 - atan2(virtual_vec_mouse.y*32767, virtual_vec_mouse.x*32767) * 360 / (2 * M_PI)));
 
+		// SI NO SE PONE EN FALSE SE QUEDARIA EN TRUE HASTA QUE SE SOLTASE LA TECLA
+		pressed_SPACE_PUSHED = false;
 
 	}
 
@@ -863,6 +868,15 @@ void HelloWorld::update(float dt)
 		}
 		if (coolDownAirNow < coolDownMax){
 			coolDownAirNow += dt;
+		}
+
+		// SE CONTROLA QUE NO SE SALGA DEL RADIO DE LAS MOUNTAINS
+		float aux_distance_player = sqrt(pow(boss->_sprite->getPositionX(), 2) + pow(boss->_sprite->getPositionY(), 2));
+		float radius_mountains = 930;
+		if (aux_distance_player > radius_mountains*(floorSize/2048)) {
+			Vec2 distance_from_center = Vec2(boss->_sprite->getPositionX(), boss->_sprite->getPositionY());
+			distance_from_center.normalize();
+			boss->_sprite->setPosition3D(Vec3(distance_from_center.x*radius_mountains*(floorSize/2048), distance_from_center.y*radius_mountains*(floorSize/2048), boss->_sprite->getPositionZ()));
 		}
 
 		// BOSS 2 ROTATED TOWARDS BOSS 1
@@ -1133,6 +1147,10 @@ void HelloWorld::update(float dt)
 							Tower* t = (Tower*) static_objects[i];
 
 							if (t->_subtype.compare("slow") == 0) {
+								
+								if (mobile_objects[j]->_type.compare("enemy") == 0) {
+									((Enemy*) mobile_objects[j])->slowed = true;
+								}
 
 							}
 							else if (t->_subtype.compare("monster") == 0) {
@@ -1480,6 +1498,7 @@ void HelloWorld::keyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Ev
 	}
 	else if (keyCode == EventKeyboard::KeyCode::KEY_SPACE) {
 		pressed_SPACE = true;
+		pressed_SPACE_PUSHED = true;
 	}
 
 }
@@ -1515,6 +1534,7 @@ void HelloWorld::keyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
 	}
 	else if (keyCode == EventKeyboard::KeyCode::KEY_SPACE) {
 		pressed_SPACE = false;
+		pressed_SPACE_PUSHED = false;
 	}
 
 }

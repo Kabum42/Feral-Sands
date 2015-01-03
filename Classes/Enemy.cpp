@@ -16,6 +16,7 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 	num_location = 0;
 	established_location = false;
 	player = player2;
+	slowed = false;
 	
 	_subtype = s_enemy2;
 	initial_point_enemy = initial_point_enemy2;
@@ -125,6 +126,8 @@ void Enemy::update(float dt)
 			followPath(dt);
 		}	
 
+		slowed = false;
+
 	}
 
 	
@@ -186,8 +189,11 @@ void Enemy::followPath(float dt) {
 
 		Vec2 v = Vec2(location.x - _sprite->getPositionX(), location.y - _sprite->getPositionY());
 		v.normalize();
-		_sprite->setPositionX(_sprite->getPositionX() +v.x*dt*_speed);
-		_sprite->setPositionY(_sprite->getPositionY() +v.y*dt*_speed);
+		
+		float aux_s = 1;
+		if (slowed) { aux_s = 0.5; }
+		_sprite->setPositionX(_sprite->getPositionX() +v.x*dt*_speed*aux_s);
+		_sprite->setPositionY(_sprite->getPositionY() +v.y*dt*_speed*aux_s);
 
 		// ESTA COMPROBACION LO QUE VERIFICA ES QUE EL SIGNO DE LA DIRECCION TOMADA AHORA Y LA QUE SE TOMARIA EN UNA
 		// PROXIMA ITERACION SON EL MISMO, SI NO LO SON, ES QUE RETROCEDERÍA, Y POR TANTO, HA LLEGADO AL PUNTO
@@ -218,8 +224,11 @@ void Enemy::followPlayer(float dt) {
 
 	Vec2 v = Vec2(location2.x - _sprite->getPositionX(), location2.y - _sprite->getPositionY());
 	v.normalize();
-	_sprite->setPositionX(_sprite->getPositionX() +v.x*dt*_speed);
-	_sprite->setPositionY(_sprite->getPositionY() +v.y*dt*_speed);
+
+	float aux_s = 1;
+	if (slowed) { aux_s = 0.5; }
+	_sprite->setPositionX(_sprite->getPositionX() +v.x*dt*_speed*aux_s);
+	_sprite->setPositionY(_sprite->getPositionY() +v.y*dt*_speed*aux_s);
 
 
 	position1 = position2;
