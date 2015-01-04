@@ -41,6 +41,8 @@ bool mouse_clicked = false;
 DWORD dwResult;
 float data [1] = { };
 
+Sprite* sinvida;
+
 Sprite* icon_dash;
 Sprite* icon_tower;
 Sprite* icon_slow;
@@ -192,6 +194,22 @@ bool HelloWorld::init()
 	marco->setPositionX(960 - 140/2 -10);
 	marco->setPositionY(640 -140/2 -10);
 	this->addChild(marco, 1);
+
+	auto vida = Sprite::create("icon_vida.png");
+	vida->setPositionX(200/2 +10);
+	vida->setPositionY(640 -60/2 -10);
+	this->addChild(vida, 1);
+
+	sinvida = Sprite::create("icon_sinvida.png");
+	sinvida->setScaleX(0);
+	sinvida->setPositionX(200/2 +(74*(1-sinvida->getScaleX())) +21 +10);
+	sinvida->setPositionY(640 -60/2 -10);
+	this->addChild(sinvida, 1);
+
+	auto cara = Sprite::create("icon_cara.png");
+	cara->setPositionX(200/2 +10);
+	cara->setPositionY(640 -60/2 -10);
+	this->addChild(cara, 1);
 
 
 	icon_dash = Sprite::create("icon_dash.png");
@@ -468,6 +486,9 @@ void HelloWorld::update(float dt)
 			sun->setDirection(Vec3(0, nomefio, -1));
 			sun->setColor(Color3B(255, 255 -(nomefio+1)*(128/2), 127 + (nomefio+1)*(128/2)));
 		}
+
+		sinvida->setScaleX((200 -boss->_health)/200);
+		sinvida->setPositionX(200/2 +(74*(1-sinvida->getScaleX())) +21 +10);
 
 	}
 	
