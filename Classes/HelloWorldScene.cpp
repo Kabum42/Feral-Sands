@@ -1155,6 +1155,14 @@ void HelloWorld::update(float dt)
 							}
 							else if (t->_subtype.compare("monster") == 0) {
 
+								if (t->_cooldown <= 0) {
+									if (mobile_objects[j]->_type.compare("enemy") == 0) {
+										((Enemy*)mobile_objects[j])->_health = 0;
+										CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+										t->_cooldown = 4;
+									}
+								}
+
 							}
 							else {
 								static_repulse(static_objects[i], mobile_objects[j]);
