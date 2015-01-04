@@ -38,7 +38,7 @@ Tower::Tower(int floorSize2, String _subtype2, Point initial_point_2) {
 		
 		scale_tower = 30*(floorSize/2048);
 
-		_radius = scale_tower*0.15;
+		_radius = scale_tower*0.4;
 
 		position_z_tower = 1;
 
@@ -52,7 +52,7 @@ Tower::Tower(int floorSize2, String _subtype2, Point initial_point_2) {
 		
 		scale_tower = 30*(floorSize/2048);
 
-		_radius = scale_tower*0.5;
+		_radius = scale_tower*0.15;
 
 		position_z_tower = 1;
 

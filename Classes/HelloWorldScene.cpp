@@ -41,6 +41,15 @@ bool mouse_clicked = false;
 DWORD dwResult;
 float data [1] = { };
 
+Sprite* icon_dash;
+Sprite* icon_tower;
+Sprite* icon_slow;
+Sprite* icon_monster;
+
+Sprite* gun_normal;
+Sprite* gun_fire;
+Sprite* gun_air;
+
 Nexus* nexus;
 Player* boss;
 Sprite3D* boss1;
@@ -85,8 +94,8 @@ bool menuTurrets = false;
 
 bool leftTriggerPushed = false;
 bool leftShoulderPushed = false;
+bool rightShoulderPushed = false;
 bool startPushed = false;
-bool changeWeapon = false;
 
 float rightThumbX = 0;
 float rightThumbY = 32767;
@@ -138,6 +147,8 @@ bool HelloWorld::init()
     //    you may modify it.
 
     // add a "close" icon to exit the progress. it's an autorelease object
+
+	/*
     auto closeItem = MenuItemImage::create(
                                            "CloseNormal.png",
                                            "CloseSelected.png",
@@ -146,10 +157,15 @@ bool HelloWorld::init()
 	closeItem->setPosition(Vec2(origin.x + visibleSize.width - closeItem->getContentSize().width/2 ,
                                 origin.y + closeItem->getContentSize().height/2));
 
+	*/
+
     // create menu, it's an autorelease object
+
+	/*
     auto menu = Menu::create(closeItem, NULL);
     menu->setPosition(Vec2::ZERO);
     this->addChild(menu, 1);
+	*/
 
     /////////////////////////////
     // 3. add your codes below...
@@ -165,6 +181,61 @@ bool HelloWorld::init()
 
     // add the label as a child to this layer
     this->addChild(label, 1);
+
+	auto minimapa = Sprite::create("sand.png");
+	minimapa->setScale(0.0625); // ESTO ES 1/16, pasando de 2048 pixeles a 128
+	minimapa->setPositionX(960 - 128/2 -6 -10);
+	minimapa->setPositionY(640 -128/2 -6 -10);
+	this->addChild(minimapa, 1);
+
+	auto marco = Sprite::create("marco_minimapa.png");
+	marco->setPositionX(960 - 140/2 -10);
+	marco->setPositionY(640 -140/2 -10);
+	this->addChild(marco, 1);
+
+
+	icon_dash = Sprite::create("icon_dash.png");
+	icon_dash->setPositionX(140/2 +10);
+	icon_dash->setPositionY(140/2 +10);
+	icon_dash->setVisible(true);
+	this->addChild(icon_dash, 1);
+
+	icon_tower = Sprite::create("icon_tower.png");
+	icon_tower->setPositionX(140/2 +10);
+	icon_tower->setPositionY(140/2 +10);
+	icon_tower->setVisible(false);
+	this->addChild(icon_tower, 1);
+
+	icon_slow = Sprite::create("icon_slow.png");
+	icon_slow->setPositionX(140/2 +10);
+	icon_slow->setPositionY(140/2 +10);
+	icon_slow->setVisible(false);
+	this->addChild(icon_slow, 1);
+
+	icon_monster = Sprite::create("icon_monster.png");
+	icon_monster->setPositionX(140/2 +10);
+	icon_monster->setPositionY(140/2 +10);
+	icon_monster->setVisible(false);
+	this->addChild(icon_monster, 1);
+
+
+	gun_normal = Sprite::create("gun_normal.png");
+	gun_normal->setPositionX(960 - 152/2 -10);
+	gun_normal->setPositionY(94/2 +10);
+	gun_normal->setVisible(true);
+	this->addChild(gun_normal, 1);
+
+	gun_fire = Sprite::create("gun_fire.png");
+	gun_fire->setPositionX(960 - 152/2 -10);
+	gun_fire->setPositionY(94/2 +10);
+	gun_fire->setVisible(false);
+	this->addChild(gun_fire, 1);
+
+	gun_air = Sprite::create("gun_air.png");
+	gun_air->setPositionX(960 - 152/2 -10);
+	gun_air->setPositionY(94/2 +10);
+	gun_air->setVisible(false);
+	this->addChild(gun_air, 1);
 
 
 	auto keyboardListener = EventListenerKeyboard::create();
@@ -547,16 +618,32 @@ void HelloWorld::update(float dt)
 
 
 			// CHANGE WEAPON
-			if (wButtons & XINPUT_GAMEPAD_Y){
-				if (!changeWeapon){
+			if (wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+				if (!rightShoulderPushed) {
 					boss->_weapon += 1;
 					if (boss->_weapon == 3) boss->_weapon = 0;
-					changeWeapon = true;
+
+					if (boss->_weapon == 0) {
+						gun_normal->setVisible(true);
+						gun_fire->setVisible(false);
+						gun_air->setVisible(false);
+					}
+					else if (boss->_weapon == 1) {
+						gun_normal->setVisible(false);
+						gun_fire->setVisible(true);
+						gun_air->setVisible(false);
+					}
+					else if (boss->_weapon == 2) {
+						gun_normal->setVisible(false);
+						gun_fire->setVisible(false);
+						gun_air->setVisible(true);
+					}
 				}
+				rightShoulderPushed = true;
 			}
-			if (changeWeapon)
-				if (!(wButtons & XINPUT_GAMEPAD_Y))
-					changeWeapon = false;
+			else {
+				rightShoulderPushed = false;
+			}
 
 
 			// ROTACION DE PLAYER
@@ -566,7 +653,7 @@ void HelloWorld::update(float dt)
 			boss->_sprite->setRotation3D(Vec3(90, 0, -90 - atan2(rightThumbY, rightThumbX) * 360 / (2 * M_PI)));
 
 			// DISPARO
-			if (state.Gamepad.bRightTrigger != 0){
+			if (state.Gamepad.bRightTrigger != 0) {
 				if (boss->_weapon == 0){ //NORMAL
 					if (coolDownNow >= coolDownMax) {
 						coolDownNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
@@ -738,8 +825,10 @@ void HelloWorld::update(float dt)
 			}
 
 			// ROTAR CAMARA
+			/*
 			if (wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) cameraAngle += 0.1;
 			if (wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) cameraAngle -= 0.1;
+			*/
 			camera->setRotation3D(Vec3(cameraAngle, 0, 0));
 
 			// MENU DE TORRETAS
@@ -750,18 +839,38 @@ void HelloWorld::update(float dt)
 					if (!menuTurrets) {
 						menuTurrets = true;
 						green_tower->setVisible(true);
+
+						icon_dash->setVisible(false);
+						icon_tower->setVisible(true);
+						icon_slow->setVisible(false);
+						icon_monster->setVisible(false);
 					}
 					else if (menuTurrets && green_tower->isVisible()) {
 						green_tower->setVisible(false);
 						green_slow->setVisible(true);
+
+						icon_dash->setVisible(false);
+						icon_tower->setVisible(false);
+						icon_slow->setVisible(true);
+						icon_monster->setVisible(false);
 					}
 					else if (menuTurrets && green_slow->isVisible()) {
 						green_slow->setVisible(false);
 						green_monster->setVisible(true);
+
+						icon_dash->setVisible(false);
+						icon_tower->setVisible(false);
+						icon_slow->setVisible(false);
+						icon_monster->setVisible(true);
 					}
 					else {
 						green_monster->setVisible(false);
 						menuTurrets = false;
+
+						icon_dash->setVisible(true);
+						icon_tower->setVisible(false);
+						icon_slow->setVisible(false);
+						icon_monster->setVisible(false);
 					}
 
 					/*

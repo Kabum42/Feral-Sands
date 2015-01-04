@@ -191,7 +191,7 @@ void Enemy::followPath(float dt) {
 		v.normalize();
 		
 		float aux_s = 1;
-		if (slowed) { aux_s = 0.5; }
+		if (slowed) { aux_s = 0.3; }
 		_sprite->setPositionX(_sprite->getPositionX() +v.x*dt*_speed*aux_s);
 		_sprite->setPositionY(_sprite->getPositionY() +v.y*dt*_speed*aux_s);
 
@@ -226,7 +226,7 @@ void Enemy::followPlayer(float dt) {
 	v.normalize();
 
 	float aux_s = 1;
-	if (slowed) { aux_s = 0.5; }
+	if (slowed) { aux_s = 0.3; }
 	_sprite->setPositionX(_sprite->getPositionX() +v.x*dt*_speed*aux_s);
 	_sprite->setPositionY(_sprite->getPositionY() +v.y*dt*_speed*aux_s);
 
