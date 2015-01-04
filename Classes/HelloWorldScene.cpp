@@ -41,6 +41,8 @@ bool mouse_clicked = false;
 DWORD dwResult;
 float data [1] = { };
 
+Sprite* player_arrow;
+
 Sprite* sinvida;
 
 Sprite* icon_dash;
@@ -63,6 +65,7 @@ Entity* static_objects [400] = { };
 int num_static_objects = 0;
 Entity* mobile_objects [200] = { };
 int num_mobile_objects = 0;
+Sprite* enemy_points [200] = { };
 
 PathStone* active_pathstones [10] = { };
 int num_active_pathstones = 0;
@@ -189,6 +192,16 @@ bool HelloWorld::init()
 	minimapa->setPositionX(960 - 128/2 -6 -10);
 	minimapa->setPositionY(640 -128/2 -6 -10);
 	this->addChild(minimapa, 1);
+
+	for (int aux_bla = 0; aux_bla < 200; aux_bla++) {
+		Sprite* aux_spr = Sprite::create("enemy_point.png");
+		this->addChild(aux_spr, 1);
+		aux_spr->setVisible(false);
+		enemy_points[aux_bla] = aux_spr;
+	}
+
+	player_arrow = Sprite::create("player_arrow.png");
+	this->addChild(player_arrow, 1);
 
 	auto marco = Sprite::create("marco_minimapa.png");
 	marco->setPositionX(960 - 140/2 -10);
@@ -460,7 +473,7 @@ bool HelloWorld::init()
 
 	//SET BACKGROUND MUSIC
 	// La background music al usarse junto a efectos de sonido da lagazos del copón
-	CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("sandstorm.wav", true);
+	//CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("sandstorm.wav", true);
 
 	this->scheduleUpdate();
 
@@ -489,6 +502,10 @@ void HelloWorld::update(float dt)
 
 		sinvida->setScaleX((200 -boss->_health)/200);
 		sinvida->setPositionX(200/2 +(74*(1-sinvida->getScaleX())) +21 +10);
+
+		player_arrow->setPositionX(960 -64 -16 +(boss->_sprite->getPositionX()/(floorSize/2))*(128/2));
+		player_arrow->setPositionY(640 -64 -16 +(boss->_sprite->getPositionY()/(floorSize/2))*(128/2));
+		player_arrow->setRotation(boss->_sprite->getRotation3D().z);
 
 	}
 	
@@ -1245,8 +1262,6 @@ void HelloWorld::update(float dt)
 				}
 			}
 		
-		
-		
 			// COLLISION DETECTION STATIC VS MOBILE OBJECTS
 			// VAN DESPUES QUE LA COLISION ENTRE MOVILES PORQUE LA COLISION ESTATICA SE TIENE QUE RESPETAR POR ENCIMA DE LA OTRA
 		
@@ -1256,6 +1271,7 @@ void HelloWorld::update(float dt)
 					float total_radius = static_objects[i]->_radius + mobile_objects[j]->_radius;
 
 					if (static_objects[i] != mobile_objects[j] && pow(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2) < pow(total_radius, 2)) {
+
 
 						if (mobile_objects[j]->_type.compare("enemy") == 0 && static_objects[i]->_type.compare("nexus") == 0) {
 
@@ -1359,6 +1375,20 @@ void HelloWorld::update(float dt)
 				}
 
 			}
+
+		// TODOS LOS PUNTOS ROJOS DEL MINIMAPA REPRESENTANDO ENEMIGOS SE RESETEAN
+		for (int aux_bla = 0; aux_bla < 200; aux_bla++) {
+			enemy_points[aux_bla]->setVisible(false);
+		}
+
+		// AQUI SE VUELVEN A PONER LOS PUNTOS ROJOS DE LOS ENEMIGOS
+		for (int j = 0; j < num_mobile_objects; j++) {
+			if (mobile_objects[j]->_type.compare("enemy") == 0) {
+				enemy_points[j]->setVisible(true);
+				enemy_points[j]->setPositionX(960 -64 -16 +(mobile_objects[j]->_sprite->getPositionX()/(floorSize/2))*(128/2));
+				enemy_points[j]->setPositionY(640 -64 -16 +(mobile_objects[j]->_sprite->getPositionY()/(floorSize/2))*(128/2));
+			}
+		}
 		
 		if (nexus->_life > 0 && dead_enemies == total_enemies) {
 
