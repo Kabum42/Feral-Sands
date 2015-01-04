@@ -41,8 +41,10 @@ bool mouse_clicked = false;
 DWORD dwResult;
 float data [1] = { };
 
+Sprite* minimapa;
 Sprite* player_arrow;
 
+Sprite* vida;
 Sprite* sinvida;
 
 Sprite* icon_dash;
@@ -187,10 +189,10 @@ bool HelloWorld::init()
     // add the label as a child to this layer
     this->addChild(label, 1);
 
-	auto minimapa = Sprite::create("sand.png");
+	minimapa = Sprite::create("sand.png");
 	minimapa->setScale(0.0625); // ESTO ES 1/16, pasando de 2048 pixeles a 128
-	minimapa->setPositionX(960 - 128/2 -6 -10);
-	minimapa->setPositionY(640 -128/2 -6 -10);
+	minimapa->setPositionX(960 -minimapa->getBoundingBox().size.width/2 -6 -10);
+	minimapa->setPositionY(640 -minimapa->getBoundingBox().size.height/2 -6 -10);
 	this->addChild(minimapa, 1);
 
 	for (int aux_bla = 0; aux_bla < 200; aux_bla++) {
@@ -204,67 +206,67 @@ bool HelloWorld::init()
 	this->addChild(player_arrow, 1);
 
 	auto marco = Sprite::create("marco_minimapa.png");
-	marco->setPositionX(960 - 140/2 -10);
-	marco->setPositionY(640 -140/2 -10);
+	marco->setPositionX(960 -marco->getBoundingBox().size.width/2 -10);
+	marco->setPositionY(640 -marco->getBoundingBox().size.height/2 -10);
 	this->addChild(marco, 1);
 
-	auto vida = Sprite::create("icon_vida.png");
-	vida->setPositionX(200/2 +10);
-	vida->setPositionY(640 -60/2 -10);
+	vida = Sprite::create("icon_vida.png");
+	vida->setPositionX(vida->getBoundingBox().size.width/2 +10);
+	vida->setPositionY(640 -vida->getBoundingBox().size.height/2 -10);
 	this->addChild(vida, 1);
 
 	sinvida = Sprite::create("icon_sinvida.png");
 	sinvida->setScaleX(0);
-	sinvida->setPositionX(200/2 +(74*(1-sinvida->getScaleX())) +21 +10);
-	sinvida->setPositionY(640 -60/2 -10);
+	sinvida->setPositionX(vida->getBoundingBox().size.width/2 +(74*(1-sinvida->getScaleX())) +21 +10);
+	sinvida->setPositionY(640 -vida->getBoundingBox().size.height/2 -10);
 	this->addChild(sinvida, 1);
 
 	auto cara = Sprite::create("icon_cara.png");
-	cara->setPositionX(200/2 +10);
-	cara->setPositionY(640 -60/2 -10);
+	cara->setPositionX(cara->getBoundingBox().size.width/2 +10);
+	cara->setPositionY(640 -cara->getBoundingBox().size.height/2 -10);
 	this->addChild(cara, 1);
 
 
 	icon_dash = Sprite::create("icon_dash.png");
-	icon_dash->setPositionX(140/2 +10);
-	icon_dash->setPositionY(140/2 +10);
+	icon_dash->setPositionX(icon_dash->getBoundingBox().size.width/2 +10);
+	icon_dash->setPositionY(icon_dash->getBoundingBox().size.height/2 +10);
 	icon_dash->setVisible(true);
 	this->addChild(icon_dash, 1);
 
 	icon_tower = Sprite::create("icon_tower.png");
-	icon_tower->setPositionX(140/2 +10);
-	icon_tower->setPositionY(140/2 +10);
+	icon_tower->setPositionX(icon_tower->getBoundingBox().size.width/2 +10);
+	icon_tower->setPositionY(icon_tower->getBoundingBox().size.height/2 +10);
 	icon_tower->setVisible(false);
 	this->addChild(icon_tower, 1);
 
 	icon_slow = Sprite::create("icon_slow.png");
-	icon_slow->setPositionX(140/2 +10);
-	icon_slow->setPositionY(140/2 +10);
+	icon_slow->setPositionX(icon_slow->getBoundingBox().size.width/2 +10);
+	icon_slow->setPositionY(icon_slow->getBoundingBox().size.height/2 +10);
 	icon_slow->setVisible(false);
 	this->addChild(icon_slow, 1);
 
 	icon_monster = Sprite::create("icon_monster.png");
-	icon_monster->setPositionX(140/2 +10);
-	icon_monster->setPositionY(140/2 +10);
+	icon_monster->setPositionX(icon_monster->getBoundingBox().size.width/2 +10);
+	icon_monster->setPositionY(icon_monster->getBoundingBox().size.height/2 +10);
 	icon_monster->setVisible(false);
 	this->addChild(icon_monster, 1);
 
 
 	gun_normal = Sprite::create("gun_normal.png");
-	gun_normal->setPositionX(960 - 152/2 -10);
-	gun_normal->setPositionY(94/2 +10);
+	gun_normal->setPositionX(960 -gun_normal->getBoundingBox().size.width/2 -10);
+	gun_normal->setPositionY(gun_normal->getBoundingBox().size.height/2 +10);
 	gun_normal->setVisible(true);
 	this->addChild(gun_normal, 1);
 
 	gun_fire = Sprite::create("gun_fire.png");
-	gun_fire->setPositionX(960 - 152/2 -10);
-	gun_fire->setPositionY(94/2 +10);
+	gun_fire->setPositionX(960 -gun_fire->getBoundingBox().size.width/2 -10);
+	gun_fire->setPositionY(gun_fire->getBoundingBox().size.height/2 +10);
 	gun_fire->setVisible(false);
 	this->addChild(gun_fire, 1);
 
 	gun_air = Sprite::create("gun_air.png");
-	gun_air->setPositionX(960 - 152/2 -10);
-	gun_air->setPositionY(94/2 +10);
+	gun_air->setPositionX(960 -gun_air->getBoundingBox().size.width/2 -10);
+	gun_air->setPositionY(gun_air->getBoundingBox().size.height/2 +10);
 	gun_air->setVisible(false);
 	this->addChild(gun_air, 1);
 
@@ -501,10 +503,10 @@ void HelloWorld::update(float dt)
 		}
 
 		sinvida->setScaleX((200 -boss->_health)/200);
-		sinvida->setPositionX(200/2 +(74*(1-sinvida->getScaleX())) +21 +10);
+		sinvida->setPositionX(vida->getBoundingBox().size.width/2 +(74*(1-sinvida->getScaleX())) +21 +10);
 
-		player_arrow->setPositionX(960 -64 -16 +(boss->_sprite->getPositionX()/(floorSize/2))*(128/2));
-		player_arrow->setPositionY(640 -64 -16 +(boss->_sprite->getPositionY()/(floorSize/2))*(128/2));
+		player_arrow->setPositionX(960 -minimapa->getBoundingBox().size.width/2 -16 +(boss->_sprite->getPositionX()/(floorSize/2))*(128/2));
+		player_arrow->setPositionY(640 -minimapa->getBoundingBox().size.height/2 -16 +(boss->_sprite->getPositionY()/(floorSize/2))*(128/2));
 		player_arrow->setRotation(boss->_sprite->getRotation3D().z);
 
 	}
@@ -1385,8 +1387,8 @@ void HelloWorld::update(float dt)
 		for (int j = 0; j < num_mobile_objects; j++) {
 			if (mobile_objects[j]->_type.compare("enemy") == 0) {
 				enemy_points[j]->setVisible(true);
-				enemy_points[j]->setPositionX(960 -64 -16 +(mobile_objects[j]->_sprite->getPositionX()/(floorSize/2))*(128/2));
-				enemy_points[j]->setPositionY(640 -64 -16 +(mobile_objects[j]->_sprite->getPositionY()/(floorSize/2))*(128/2));
+				enemy_points[j]->setPositionX(960 -minimapa->getBoundingBox().size.width/2 -16 +(mobile_objects[j]->_sprite->getPositionX()/(floorSize/2))*(128/2));
+				enemy_points[j]->setPositionY(640 -minimapa->getBoundingBox().size.height/2 -16 +(mobile_objects[j]->_sprite->getPositionY()/(floorSize/2))*(128/2));
 			}
 		}
 		
