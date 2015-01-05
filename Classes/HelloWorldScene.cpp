@@ -270,6 +270,26 @@ bool HelloWorld::init()
 	gun_air->setVisible(false);
 	this->addChild(gun_air, 1);
 
+	auto dialog_box = Sprite::create("dialog_box.png");
+	dialog_box->setPositionX(960/2);
+	dialog_box->setPositionY(dialog_box->getBoundingBox().size.height/2 +10);
+	this->addChild(dialog_box, 1);
+
+	CCAnimation * anim = CCAnimation::create();
+	anim->addSpriteFrameWithFileName("button_a_01.png");
+	anim->addSpriteFrameWithFileName("button_a_02.png");
+	anim->setLoops(-1); // for infinit loop animation
+    anim->setDelayPerUnit(0.3f);
+
+	//CCAnimate *theAnim = CCAnimate::actionWithDuration(1.8f,anim,true); 
+	// Duration, animation action and bool to return to frame 1 after finishing. 
+
+	auto button_a = Sprite::create("button_a_01.png");
+	button_a->setPositionX(960 -button_a->getBoundingBox().size.width/2 -42);
+	button_a->setPositionY(button_a->getBoundingBox().size.height/2 +15);
+	this->addChild(button_a, 1);
+	button_a->runAction(CCAnimate::create(anim));
+
 
 	auto keyboardListener = EventListenerKeyboard::create();
 	keyboardListener->onKeyPressed = CC_CALLBACK_2(HelloWorld::keyPressed, this);
