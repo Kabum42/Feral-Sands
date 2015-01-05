@@ -15,6 +15,7 @@
 #include "Wave.h"
 #include "Atrezzo.h"
 #include "QuadBezier.h"
+#include "Dialog.h"
 
 class HelloWorld : public cocos2d::Layer
 {
