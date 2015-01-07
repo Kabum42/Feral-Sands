@@ -9,11 +9,11 @@ class Dialog
 {
 
 public:
-	String _text;
+	std::string _text;
 	Dialog* _nextDialog;
 
 	Dialog(void);
-	Dialog(String text2);
+	Dialog(std::string text2);
 	~Dialog(void);
 
 };

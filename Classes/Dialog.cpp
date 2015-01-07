@@ -4,7 +4,7 @@ Dialog::Dialog(void) {
 
 }
 
-Dialog::Dialog(String text2) {
+Dialog::Dialog(std::string text2) {
 
 	_text = text2;
 	_nextDialog = NULL;

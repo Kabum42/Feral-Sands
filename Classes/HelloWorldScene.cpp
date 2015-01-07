@@ -1,12 +1,12 @@
-/*
+Ôªø/*
 TO DO:
 -Eventos para evitar tener ochenta arrays.
 -Pulsaciones de botones como eventos.
 -Boss como clase Character que hereda de Sprite3D.
 -Spawner como clase
--Crear funciones init para todos los elementos m·s importantes de la GameScreen(camera, layers, etc.)
+-Crear funciones init para todos los elementos m√°s importantes de la GameScreen(camera, layers, etc.)
 -Crear el physicsworld que contenga todos los elementos y compruebe sus colisiones.
--Meter dentro del Character todo lo que sea pulsaciÛn de botones.
+-Meter dentro del Character todo lo que sea pulsaci√≥n de botones.
 */
 
 #include "HelloWorldScene.h"
@@ -55,6 +55,7 @@ Sprite* button_a;
 Sprite* button_enter;
 
 Dialog* active_dialog = NULL;
+Label* dialog_label;
 
 Sprite* icon_dash;
 Sprite* icon_tower;
@@ -286,7 +287,21 @@ bool HelloWorld::init()
 	this->addChild(dialog_box, 1);
 	dialog_box->setVisible(false);
 
-	Dialog* dialog_1 = new Dialog("LOL");
+	//dialog_label = Label::createWithBMFont("Prueba", "fonts/konqa32.fnt");
+	dialog_label = Label::createWithTTF("Prueba","fonts/Volkoff.otf", 32);
+	dialog_label->setColor(Color3B(0, 0, 0));
+    dialog_label->setPosition(Vec2(visibleSize.width/2, dialog_box->getPositionY()));
+    this->addChild(dialog_label, 1);
+
+	Dialog* dialog_1 = new Dialog("Hi! Welcome to Feral Sands!");
+
+	Dialog* dialog_2 = new Dialog("You can move around with the left joystick");
+	dialog_1->_nextDialog = dialog_2;
+
+	Dialog* dialog_3 = new Dialog("or using WASD if you don't have a gamepad");
+	dialog_2->_nextDialog = dialog_3;
+
+
 	active_dialog = dialog_1;
 
 
@@ -429,7 +444,7 @@ bool HelloWorld::init()
 	this->addChild(green_monster, 0);
 	
 	// ESTO NO FUNCIONA, TENGO QUE FABRICARME MI PROPIA CLASE PARA CREAR BEZIERS QUADRATICAS, USANDO LA FUNCION AQUELLA GUAY
-	// SERA UNA CLASE SIMPLE QUE SOLAMENTE TIENE 3 PAR¡METROS; PUNTO INICIAl, CONTROl POINT y PUNTO FINAL
+	// SERA UNA CLASE SIMPLE QUE SOLAMENTE TIENE 3 PAR√ÅMETROS; PUNTO INICIAl, CONTROl POINT y PUNTO FINAL
 
 	/*
 	ccBezierConfig bezier;
@@ -520,7 +535,7 @@ bool HelloWorld::init()
 	//now the bezier config declaration
 
 	//SET BACKGROUND MUSIC
-	// La background music al usarse junto a efectos de sonido da lagazos del copÛn
+	// La background music al usarse junto a efectos de sonido da lagazos del cop√≥n
 	//CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("sandstorm.wav", true);
 
 	this->scheduleUpdate();
@@ -574,6 +589,10 @@ void HelloWorld::update(float dt)
 		if (active_dialog != NULL) { // HAY UN DIALOGO ACTIVO
 
 			dialog_box->setVisible(true);
+			if (dialog_label->getString() != active_dialog->_text) {
+				dialog_label->setString(active_dialog->_text);
+			}
+			dialog_label->setVisible(true);
 
 			if (dwResult == ERROR_SUCCESS) { // Controller is connected 
 
@@ -613,6 +632,7 @@ void HelloWorld::update(float dt)
 		else { // NO HAY NINGUN DIALOGO ACTIVO Y NO ESTA PAUSADO
 
 			dialog_box->setVisible(false);
+			dialog_label->setVisible(false);
 			button_a->setVisible(false);
 			button_enter->setVisible(false);
 
@@ -1059,8 +1079,8 @@ void HelloWorld::update(float dt)
 					// VIBRACION
 					/*
 					if (wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
-					// ESTA VIBRACI”N NO DEBERÕA EXPERIMENTARSE AL PULSAR EL BOT”N, LA DEBERÕA PROVOCAR LA PROPIA
-					// CLASE DE LA TORRETA, MIENTRAS SE EST¡ ALZANDO, ACOMPA—ADA DE SONIDO Y DE PARTÕCULAS DE POLVO
+					// ESTA VIBRACI√ìN NO DEBER√çA EXPERIMENTARSE AL PULSAR EL BOT√ìN, LA DEBER√çA PROVOCAR LA PROPIA
+					// CLASE DE LA TORRETA, MIENTRAS SE EST√Å ALZANDO, ACOMPA√ëADA DE SONIDO Y DE PART√çCULAS DE POLVO
 					vibration.wLeftMotorSpeed = 20000;
 					vibration.wRightMotorSpeed = 20000;
 					XInputSetState(0, &vibration);
@@ -1162,7 +1182,7 @@ void HelloWorld::update(float dt)
 				green_monster->setRotation3D(boss->_sprite->getRotation3D());
 				green_monster->setColor(ccc3(0, 200, 0));
 
-				// SE COMPRUEBA QUE LA TORRE NO EST¡ TOCANDO OTRO OBJETO EST¡TICO
+				// SE COMPRUEBA QUE LA TORRE NO EST√Å TOCANDO OTRO OBJETO EST√ÅTICO
 				for (int i = 0; i < num_static_objects; i++) {
 					// 60*1 es el radio de la futura torre
 					float total_radius = static_objects[i]->_radius + 12*(floorSize/2048);
@@ -1191,7 +1211,7 @@ void HelloWorld::update(float dt)
 
 				}
 
-				// SE COMPRUEBA QUE LA TORRE NO EST¡ TOCANDO NINGUNO DE LOS PUNTOS DE LA BEZIER DE UN CAMINO
+				// SE COMPRUEBA QUE LA TORRE NO EST√Å TOCANDO NINGUNO DE LOS PUNTOS DE LA BEZIER DE UN CAMINO
 				for (int i = 0; i < num_active_pathstones; i++) {
 
 					for (int j = 0; j < 200; j++) {
@@ -1314,7 +1334,7 @@ void HelloWorld::update(float dt)
 								}
 
 								else if (mobile_objects[i]->_type.compare("fireshot") == 0 || mobile_objects[j]->_type.compare("fireshot") == 0) {
-									// UNO DE LOS DOS ES UNA PARTÕCULA DE FUEGO
+									// UNO DE LOS DOS ES UNA PART√çCULA DE FUEGO
 									if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
 										// EL OTRO ES UN ENEMY
 										FireShot* bala;
@@ -1341,7 +1361,7 @@ void HelloWorld::update(float dt)
 									}
 								}
 								else if (mobile_objects[i]->_type.compare("airshot") == 0 || mobile_objects[j]->_type.compare("fireshot") == 0) {
-									// UNO DE LOS DOS ES UNA PARTÕCULA DE FUEGO
+									// UNO DE LOS DOS ES UNA PART√çCULA DE FUEGO
 									if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
 										// EL OTRO ES UN ENEMY
 										AirShot* bala;
