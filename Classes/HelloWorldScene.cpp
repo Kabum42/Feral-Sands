@@ -57,6 +57,8 @@ Sprite* button_enter;
 Dialog* active_dialog = NULL;
 Label* dialog_label;
 
+Label* top_label;
+
 Sprite* icon_dash;
 Sprite* icon_tower;
 Sprite* icon_slow;
@@ -191,14 +193,10 @@ bool HelloWorld::init()
     // add a label shows "Hello World"
     // create and initialize a label
     
-    auto label = LabelTTF::create("Die World", "Arial", 24);
-    
-    // position the label on the center of the screen
-    label->setPosition(Vec2(origin.x + visibleSize.width/2,
-                            origin.y + visibleSize.height - label->getContentSize().height));
-
-    // add the label as a child to this layer
-    this->addChild(label, 1);
+    top_label = Label::create("Die World", "Arial", 24);
+    top_label->setPosition(Vec2(origin.x + visibleSize.width/2, origin.y + visibleSize.height - top_label->getContentSize().height));
+    this->addChild(top_label, 1);
+	top_label->setVisible(false);
 
 	minimapa = Sprite::create("sand.png");
 	minimapa->setScale(0.0625); // ESTO ES 1/16, pasando de 2048 pixeles a 128
@@ -480,8 +478,9 @@ bool HelloWorld::init()
 
 	Wave* w = new Wave(floorSize, path, boss);
 	w->addEnemy("grunt", 1.5);
-	w->addEnemy("grunt", 1);
-	w->addEnemy("grunt", 2);
+	w->addEnemy("dog", 1);
+	w->addEnemy("tank", 1);
+	w->addEnemy("ghost", 1);
 	w->addEnemy("grunt", 20);
 	w->addEnemy("grunt", 2);
 	w->addEnemy("grunt", 2);
@@ -630,6 +629,10 @@ void HelloWorld::update(float dt)
 
 		}
 		else { // NO HAY NINGUN DIALOGO ACTIVO Y NO ESTA PAUSADO
+
+			top_label->setVisible(true);
+			std::string s_aux = std::to_string(nexus->_life) + "/5";
+			top_label->setString(s_aux);
 
 			dialog_box->setVisible(false);
 			dialog_label->setVisible(false);

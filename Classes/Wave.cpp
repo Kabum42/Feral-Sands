@@ -13,7 +13,10 @@ Wave::Wave(int floorSize2, PathStone* path2, Player* player2) {
 	player = player2;
 
 	// ESTO NO SE USA PARA NADA; SOLO PARA CREAR UN ENEMIGO AL VUELO DESDE WAVE Y QUE NO HAYA UN DELAY A POSTERIORI
-	Enemy* e = new Enemy(floorSize, enemies_type[current_enemy], initial_point, path, 20, player);
+	Enemy* e = new Enemy(floorSize, "grunt", initial_point, path, 20, player);
+	e = new Enemy(floorSize, "dog", initial_point, path, 20, player);
+	e = new Enemy(floorSize, "ghost", initial_point, path, 20, player);
+	e = new Enemy(floorSize, "tank", initial_point, path, 20, player);
 	
 	_eventDispatcher->addCustomEventListener("EnterFrame", [=](EventCustom* event) {
 		float* data = static_cast<float*>(event->getUserData());
