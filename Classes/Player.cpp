@@ -8,6 +8,7 @@ Player::Player(int floorSize2, Point initial_point_player2) {
 
 	floorSize = floorSize2;
 	_active = true;
+	_resurrect = false;
 	_health = 200;
 	_injured = 0;
 	_type = "player";
@@ -48,7 +49,7 @@ Player::~Player(void)
 void Player::update(float dt)
 {
 
-	if (_health > 0 && _active) {
+	if (_health > 0 && _active && !_resurrect) {
 
 		if (_injured > 0) {
 
@@ -81,6 +82,26 @@ void Player::update(float dt)
 			speed = 1.5;
 		}
 
+	}
+	else if (_active && _resurrect) {
+
+		_sprite->setColor(Color3B(255, 255, 255));
+
+		float max_health = 200;
+		float seconds_to_full = 2;
+		_health += (max_health/seconds_to_full)*dt;
+
+		GLubyte ubyteComponent = static_cast<GLubyte>((_health/max_health) * 255.f); 
+		_sprite->setOpacity(ubyteComponent);
+
+		if (_health > max_health) {
+			CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+			_resurrect = false;
+			_health = max_health;
+
+			GLubyte ubyteComponent = static_cast<GLubyte>(255.f); 
+			_sprite->setOpacity(ubyteComponent);
+		}
 	}
 	
 }

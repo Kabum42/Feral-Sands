@@ -1,6 +1,7 @@
 using namespace std;
 #include "cocos2d.h"
 #include "Entity.h"
+#include "SimpleAudioEngine.h"
 USING_NS_CC;
 
 #ifndef PLAYER_H
@@ -17,6 +18,7 @@ public:
 	float dashing;
 	Vec2 dashingVector;
 	int _weapon;
+	bool _resurrect;
 
 	float speed;
 	float speed_cooldown;

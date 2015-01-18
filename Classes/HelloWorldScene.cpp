@@ -59,6 +59,10 @@ Label* dialog_label;
 
 Label* top_label;
 
+int resources = 0;
+Sprite* resource;
+Label* resources_label;
+
 Sprite* icon_dash;
 Sprite* icon_tower;
 Sprite* icon_slow;
@@ -193,7 +197,7 @@ bool HelloWorld::init()
     // add a label shows "Hello World"
     // create and initialize a label
     
-    top_label = Label::create("Die World", "Arial", 24);
+    top_label = Label::createWithTTF("Prueba OMFG","fonts/Volkoff.otf", 32);
     top_label->setPosition(Vec2(origin.x + visibleSize.width/2, origin.y + visibleSize.height - top_label->getContentSize().height));
     this->addChild(top_label, 1);
 	top_label->setVisible(false);
@@ -229,6 +233,18 @@ bool HelloWorld::init()
 	sinvida->setPositionX(vida->getBoundingBox().size.width/2 +(74*(1-sinvida->getScaleX())) +21 +10);
 	sinvida->setPositionY(640 -vida->getBoundingBox().size.height/2 -10);
 	this->addChild(sinvida, 1);
+
+	resource = Sprite::create("resource.png");
+	resource->setScaleX(0.3);
+	resource->setScaleY(0.3);
+	resource->setPositionX(resource->getBoundingBox().size.width/2 +20);
+	resource->setPositionY(640 -resource->getBoundingBox().size.height/2 -70);
+	this->addChild(resource, 1);
+
+	resources_label = Label::createWithTTF("0","fonts/Volkoff.otf", 32);
+	resources_label->setColor(Color3B(255, 255, 255));
+    resources_label->setPosition(Vec2(resource->getPositionX() +resource->getBoundingBox().size.width/2 + resources_label->getBoundingBox().size.width/2 +10, resource->getPositionY()));
+    this->addChild(resources_label, 1);
 
 	auto cara = Sprite::create("icon_cara.png");
 	cara->setPositionX(cara->getBoundingBox().size.width/2 +10);
@@ -633,7 +649,9 @@ void HelloWorld::update(float dt)
 			top_label->setVisible(true);
 			std::string s_aux = std::to_string(nexus->_life) + "/5";
 			top_label->setString(s_aux);
-
+			s_aux = std::to_string(resources);
+			resources_label->setString(s_aux);
+			resources_label->setPosition(Vec2(resource->getPositionX() +resource->getBoundingBox().size.width/2 + resources_label->getBoundingBox().size.width/2 +10, resource->getPositionY()));
 			dialog_box->setVisible(false);
 			dialog_label->setVisible(false);
 			button_a->setVisible(false);
@@ -771,7 +789,7 @@ void HelloWorld::update(float dt)
 							}
 
 						}
-						else if (!leftTriggerPushed && !menuTurrets && boss->dashing == 0 && (state.Gamepad.sThumbLX != 0 || state.Gamepad.sThumbLY != 0)) {
+						else if (!leftTriggerPushed && !menuTurrets && boss->dashing == 0 && (state.Gamepad.sThumbLX != 0 || state.Gamepad.sThumbLY != 0) && !boss->_resurrect) {
 
 							Vec2 v = Vec2(state.Gamepad.sThumbLX, state.Gamepad.sThumbLY);
 							v.normalize();
@@ -786,7 +804,7 @@ void HelloWorld::update(float dt)
 					}
 
 					// CONTROL DE PLAYER
-					if (boss->dashing == 0) {
+					if (boss->dashing == 0 && !boss->_resurrect) {
 						boss->_sprite->setPosition3D(boss->_sprite->getPosition3D() + Vec3(state.Gamepad.sThumbLX*dt*boss->speed / 70, state.Gamepad.sThumbLY*dt*boss->speed / 70, 0));
 					}
 
@@ -833,15 +851,15 @@ void HelloWorld::update(float dt)
 
 					// DISPARO
 					if (state.Gamepad.bRightTrigger != 0) {
-						if (boss->_weapon == 0){ //NORMAL
-							if (coolDownNow >= coolDownMax) {
+						if (boss->_weapon == 0 && !boss->_resurrect){ //NORMAL
+							if (coolDownNow >= coolDownMax ) {
 								coolDownNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
 								CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
 								WeaponShot* _shotInstance = new WeaponShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
 								addMobileObject(_shotInstance);
 							}
 						}
-						else if (boss->_weapon == 1){ // FUEGO
+						else if (boss->_weapon == 1 && !boss->_resurrect){ // FUEGO
 							if (coolDownFireNow >= coolDownMax){
 								//coolDownFireNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
 								coolDownFireNow = 0.14;
@@ -865,7 +883,7 @@ void HelloWorld::update(float dt)
 								addMobileObject(_fireInstance);
 							}
 						}
-						else if (boss->_weapon == 2){ //AIRE
+						else if (boss->_weapon == 2 && !boss->_resurrect){ //AIRE
 							if (coolDownAirNow >= coolDownMax){
 								airCharging = true;
 								if (airPower < 5) airPower += dt;
@@ -875,7 +893,7 @@ void HelloWorld::update(float dt)
 					}
 
 					if (state.Gamepad.bRightTrigger == 0) {
-						if (boss->_weapon == 2){ //AIRE
+						if (boss->_weapon == 2 && !boss->_resurrect){ //AIRE
 							if (airCharging){
 
 								airPower = log(airPower + 0.6) * 4 + 1;
@@ -1119,12 +1137,12 @@ void HelloWorld::update(float dt)
 				virtual_vec.normalize();
 
 				// CONTROLA EL MOVIMIENTO
-				if (boss->dashing == 0) {
+				if (boss->dashing == 0 && !boss->_resurrect) {
 						boss->_sprite->setPosition3D(boss->_sprite->getPosition3D() + Vec3(virtual_vec.x*32767*dt*boss->speed / 70, -virtual_vec.y*32767*dt*boss->speed / 70, 0));
 				}
 
 				// CONTROLA EL DASHING
-				if (pressed_SPACE_PUSHED && boss->dashing == 0 && (virtual_vec.x != 0 || virtual_vec.y != 0)) {
+				if (pressed_SPACE_PUSHED && boss->dashing == 0 && (virtual_vec.x != 0 || virtual_vec.y != 0) && !boss->_resurrect) {
 
 					Vec2 v = Vec2(virtual_vec.x, -virtual_vec.y);
 					v.normalize();
@@ -1309,11 +1327,11 @@ void HelloWorld::update(float dt)
 
 									if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
 										// EL OTRO ES UN ENEMY
-										Entity* player;
+										Player* player;
 										Entity* enemigo;
 
-										if (mobile_objects[i]->_type.compare("player") == 0) player = mobile_objects[i];
-										if (mobile_objects[j]->_type.compare("player") == 0) player = mobile_objects[j];
+										if (mobile_objects[i]->_type.compare("player") == 0) player = (Player*)mobile_objects[i];
+										if (mobile_objects[j]->_type.compare("player") == 0) player = (Player*)mobile_objects[j];
 
 										if (mobile_objects[i]->_type.compare("enemy") == 0) enemigo = mobile_objects[i];
 										if (mobile_objects[j]->_type.compare("enemy") == 0) enemigo = mobile_objects[j];
@@ -1329,7 +1347,8 @@ void HelloWorld::update(float dt)
 										}
 										else {
 											CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
-											player->_health = 200;
+											player->_resurrect = true;
+											player->_health = 0.01;
 											player->_sprite->setPosition3D(Vec3(0, 0, player->_sprite->getPositionZ()));
 										}
 							
