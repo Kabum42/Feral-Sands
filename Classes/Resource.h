@@ -3,13 +3,14 @@ using namespace std;
 #include "Player.h"
 USING_NS_CC;
 
-class Resource : public cocos2d::Sprite3D
+class Resource : public Entity
 {
 
 public:
 	float floorSize;
-	Sprite3D* _sprite;
 	Player* _player;
+	Vec2 escape;
+	float time_passed;
 
 	Resource(void);
 	Resource(int floorSize2, Point initial_point, Player* _player2);

@@ -1353,6 +1353,23 @@ void HelloWorld::update(float dt)
 										}
 							
 									}
+									else if (mobile_objects[i]->_type.compare("resource") == 0 || mobile_objects[j]->_type.compare("resource") == 0) {
+										// EL OTRO ES EL JUGADOR
+										Resource* res;
+										Player* player;
+
+										if (mobile_objects[i]->_type.compare("resource") == 0) res = (Resource*)mobile_objects[i];
+										if (mobile_objects[j]->_type.compare("resource") == 0) res = (Resource*)mobile_objects[j];
+
+										res->_sprite->setVisible(false);
+										res->_active = false;
+										removeMobileObject(res->_num_in_array);
+										
+										resources += 20;
+
+										//if (mobile_objects[i]->_type.compare("player") == 0) enemigo = mobile_objects[i];
+										//if (mobile_objects[j]->_type.compare("player") == 0) enemigo = mobile_objects[j];
+									}
 								}
 
 								else if (mobile_objects[i]->_type.compare("fireshot") == 0 || mobile_objects[j]->_type.compare("fireshot") == 0) {
@@ -1383,7 +1400,7 @@ void HelloWorld::update(float dt)
 									}
 								}
 								else if (mobile_objects[i]->_type.compare("airshot") == 0 || mobile_objects[j]->_type.compare("fireshot") == 0) {
-									// UNO DE LOS DOS ES UNA PARTÍCULA DE FUEGO
+									// UNO DE LOS DOS ES UNA PARTÍCULA DE AIRE
 									if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
 										// EL OTRO ES UN ENEMY
 										AirShot* bala;
@@ -1408,6 +1425,10 @@ void HelloWorld::update(float dt)
 											CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
 										}
 									}
+								}
+								else if (mobile_objects[i]->_type.compare("resource") == 0 || mobile_objects[j]->_type.compare("resource") == 0) {
+									// UNO ES UN RESOURCE
+									// NO CHOCA CON NADA
 								}
 								else if (mobile_objects[i]->_type.compare("enemy") == 0 && mobile_objects[j]->_type.compare("enemy") == 0) {
 									//LOS DOS SON ENEMIGOS
@@ -1448,6 +1469,9 @@ void HelloWorld::update(float dt)
 								}
 								else if (mobile_objects[j]->_type.compare("tower_shot") == 0) {
 									// LOS TOWER_SHOT NO COLISIONAN CON NADA ESTATICO
+								}
+								else if (mobile_objects[j]->_type.compare("resource") == 0) {
+									// LOS RESOURCES NO COLISIONAN CON NADA ESTATICO
 								}
 								else if (static_objects[i]->_type.compare("tower") == 0) {
 							
@@ -1518,6 +1542,17 @@ void HelloWorld::update(float dt)
 							mobile_objects[i]->_active = false;
 
 							if (mobile_objects[i]->_type.compare("enemy") == 0) {
+								Resource* r = new Resource(floorSize, Point(mobile_objects[i]->_sprite->getPositionX(), mobile_objects[i]->_sprite->getPositionY()), boss);
+								addMobileObject(r);
+								r = new Resource(floorSize, Point(mobile_objects[i]->_sprite->getPositionX(), mobile_objects[i]->_sprite->getPositionY()), boss);
+								addMobileObject(r);
+								r = new Resource(floorSize, Point(mobile_objects[i]->_sprite->getPositionX(), mobile_objects[i]->_sprite->getPositionY()), boss);
+								addMobileObject(r);
+								r = new Resource(floorSize, Point(mobile_objects[i]->_sprite->getPositionX(), mobile_objects[i]->_sprite->getPositionY()), boss);
+								addMobileObject(r);
+								r = new Resource(floorSize, Point(mobile_objects[i]->_sprite->getPositionX(), mobile_objects[i]->_sprite->getPositionY()), boss);
+								addMobileObject(r);
+
 								EventCustom event_dead("enemy_dead");
 								_eventDispatcher->dispatchEvent(&event_dead);
 							}
