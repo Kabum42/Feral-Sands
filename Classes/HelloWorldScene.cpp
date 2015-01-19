@@ -1,12 +1,12 @@
-/*
+Ôªø/*
 TO DO:
 -Eventos para evitar tener ochenta arrays.
 -Pulsaciones de botones como eventos.
 -Boss como clase Character que hereda de Sprite3D.
 -Spawner como clase
--Crear funciones init para todos los elementos m·s importantes de la GameScreen(camera, layers, etc.)
+-Crear funciones init para todos los elementos m√°s importantes de la GameScreen(camera, layers, etc.)
 -Crear el physicsworld que contenga todos los elementos y compruebe sus colisiones.
--Meter dentro del Character todo lo que sea pulsaciÛn de botones.
+-Meter dentro del Character todo lo que sea pulsaci√≥n de botones.
 */
 
 #include "HelloWorldScene.h"
@@ -22,8 +22,55 @@ USING_NS_CC;
 
 #define INPUT_DEADZONE  ( 0.24f * FLOAT(0x7FFF) )  // Default to 24% of the +/- 32767 range.   This is a reasonable default value but can be altered if needed.
 
+bool pressed_W = false;
+bool pressed_A = false;
+bool pressed_S = false;
+bool pressed_D = false;
+
+bool pressed_UP = false;
+bool pressed_LEFT = false;
+bool pressed_DOWN = false;
+bool pressed_RIGHT = false;
+
+bool pressed_SPACE = false;
+bool pressed_SPACE_PUSHED = false;
+
+bool pressed_ENTER = false;
+bool pressed_ENTER_PUSHED = false;
+
+Vec2 mouse_position = Vec2(0, 0);
+bool mouse_clicked = false;
+
 DWORD dwResult;
 float data [1] = { };
+
+Sprite* minimapa;
+Sprite* player_arrow;
+
+Sprite* vida;
+Sprite* sinvida;
+
+Sprite* dialog_box;
+Sprite* button_a;
+Sprite* button_enter;
+
+Dialog* active_dialog = NULL;
+Label* dialog_label;
+
+Label* top_label;
+
+int resources = 0;
+Sprite* resource;
+Label* resources_label;
+
+Sprite* icon_dash;
+Sprite* icon_tower;
+Sprite* icon_slow;
+Sprite* icon_monster;
+
+Sprite* gun_normal;
+Sprite* gun_fire;
+Sprite* gun_air;
 
 Nexus* nexus;
 Player* boss;
@@ -36,6 +83,7 @@ Entity* static_objects [400] = { };
 int num_static_objects = 0;
 Entity* mobile_objects [200] = { };
 int num_mobile_objects = 0;
+Sprite* enemy_points [200] = { };
 
 PathStone* active_pathstones [10] = { };
 int num_active_pathstones = 0;
@@ -69,8 +117,9 @@ bool menuTurrets = false;
 
 bool leftTriggerPushed = false;
 bool leftShoulderPushed = false;
+bool rightShoulderPushed = false;
 bool startPushed = false;
-bool changeWeapon = false;
+bool aPushed = false;
 
 float rightThumbX = 0;
 float rightThumbY = 32767;
@@ -122,6 +171,8 @@ bool HelloWorld::init()
     //    you may modify it.
 
     // add a "close" icon to exit the progress. it's an autorelease object
+
+	/*
     auto closeItem = MenuItemImage::create(
                                            "CloseNormal.png",
                                            "CloseSelected.png",
@@ -130,10 +181,15 @@ bool HelloWorld::init()
 	closeItem->setPosition(Vec2(origin.x + visibleSize.width - closeItem->getContentSize().width/2 ,
                                 origin.y + closeItem->getContentSize().height/2));
 
+	*/
+
     // create menu, it's an autorelease object
+
+	/*
     auto menu = Menu::create(closeItem, NULL);
     menu->setPosition(Vec2::ZERO);
     this->addChild(menu, 1);
+	*/
 
     /////////////////////////////
     // 3. add your codes below...
@@ -141,16 +197,168 @@ bool HelloWorld::init()
     // add a label shows "Hello World"
     // create and initialize a label
     
-    auto label = LabelTTF::create("Die World", "Arial", 24);
-    
-    // position the label on the center of the screen
-    label->setPosition(Vec2(origin.x + visibleSize.width/2,
-                            origin.y + visibleSize.height - label->getContentSize().height));
+    top_label = Label::createWithTTF("Prueba OMFG","fonts/Volkoff.otf", 32);
+    top_label->setPosition(Vec2(origin.x + visibleSize.width/2, origin.y + visibleSize.height - top_label->getContentSize().height));
+    this->addChild(top_label, 1);
+	top_label->setVisible(false);
 
-    // add the label as a child to this layer
-    this->addChild(label, 1);
+	minimapa = Sprite::create("sand.png");
+	minimapa->setScale(0.0625); // ESTO ES 1/16, pasando de 2048 pixeles a 128
+	minimapa->setPositionX(960 -minimapa->getBoundingBox().size.width/2 -6 -10);
+	minimapa->setPositionY(640 -minimapa->getBoundingBox().size.height/2 -6 -10);
+	this->addChild(minimapa, 1);
+
+	for (int aux_bla = 0; aux_bla < 200; aux_bla++) {
+		Sprite* aux_spr = Sprite::create("enemy_point.png");
+		this->addChild(aux_spr, 1);
+		aux_spr->setVisible(false);
+		enemy_points[aux_bla] = aux_spr;
+	}
+
+	player_arrow = Sprite::create("player_arrow.png");
+	this->addChild(player_arrow, 1);
+
+	auto marco = Sprite::create("marco_minimapa.png");
+	marco->setPositionX(960 -marco->getBoundingBox().size.width/2 -10);
+	marco->setPositionY(640 -marco->getBoundingBox().size.height/2 -10);
+	this->addChild(marco, 1);
+
+	vida = Sprite::create("icon_vida.png");
+	vida->setPositionX(vida->getBoundingBox().size.width/2 +10);
+	vida->setPositionY(640 -vida->getBoundingBox().size.height/2 -10);
+	this->addChild(vida, 1);
+
+	sinvida = Sprite::create("icon_sinvida.png");
+	sinvida->setScaleX(0);
+	sinvida->setPositionX(vida->getBoundingBox().size.width/2 +(74*(1-sinvida->getScaleX())) +21 +10);
+	sinvida->setPositionY(640 -vida->getBoundingBox().size.height/2 -10);
+	this->addChild(sinvida, 1);
+
+	resource = Sprite::create("resource.png");
+	resource->setScaleX(0.3);
+	resource->setScaleY(0.3);
+	resource->setPositionX(resource->getBoundingBox().size.width/2 +20);
+	resource->setPositionY(640 -resource->getBoundingBox().size.height/2 -70);
+	this->addChild(resource, 1);
+
+	resources_label = Label::createWithTTF("0","fonts/Volkoff.otf", 32);
+	resources_label->setColor(Color3B(255, 255, 255));
+    resources_label->setPosition(Vec2(resource->getPositionX() +resource->getBoundingBox().size.width/2 + resources_label->getBoundingBox().size.width/2 +10, resource->getPositionY()));
+    this->addChild(resources_label, 1);
+
+	auto cara = Sprite::create("icon_cara.png");
+	cara->setPositionX(cara->getBoundingBox().size.width/2 +10);
+	cara->setPositionY(640 -cara->getBoundingBox().size.height/2 -10);
+	this->addChild(cara, 1);
 
 
+	icon_dash = Sprite::create("icon_dash.png");
+	icon_dash->setPositionX(icon_dash->getBoundingBox().size.width/2 +10);
+	icon_dash->setPositionY(icon_dash->getBoundingBox().size.height/2 +10);
+	icon_dash->setVisible(true);
+	this->addChild(icon_dash, 1);
+
+	icon_tower = Sprite::create("icon_tower.png");
+	icon_tower->setPositionX(icon_tower->getBoundingBox().size.width/2 +10);
+	icon_tower->setPositionY(icon_tower->getBoundingBox().size.height/2 +10);
+	icon_tower->setVisible(false);
+	this->addChild(icon_tower, 1);
+
+	icon_slow = Sprite::create("icon_slow.png");
+	icon_slow->setPositionX(icon_slow->getBoundingBox().size.width/2 +10);
+	icon_slow->setPositionY(icon_slow->getBoundingBox().size.height/2 +10);
+	icon_slow->setVisible(false);
+	this->addChild(icon_slow, 1);
+
+	icon_monster = Sprite::create("icon_monster.png");
+	icon_monster->setPositionX(icon_monster->getBoundingBox().size.width/2 +10);
+	icon_monster->setPositionY(icon_monster->getBoundingBox().size.height/2 +10);
+	icon_monster->setVisible(false);
+	this->addChild(icon_monster, 1);
+
+
+	gun_normal = Sprite::create("gun_normal.png");
+	gun_normal->setPositionX(960 -gun_normal->getBoundingBox().size.width/2 -10);
+	gun_normal->setPositionY(gun_normal->getBoundingBox().size.height/2 +10);
+	gun_normal->setVisible(true);
+	this->addChild(gun_normal, 1);
+
+	gun_fire = Sprite::create("gun_fire.png");
+	gun_fire->setPositionX(960 -gun_fire->getBoundingBox().size.width/2 -10);
+	gun_fire->setPositionY(gun_fire->getBoundingBox().size.height/2 +10);
+	gun_fire->setVisible(false);
+	this->addChild(gun_fire, 1);
+
+	gun_air = Sprite::create("gun_air.png");
+	gun_air->setPositionX(960 -gun_air->getBoundingBox().size.width/2 -10);
+	gun_air->setPositionY(gun_air->getBoundingBox().size.height/2 +10);
+	gun_air->setVisible(false);
+	this->addChild(gun_air, 1);
+
+	dialog_box = Sprite::create("dialog_box.png");
+	dialog_box->setPositionX(960/2);
+	dialog_box->setPositionY(dialog_box->getBoundingBox().size.height/2 +10);
+	this->addChild(dialog_box, 1);
+	dialog_box->setVisible(false);
+
+	//dialog_label = Label::createWithBMFont("Prueba", "fonts/konqa32.fnt");
+	dialog_label = Label::createWithTTF("Prueba","fonts/Volkoff.otf", 32);
+	dialog_label->setColor(Color3B(0, 0, 0));
+    dialog_label->setPosition(Vec2(visibleSize.width/2, dialog_box->getPositionY()));
+    this->addChild(dialog_label, 1);
+
+	Dialog* dialog_1 = new Dialog("Hi! Welcome to Feral Sands!");
+
+	Dialog* dialog_2 = new Dialog("You can move around with the left joystick");
+	dialog_1->_nextDialog = dialog_2;
+
+	Dialog* dialog_3 = new Dialog("or using WASD if you don't have a gamepad");
+	dialog_2->_nextDialog = dialog_3;
+
+
+	active_dialog = dialog_1;
+
+
+	CCAnimation * anim = CCAnimation::create();
+	anim->addSpriteFrameWithFileName("button_a_01.png");
+	anim->addSpriteFrameWithFileName("button_a_02.png");
+	anim->setLoops(-1); // for infinit loop animation
+    anim->setDelayPerUnit(0.3f);
+
+	button_a = Sprite::create("button_a_01.png");
+	button_a->setPositionX(960 -button_a->getBoundingBox().size.width/2 -42);
+	button_a->setPositionY(button_a->getBoundingBox().size.height/2 +15);
+	this->addChild(button_a, 1);
+	button_a->runAction(CCAnimate::create(anim));
+	button_a->setVisible(false);
+
+	CCAnimation * anim2 = CCAnimation::create();
+	anim2->addSpriteFrameWithFileName("button_enter_01.png");
+	anim2->addSpriteFrameWithFileName("button_enter_02.png");
+	anim2->setLoops(-1); // for infinit loop animation
+    anim2->setDelayPerUnit(0.3f);
+
+	button_enter = Sprite::create("button_enter_01.png");
+	button_enter->setPositionX(960 -button_enter->getBoundingBox().size.width/2 -42);
+	button_enter->setPositionY(button_enter->getBoundingBox().size.height/2 +25);
+	this->addChild(button_enter, 1);
+	button_enter->runAction(CCAnimate::create(anim2));
+	button_enter->setVisible(false);
+
+
+	auto keyboardListener = EventListenerKeyboard::create();
+	keyboardListener->onKeyPressed = CC_CALLBACK_2(HelloWorld::keyPressed, this);
+	keyboardListener->onKeyReleased = CC_CALLBACK_2(HelloWorld::keyReleased, this);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(keyboardListener, this);
+
+	auto mouseListener = EventListenerMouse::create();
+    mouseListener->onMouseMove = [=](Event* event){
+        auto mouse = (EventMouse*)event;
+		mouse_position = Vec2(mouse->getCursorX(), mouse->getCursorY());
+    };
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(mouseListener, this);
+
+	
 	
 
 	_eventDispatcher->addCustomEventListener("object_collision", [=](EventCustom* event){
@@ -241,9 +449,16 @@ bool HelloWorld::init()
 	green_slow->setColor(ccc3(0, 200, 0));
 	green_slow->setVisible(false);
 	this->addChild(green_slow, 0);
+
+	green_monster = Sprite3D::create("Floor.obj", "monster.png");
+	green_monster->setScale(30*(floorSize/2048));
+	green_monster->setCameraMask(2);
+	green_monster->setColor(ccc3(0, 200, 0));
+	green_monster->setVisible(false);
+	this->addChild(green_monster, 0);
 	
 	// ESTO NO FUNCIONA, TENGO QUE FABRICARME MI PROPIA CLASE PARA CREAR BEZIERS QUADRATICAS, USANDO LA FUNCION AQUELLA GUAY
-	// SERA UNA CLASE SIMPLE QUE SOLAMENTE TIENE 3 PAR¡METROS; PUNTO INICIAl, CONTROl POINT y PUNTO FINAL
+	// SERA UNA CLASE SIMPLE QUE SOLAMENTE TIENE 3 PAR√ÅMETROS; PUNTO INICIAl, CONTROl POINT y PUNTO FINAL
 
 	/*
 	ccBezierConfig bezier;
@@ -279,8 +494,9 @@ bool HelloWorld::init()
 
 	Wave* w = new Wave(floorSize, path, boss);
 	w->addEnemy("grunt", 1.5);
-	w->addEnemy("grunt", 1);
-	w->addEnemy("grunt", 2);
+	w->addEnemy("dog", 1);
+	w->addEnemy("tank", 1);
+	w->addEnemy("ghost", 1);
 	w->addEnemy("grunt", 20);
 	w->addEnemy("grunt", 2);
 	w->addEnemy("grunt", 2);
@@ -334,7 +550,7 @@ bool HelloWorld::init()
 	//now the bezier config declaration
 
 	//SET BACKGROUND MUSIC
-	// La background music al usarse junto a efectos de sonido da lagazos del copÛn
+	// La background music al usarse junto a efectos de sonido da lagazos del cop√≥n
 	//CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("sandstorm.wav", true);
 
 	this->scheduleUpdate();
@@ -344,776 +560,1046 @@ bool HelloWorld::init()
 
 void HelloWorld::update(float dt)
 {
-	
-	if (!paused) {
 
-		data[0] = dt;
-		event.setUserData(data);
-		_eventDispatcher->dispatchEvent(&event);
-
-		EventCustom eventVisible("checkVisible");
-		eventVisible.setUserData(new Point(boss->_sprite->getPositionX(), boss->_sprite->getPositionY()));
-		_eventDispatcher->dispatchEvent(&eventVisible);
-
-		if (enabledLights) {
-			nomefio += dt/2;
-			if (nomefio > 1) { nomefio = -1; }
-			sun->setDirection(Vec3(0, nomefio, -1));
-			sun->setColor(Color3B(255, 255 -(nomefio+1)*(128/2), 127 + (nomefio+1)*(128/2)));
-		}
-
-	}
-	
 	XINPUT_STATE state;
 	ZeroMemory(&state, sizeof(XINPUT_STATE));
 	
 	XINPUT_VIBRATION vibration;
 	ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
-	
-	
 
 	// Simply get the state of the controller from XInput.
 	dwResult = XInputGetState(0, &state);
 
-	if (dwResult == ERROR_SUCCESS)
-	{
-		// Controller is connected 
+	if (paused) { // ESTA PAUSADO
 
+		if (dwResult == ERROR_SUCCESS) { // Controller is connected 
 
-		if ((state.Gamepad.sThumbLX < INPUT_DEADZONE &&
-			state.Gamepad.sThumbLX > -INPUT_DEADZONE) &&
-			(state.Gamepad.sThumbLY < INPUT_DEADZONE &&
-			state.Gamepad.sThumbLY > -INPUT_DEADZONE))
-		{
-			state.Gamepad.sThumbLX = 0;
-			state.Gamepad.sThumbLY = 0;
+			WORD wButtons = state.Gamepad.wButtons;
+
+			if (wButtons & XINPUT_GAMEPAD_START) {
+				if (!startPushed) {
+					paused = !paused;
+					if (paused) {
+						EventCustom event_paused("paused");
+						_eventDispatcher->dispatchEvent(&event_paused);
+					}
+					else {
+						EventCustom event_unpaused("unpaused");
+						_eventDispatcher->dispatchEvent(&event_unpaused);
+					}
+				}
+				startPushed = true;
+			}
+
+			else {
+				startPushed = false;
+			}
+		}
+		else { // Controller is not connected
+
 		}
 
-		if ((state.Gamepad.sThumbRX < INPUT_DEADZONE &&
-			state.Gamepad.sThumbRX > -INPUT_DEADZONE) &&
-			(state.Gamepad.sThumbRY < INPUT_DEADZONE &&
-			state.Gamepad.sThumbRY > -INPUT_DEADZONE))
-		{
-			state.Gamepad.sThumbRX = 0;
-			state.Gamepad.sThumbRY = 0;
-		}
+	}
+	else { // NO ESTA PAUSADO
+		if (active_dialog != NULL) { // HAY UN DIALOGO ACTIVO
 
-		WORD wButtons = state.Gamepad.wButtons;
+			dialog_box->setVisible(true);
+			if (dialog_label->getString() != active_dialog->_text) {
+				dialog_label->setString(active_dialog->_text);
+			}
+			dialog_label->setVisible(true);
 
-		if (wButtons & XINPUT_GAMEPAD_START) {
-			if (!startPushed) {
-				paused = !paused;
-				if (paused) {
-					EventCustom event_paused("paused");
-					_eventDispatcher->dispatchEvent(&event_paused);
+			if (dwResult == ERROR_SUCCESS) { // Controller is connected 
+
+				button_a->setVisible(true);
+				button_enter->setVisible(false);
+
+				WORD wButtons = state.Gamepad.wButtons;
+
+				if (wButtons & XINPUT_GAMEPAD_A) {
+					if (!aPushed) {
+						active_dialog = active_dialog->_nextDialog;
+					}
+					aPushed = true;
 				}
 				else {
-					EventCustom event_unpaused("unpaused");
-					_eventDispatcher->dispatchEvent(&event_unpaused);
+					aPushed = false;
 				}
 			}
-			startPushed = true;
-		}
+			else { // Controller is not connected
 
-		else {
-			startPushed = false;
-		}
+				button_a->setVisible(false);
+				button_enter->setVisible(true);
 
-		if (!paused) {
-
-			// COLOCAR TORRETA
-
-			if (state.Gamepad.bLeftTrigger > 50) {
-				if (!leftTriggerPushed && menuTurrets) {
-
-					if (green_tower->isVisible()) {
-
-						if (green_tower->getColor().r == 200) {
-
-						}
-						else if (green_tower->getColor().g == 200) {
-
-							Point p = Point(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + (rightThumbY/500)*(floorSize/2048));
-
-							Tower* t = new Tower(floorSize, "standard", p);
-							t->_sprite->setRotation3D(boss->_sprite->getRotation3D());
-							static_objects[num_static_objects] = t;
-							num_static_objects++;
-							t->_sprite->setCameraMask(2);
-							this->addChild(t->_sprite, 1);
-
-						}
-
-					}
-					else if (green_slow->isVisible()) {
-
-						if (green_slow->getColor().r == 200) {
-
-						}
-						else if (green_slow->getColor().g == 200) {
-
-							Point p = Point(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + (rightThumbY/500)*(floorSize/2048));
-
-							Tower* t = new Tower(floorSize, "slow", p);
-							t->_sprite->setRotation3D(boss->_sprite->getRotation3D());
-							static_objects[num_static_objects] = t;
-							num_static_objects++;
-							t->_sprite->setCameraMask(2);
-							this->addChild(t->_sprite, 1);
-
-						}
-
-					}
-					else if (green_monster->isVisible()) {
-
-					}
-
+				if (pressed_ENTER_PUSHED) {
+					active_dialog = active_dialog->_nextDialog;
 				}
-				else if (!leftTriggerPushed && !menuTurrets && boss->dashing == 0 && (state.Gamepad.sThumbLX != 0 || state.Gamepad.sThumbLY != 0)) {
 
-					Vec2 v = Vec2(state.Gamepad.sThumbLX, state.Gamepad.sThumbLY);
-					v.normalize();
-					boss->dashingVector = v;
-					boss->dashing = 0.5;
+				pressed_SPACE_PUSHED = false;
+				pressed_ENTER_PUSHED = false;
 
-				}
-				if (!leftTriggerPushed) leftTriggerPushed = true;
-			}
-			else {
-				if (leftTriggerPushed) leftTriggerPushed = false;
 			}
 
-			// CONTROL DE PLAYER
-			if (boss->dashing == 0) {
-				boss->_sprite->setPosition3D(boss->_sprite->getPosition3D() + Vec3(state.Gamepad.sThumbLX*dt*boss->speed / 70, state.Gamepad.sThumbLY*dt*boss->speed / 70, 0));
-			}
-
-
-			if (wButtons & XINPUT_GAMEPAD_A)
-				//boss->_sprite->setPosition3D(Vec3(800 / 2 + (rand() % 2) - 1 * rand() % 1 * 800 / 2, 600 / 2 + (rand() % 2) - 1 * rand() % 1 * 600 / 2, 100));
-				boss->_sprite->setPosition3D(Vec3(0, 0, boss->_sprite->getPositionZ()));
-
-			float aux_distance_player = sqrt(pow(boss->_sprite->getPositionX(), 2) + pow(boss->_sprite->getPositionY(), 2));
-			float radius_mountains = 930;
-			if (aux_distance_player > radius_mountains*(floorSize/2048)) {
-				Vec2 distance_from_center = Vec2(boss->_sprite->getPositionX(), boss->_sprite->getPositionY());
-				distance_from_center.normalize();
-				boss->_sprite->setPosition3D(Vec3(distance_from_center.x*radius_mountains*(floorSize/2048), distance_from_center.y*radius_mountains*(floorSize/2048), boss->_sprite->getPositionZ()));
-			}
-
-			// CHANGE WEAPON
-			if (wButtons & XINPUT_GAMEPAD_Y){
-				if (!changeWeapon){
-					boss->_weapon += 1;
-					if (boss->_weapon == 3) boss->_weapon = 0;
-					changeWeapon = true;
-				}
-			}
-			if (changeWeapon)
-				if (!(wButtons & XINPUT_GAMEPAD_Y))
-					changeWeapon = false;
-
-
-			// ROTACION DE PLAYER
-			if (state.Gamepad.sThumbRY != 0) rightThumbY = state.Gamepad.sThumbRY;
-			if (state.Gamepad.sThumbRX != 0) rightThumbX = state.Gamepad.sThumbRX;
-
-			boss->_sprite->setRotation3D(Vec3(90, 0, -90 - atan2(rightThumbY, rightThumbX) * 360 / (2 * M_PI)));
-
-			// DISPARO
-			if (state.Gamepad.bRightTrigger != 0){
-				if (boss->_weapon == 0){ //NORMAL
-					if (coolDownNow >= coolDownMax) {
-						coolDownNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
-						CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
-						WeaponShot* _shotInstance = new WeaponShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
-						addMobileObject(_shotInstance);
-					}
-				}
-				else if (boss->_weapon == 1){ // FUEGO
-					if (coolDownFireNow >= coolDownMax){
-						//coolDownFireNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
-						coolDownFireNow = 0.14;
-						CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
-
-						Vec3 _playerMovement = Vec3(state.Gamepad.sThumbLX / 70, state.Gamepad.sThumbLY / 70, 0);
-
-						FireShot* _fireInstance = new FireShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -14 + (rand() % 14) - 7));
-						//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
-						_fireInstance->_displacement = _playerMovement;
-						addMobileObject(_fireInstance);
-
-						_fireInstance = new FireShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, (rand() % 14) - 7));
-						//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
-						_fireInstance->_displacement = _playerMovement;
-						addMobileObject(_fireInstance);
-
-						_fireInstance = new FireShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 14 + (rand() % 14) - 7));
-						//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
-						_fireInstance->_displacement = _playerMovement;
-						addMobileObject(_fireInstance);
-					}
-				}
-				else if (boss->_weapon == 2){ //AIRE
-					if (coolDownAirNow >= coolDownMax){
-						airCharging = true;
-						if (airPower < 5) airPower += dt;
-					}
-
-				}
-			}
-
-			if (state.Gamepad.bRightTrigger == 0) {
-				if (boss->_weapon == 2){ //AIRE
-					if (airCharging){
-
-						airPower = log(airPower + 0.6) * 4 + 1;
-						if (airPower >= 3.99) airPower = 8;
-
-						airCharging = false;
-						coolDownAirNow = 0;
-
-						CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
-
-
-						AirShot* _airInstance;
-
-						if (airPower == 8){
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -30 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-						}
-
-						if (airPower >= 3){
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -24 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-
-						}
-
-						if (airPower >= 2){
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -18 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-						}
-
-						_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
-						addMobileObject(_airInstance);
-						_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
-						addMobileObject(_airInstance);
-						_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
-						addMobileObject(_airInstance);
-						_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
-						addMobileObject(_airInstance);
-						_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
-						addMobileObject(_airInstance);
-
-						if (airPower >= 2){
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 18 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-						}
-
-						if (airPower >= 3){
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 24 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-						}
-
-						if (airPower == 8) {
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 30 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-							_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
-							addMobileObject(_airInstance);
-						}
-
-
-						airPower = 0;
-					}
-				}
-			}
-
-			// ROTAR CAMARA
-			if (wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) cameraAngle += 0.1;
-			if (wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) cameraAngle -= 0.1;
 			camera->setRotation3D(Vec3(cameraAngle, 0, 0));
+			camera->setPosition3D(Vec3(boss->_sprite->getPositionX(), boss->_sprite->getPositionY() - sin(cameraAngle*(2*M_PI)/360)*zoom, boss->_sprite->getPositionZ() + cos(cameraAngle*(2*M_PI)/360)*zoom ));
 
-			// MENU DE TORRETAS
-			if (wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
+		}
+		else { // NO HAY NINGUN DIALOGO ACTIVO Y NO ESTA PAUSADO
 
-				if (!leftShoulderPushed) {
+			top_label->setVisible(true);
+			std::string s_aux = std::to_string(nexus->_life) + "/5";
+			top_label->setString(s_aux);
+			s_aux = std::to_string(resources);
+			resources_label->setString(s_aux);
+			resources_label->setPosition(Vec2(resource->getPositionX() +resource->getBoundingBox().size.width/2 + resources_label->getBoundingBox().size.width/2 +10, resource->getPositionY()));
+			dialog_box->setVisible(false);
+			dialog_label->setVisible(false);
+			button_a->setVisible(false);
+			button_enter->setVisible(false);
 
-					if (!menuTurrets) {
-						menuTurrets = true;
-						green_tower->setVisible(true);
+			data[0] = dt;
+			event.setUserData(data);
+			_eventDispatcher->dispatchEvent(&event);
+
+			EventCustom eventVisible("checkVisible");
+			eventVisible.setUserData(new Point(boss->_sprite->getPositionX(), boss->_sprite->getPositionY()));
+			_eventDispatcher->dispatchEvent(&eventVisible);
+
+			if (enabledLights) {
+				nomefio += dt/2;
+				if (nomefio > 1) { nomefio = -1; }
+				sun->setDirection(Vec3(0, nomefio, -1));
+				sun->setColor(Color3B(255, 255 -(nomefio+1)*(128/2), 127 + (nomefio+1)*(128/2)));
+			}
+
+			sinvida->setScaleX((200 -boss->_health)/200);
+			sinvida->setPositionX(vida->getBoundingBox().size.width/2 +(74*(1-sinvida->getScaleX())) +21 +10);
+
+			player_arrow->setPositionX(960 -minimapa->getBoundingBox().size.width/2 -16 +(boss->_sprite->getPositionX()/(floorSize/2))*(128/2));
+			player_arrow->setPositionY(640 -minimapa->getBoundingBox().size.height/2 -16 +(boss->_sprite->getPositionY()/(floorSize/2))*(128/2));
+			player_arrow->setRotation(boss->_sprite->getRotation3D().z);
+
+			if (dwResult == ERROR_SUCCESS)
+			{
+				// Controller is connected 
+
+
+				if ((state.Gamepad.sThumbLX < INPUT_DEADZONE &&
+					state.Gamepad.sThumbLX > -INPUT_DEADZONE) &&
+					(state.Gamepad.sThumbLY < INPUT_DEADZONE &&
+					state.Gamepad.sThumbLY > -INPUT_DEADZONE))
+				{
+					state.Gamepad.sThumbLX = 0;
+					state.Gamepad.sThumbLY = 0;
+				}
+
+				if ((state.Gamepad.sThumbRX < INPUT_DEADZONE &&
+					state.Gamepad.sThumbRX > -INPUT_DEADZONE) &&
+					(state.Gamepad.sThumbRY < INPUT_DEADZONE &&
+					state.Gamepad.sThumbRY > -INPUT_DEADZONE))
+				{
+					state.Gamepad.sThumbRX = 0;
+					state.Gamepad.sThumbRY = 0;
+				}
+
+				WORD wButtons = state.Gamepad.wButtons;
+
+				if (wButtons & XINPUT_GAMEPAD_START) {
+					if (!startPushed) {
+						paused = !paused;
+						if (paused) {
+							EventCustom event_paused("paused");
+							_eventDispatcher->dispatchEvent(&event_paused);
+						}
+						else {
+							EventCustom event_unpaused("unpaused");
+							_eventDispatcher->dispatchEvent(&event_unpaused);
+						}
 					}
-					else if (menuTurrets && green_tower->isVisible()) {
-						green_tower->setVisible(false);
-						green_slow->setVisible(true);
+					startPushed = true;
+				}
+
+				else {
+					startPushed = false;
+				}
+
+				if (!paused) {
+
+					// COLOCAR TORRETA
+
+					if (state.Gamepad.bLeftTrigger > 50) {
+						if (!leftTriggerPushed && menuTurrets) {
+
+							if (green_tower->isVisible()) {
+
+								if (green_tower->getColor().r == 200) {
+
+								}
+								else if (green_tower->getColor().g == 200) {
+
+									Point p = Point(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + (rightThumbY/500)*(floorSize/2048));
+
+									Tower* t = new Tower(floorSize, "standard", p);
+									t->_sprite->setRotation3D(boss->_sprite->getRotation3D());
+									static_objects[num_static_objects] = t;
+									num_static_objects++;
+									t->_sprite->setCameraMask(2);
+									this->addChild(t->_sprite, 1);
+
+								}
+
+							}
+							else if (green_slow->isVisible()) {
+
+								if (green_slow->getColor().r == 200) {
+
+								}
+								else if (green_slow->getColor().g == 200) {
+
+									Point p = Point(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + (rightThumbY/500)*(floorSize/2048));
+
+									Tower* t = new Tower(floorSize, "slow", p);
+									t->_sprite->setRotation3D(boss->_sprite->getRotation3D());
+									static_objects[num_static_objects] = t;
+									num_static_objects++;
+									t->_sprite->setCameraMask(2);
+									this->addChild(t->_sprite, 1);
+
+								}
+
+							}
+							else if (green_monster->isVisible()) {
+
+								if (green_monster->getColor().r == 200) {
+
+								}
+								else if (green_monster->getColor().g == 200) {
+
+									Point p = Point(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + (rightThumbY/500)*(floorSize/2048));
+
+									Tower* t = new Tower(floorSize, "monster", p);
+									t->_sprite->setRotation3D(boss->_sprite->getRotation3D());
+									static_objects[num_static_objects] = t;
+									num_static_objects++;
+									t->_sprite->setCameraMask(2);
+									this->addChild(t->_sprite, 1);
+
+								}
+
+							}
+
+						}
+						else if (!leftTriggerPushed && !menuTurrets && boss->dashing == 0 && (state.Gamepad.sThumbLX != 0 || state.Gamepad.sThumbLY != 0) && !boss->_resurrect) {
+
+							Vec2 v = Vec2(state.Gamepad.sThumbLX, state.Gamepad.sThumbLY);
+							v.normalize();
+							boss->dashingVector = v;
+							boss->dashing = 0.5;
+
+						}
+						if (!leftTriggerPushed) leftTriggerPushed = true;
 					}
 					else {
-						green_slow->setVisible(false);
-						menuTurrets = false;
+						if (leftTriggerPushed) leftTriggerPushed = false;
 					}
 
+					// CONTROL DE PLAYER
+					if (boss->dashing == 0 && !boss->_resurrect) {
+						boss->_sprite->setPosition3D(boss->_sprite->getPosition3D() + Vec3(state.Gamepad.sThumbLX*dt*boss->speed / 70, state.Gamepad.sThumbLY*dt*boss->speed / 70, 0));
+					}
+
+
+					if (wButtons & XINPUT_GAMEPAD_A)
+						//boss->_sprite->setPosition3D(Vec3(800 / 2 + (rand() % 2) - 1 * rand() % 1 * 800 / 2, 600 / 2 + (rand() % 2) - 1 * rand() % 1 * 600 / 2, 100));
+						boss->_sprite->setPosition3D(Vec3(0, 0, boss->_sprite->getPositionZ()));
+
+
+					// CHANGE WEAPON
+					if (wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+						if (!rightShoulderPushed) {
+							boss->_weapon += 1;
+							if (boss->_weapon == 3) boss->_weapon = 0;
+
+							if (boss->_weapon == 0) {
+								gun_normal->setVisible(true);
+								gun_fire->setVisible(false);
+								gun_air->setVisible(false);
+							}
+							else if (boss->_weapon == 1) {
+								gun_normal->setVisible(false);
+								gun_fire->setVisible(true);
+								gun_air->setVisible(false);
+							}
+							else if (boss->_weapon == 2) {
+								gun_normal->setVisible(false);
+								gun_fire->setVisible(false);
+								gun_air->setVisible(true);
+							}
+						}
+						rightShoulderPushed = true;
+					}
+					else {
+						rightShoulderPushed = false;
+					}
+
+
+					// ROTACION DE PLAYER
+					if (state.Gamepad.sThumbRY != 0) rightThumbY = state.Gamepad.sThumbRY;
+					if (state.Gamepad.sThumbRX != 0) rightThumbX = state.Gamepad.sThumbRX;
+
+					boss->_sprite->setRotation3D(Vec3(90, 0, -90 - atan2(rightThumbY, rightThumbX) * 360 / (2 * M_PI)));
+
+					// DISPARO
+					if (state.Gamepad.bRightTrigger != 0) {
+						if (boss->_weapon == 0 && !boss->_resurrect){ //NORMAL
+							if (coolDownNow >= coolDownMax ) {
+								coolDownNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
+								CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
+								WeaponShot* _shotInstance = new WeaponShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
+								addMobileObject(_shotInstance);
+							}
+						}
+						else if (boss->_weapon == 1 && !boss->_resurrect){ // FUEGO
+							if (coolDownFireNow >= coolDownMax){
+								//coolDownFireNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
+								coolDownFireNow = 0.14;
+								CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
+
+								Vec3 _playerMovement = Vec3(state.Gamepad.sThumbLX / 70, state.Gamepad.sThumbLY / 70, 0);
+
+								FireShot* _fireInstance = new FireShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -14 + (rand() % 14) - 7));
+								//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
+								_fireInstance->_displacement = _playerMovement;
+								addMobileObject(_fireInstance);
+
+								_fireInstance = new FireShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, (rand() % 14) - 7));
+								//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
+								_fireInstance->_displacement = _playerMovement;
+								addMobileObject(_fireInstance);
+
+								_fireInstance = new FireShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 14 + (rand() % 14) - 7));
+								//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
+								_fireInstance->_displacement = _playerMovement;
+								addMobileObject(_fireInstance);
+							}
+						}
+						else if (boss->_weapon == 2 && !boss->_resurrect){ //AIRE
+							if (coolDownAirNow >= coolDownMax){
+								airCharging = true;
+								if (airPower < 5) airPower += dt;
+							}
+
+						}
+					}
+
+					if (state.Gamepad.bRightTrigger == 0) {
+						if (boss->_weapon == 2 && !boss->_resurrect){ //AIRE
+							if (airCharging){
+
+								airPower = log(airPower + 0.6) * 4 + 1;
+								if (airPower >= 3.99) airPower = 8;
+
+								airCharging = false;
+								coolDownAirNow = 0;
+
+								CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
+
+
+								AirShot* _airInstance;
+
+								if (airPower == 8){
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -30 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+								}
+
+								if (airPower >= 3){
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -24 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+
+								}
+
+								if (airPower >= 2){
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -18 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+								}
+
+								_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+								_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+								addMobileObject(_airInstance);
+
+								if (airPower >= 2){
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 18 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+								}
+
+								if (airPower >= 3){
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 24 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+								}
+
+								if (airPower == 8) {
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 30 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+									addMobileObject(_airInstance);
+								}
+
+
+								airPower = 0;
+							}
+						}
+					}
+
+					// ROTAR CAMARA
 					/*
-					menuTurrets = !menuTurrets;
-					if (menuTurrets) {
-					green_tower->setVisible(true);
+					if (wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) cameraAngle += 0.1;
+					if (wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) cameraAngle -= 0.1;
+					*/
+					camera->setRotation3D(Vec3(cameraAngle, 0, 0));
+
+					// MENU DE TORRETAS
+					if (wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
+
+						if (!leftShoulderPushed) {
+
+							if (!menuTurrets) {
+								menuTurrets = true;
+								green_tower->setVisible(true);
+
+								icon_dash->setVisible(false);
+								icon_tower->setVisible(true);
+								icon_slow->setVisible(false);
+								icon_monster->setVisible(false);
+							}
+							else if (menuTurrets && green_tower->isVisible()) {
+								green_tower->setVisible(false);
+								green_slow->setVisible(true);
+
+								icon_dash->setVisible(false);
+								icon_tower->setVisible(false);
+								icon_slow->setVisible(true);
+								icon_monster->setVisible(false);
+							}
+							else if (menuTurrets && green_slow->isVisible()) {
+								green_slow->setVisible(false);
+								green_monster->setVisible(true);
+
+								icon_dash->setVisible(false);
+								icon_tower->setVisible(false);
+								icon_slow->setVisible(false);
+								icon_monster->setVisible(true);
+							}
+							else {
+								green_monster->setVisible(false);
+								menuTurrets = false;
+
+								icon_dash->setVisible(true);
+								icon_tower->setVisible(false);
+								icon_slow->setVisible(false);
+								icon_monster->setVisible(false);
+							}
+
+							/*
+							menuTurrets = !menuTurrets;
+							if (menuTurrets) {
+							green_tower->setVisible(true);
+							}
+							else {
+							green_tower->setVisible(false);
+							}
+							*/
+
+						}
+
+						leftShoulderPushed = true;
+
+					}
+
+					else {
+
+						leftShoulderPushed = false;
+
+					}
+
+					if (wButtons & XINPUT_GAMEPAD_DPAD_UP) zoom -= 5;
+					if (wButtons & XINPUT_GAMEPAD_DPAD_DOWN) zoom += 5;
+
+
+
+					// VIBRACION
+					/*
+					if (wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
+					// ESTA VIBRACI√ìN NO DEBER√çA EXPERIMENTARSE AL PULSAR EL BOT√ìN, LA DEBER√çA PROVOCAR LA PROPIA
+					// CLASE DE LA TORRETA, MIENTRAS SE EST√Å ALZANDO, ACOMPA√ëADA DE SONIDO Y DE PART√çCULAS DE POLVO
+					vibration.wLeftMotorSpeed = 20000;
+					vibration.wRightMotorSpeed = 20000;
+					XInputSetState(0, &vibration);
 					}
 					else {
-					green_tower->setVisible(false);
+					vibration.wLeftMotorSpeed = 0;
+					vibration.wRightMotorSpeed = 0;
+					XInputSetState(0, &vibration);
 					}
 					*/
 
 				}
 
-				leftShoulderPushed = true;
-
 			}
+			else
+			{
+				// Controller is not connected 
 
-			else {
+				Vec2 virtual_vec = Vec2(0, 0);
 
-				leftShoulderPushed = false;
+				if (pressed_W || pressed_UP) {
+					virtual_vec.y -= 1;
+				}
+				if (pressed_S || pressed_DOWN) {
+					virtual_vec.y += 1;
+				}
+				if (pressed_A || pressed_LEFT) {
+					virtual_vec.x -= 1;
+				}
+				if (pressed_D || pressed_RIGHT) {
+					virtual_vec.x += 1;
+				}
+				virtual_vec.normalize();
 
-			}
+				// CONTROLA EL MOVIMIENTO
+				if (boss->dashing == 0 && !boss->_resurrect) {
+						boss->_sprite->setPosition3D(boss->_sprite->getPosition3D() + Vec3(virtual_vec.x*32767*dt*boss->speed / 70, -virtual_vec.y*32767*dt*boss->speed / 70, 0));
+				}
 
-			if (wButtons & XINPUT_GAMEPAD_DPAD_UP) zoom -= 5;
-			if (wButtons & XINPUT_GAMEPAD_DPAD_DOWN) zoom += 5;
+				// CONTROLA EL DASHING
+				if (pressed_SPACE_PUSHED && boss->dashing == 0 && (virtual_vec.x != 0 || virtual_vec.y != 0) && !boss->_resurrect) {
 
-
-
-			// VIBRACION
-			/*
-			if (wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
-			// ESTA VIBRACI”N NO DEBERÕA EXPERIMENTARSE AL PULSAR EL BOT”N, LA DEBERÕA PROVOCAR LA PROPIA
-			// CLASE DE LA TORRETA, MIENTRAS SE EST¡ ALZANDO, ACOMPA—ADA DE SONIDO Y DE PARTÕCULAS DE POLVO
-			vibration.wLeftMotorSpeed = 20000;
-			vibration.wRightMotorSpeed = 20000;
-			XInputSetState(0, &vibration);
-			}
-			else {
-			vibration.wLeftMotorSpeed = 0;
-			vibration.wRightMotorSpeed = 0;
-			XInputSetState(0, &vibration);
-			}
-			*/
-
-		}
-
-	}
-	else
-	{
-		// Controller is not connected 
-	}
-
-	// Irrelevant if controlles is connected
-
-	if (!paused) {
-
-		if (coolDownNow < coolDownMax) {
-			coolDownNow += dt;
-		}
-		if (coolDownFireNow < coolDownMax) {
-			coolDownFireNow += dt;
-		}
-		if (coolDownAirNow < coolDownMax){
-			coolDownAirNow += dt;
-		}
-
-		// BOSS 2 ROTATED TOWARDS BOSS 1
-		//Point p = Point(boss->getPositionX(), boss->getPositionY());
-		//rotateToPoint(boss2, p);
-	
-		// SE COLOCA LA TORRE DE PRUEBA EN EL LUGAR AL QUE APUNTAS Y SE PONE EN VERDE
-		green_tower->setPosition3D(Vec3(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + (rightThumbY/500)*(floorSize/2048), 0));
-		green_tower->setRotation3D(boss->_sprite->getRotation3D());
-		green_tower->setColor(ccc3(0, 200, 0));
-
-		green_slow->setPosition3D(Vec3(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + + (rightThumbY/500)*(floorSize/2048), 1));
-		green_slow->setRotation3D(boss->_sprite->getRotation3D());
-		green_slow->setColor(ccc3(0, 200, 0));
-
-		// SE COMPRUEBA QUE LA TORRE NO EST¡ TOCANDO OTRO OBJETO EST¡TICO
-		for (int i = 0; i < num_static_objects; i++) {
-			// 60*1 es el radio de la futura torre
-			float total_radius = static_objects[i]->_radius + 12*(floorSize/2048);
-
-			if (pow(static_objects[i]->_sprite->getPositionX() - green_tower->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() -green_tower->getPositionY(), 2) < pow(total_radius, 2)) {
-
-				green_tower->setColor(ccc3(200, 0, 0));
-
-			}
-
-			total_radius = static_objects[i]->_radius + 20*(floorSize/2048);
-
-			if (pow(static_objects[i]->_sprite->getPositionX() - green_slow->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() -green_slow->getPositionY(), 2) < pow(total_radius, 2)) {
-
-				green_slow->setColor(ccc3(200, 0, 0));
-
-			}
-
-		}
-
-		// SE COMPRUEBA QUE LA TORRE NO EST¡ TOCANDO NINGUNO DE LOS PUNTOS DE LA BEZIER DE UN CAMINO
-		for (int i = 0; i < num_active_pathstones; i++) {
-
-			for (int j = 0; j < 200; j++) {
-
-				// 60*1 es el radio de la futura torre
-				float stone_radius = 12*(floorSize/2048);
-				float total_radius = stone_radius + 12*(floorSize/2048);
-
-				if (pow(active_pathstones[i]->invisible_points[j].x - green_tower->getPositionX(), 2) + pow(active_pathstones[i]->invisible_points[j].y -green_tower->getPositionY(), 2) < pow(total_radius, 2)) {
-
-					green_tower->setColor(ccc3(200, 0, 0));
+					Vec2 v = Vec2(virtual_vec.x, -virtual_vec.y);
+					v.normalize();
+					boss->dashingVector = v;
+					boss->dashing = 0.5;
 
 				}
 
+				// CONTROLA LA ORIENTACION
+				Vec2 virtual_vec_mouse = (mouse_position - Vec2(960/2, -640/2));
+				virtual_vec_mouse.normalize();
+
+				boss->_sprite->setRotation3D(Vec3(90, 0, -90 - atan2(virtual_vec_mouse.y*32767, virtual_vec_mouse.x*32767) * 360 / (2 * M_PI)));
+
+				// SI NO SE PONE EN FALSE SE QUEDARIA EN TRUE HASTA QUE SE SOLTASE LA TECLA
+				pressed_SPACE_PUSHED = false;
+				pressed_ENTER_PUSHED = false;
+
 			}
 
-		}
+			// Irrelevant if controller is connected
+
+			if (!paused) {
+
+				if (coolDownNow < coolDownMax) {
+					coolDownNow += dt;
+				}
+				if (coolDownFireNow < coolDownMax) {
+					coolDownFireNow += dt;
+				}
+				if (coolDownAirNow < coolDownMax){
+					coolDownAirNow += dt;
+				}
+
+				// SE CONTROLA QUE NO SE SALGA DEL RADIO DE LAS MOUNTAINS
+				float aux_distance_player = sqrt(pow(boss->_sprite->getPositionX(), 2) + pow(boss->_sprite->getPositionY(), 2));
+				float radius_mountains = 930;
+				if (aux_distance_player > radius_mountains*(floorSize/2048)) {
+					Vec2 distance_from_center = Vec2(boss->_sprite->getPositionX(), boss->_sprite->getPositionY());
+					distance_from_center.normalize();
+					boss->_sprite->setPosition3D(Vec3(distance_from_center.x*radius_mountains*(floorSize/2048), distance_from_center.y*radius_mountains*(floorSize/2048), boss->_sprite->getPositionZ()));
+				}
+
+				// BOSS 2 ROTATED TOWARDS BOSS 1
+				//Point p = Point(boss->getPositionX(), boss->getPositionY());
+				//rotateToPoint(boss2, p);
+	
+				// SE COLOCA LA TORRE DE PRUEBA EN EL LUGAR AL QUE APUNTAS Y SE PONE EN VERDE
+				green_tower->setPosition3D(Vec3(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + (rightThumbY/500)*(floorSize/2048), 0));
+				green_tower->setRotation3D(boss->_sprite->getRotation3D());
+				green_tower->setColor(ccc3(0, 200, 0));
+
+				green_slow->setPosition3D(Vec3(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + + (rightThumbY/500)*(floorSize/2048), 2));
+				green_slow->setRotation3D(boss->_sprite->getRotation3D());
+				green_slow->setColor(ccc3(0, 200, 0));
+
+				green_monster->setPosition3D(Vec3(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + + (rightThumbY/500)*(floorSize/2048), 2));
+				green_monster->setRotation3D(boss->_sprite->getRotation3D());
+				green_monster->setColor(ccc3(0, 200, 0));
+
+				// SE COMPRUEBA QUE LA TORRE NO EST√Å TOCANDO OTRO OBJETO EST√ÅTICO
+				for (int i = 0; i < num_static_objects; i++) {
+					// 60*1 es el radio de la futura torre
+					float total_radius = static_objects[i]->_radius + 12*(floorSize/2048);
+
+					if (pow(static_objects[i]->_sprite->getPositionX() - green_tower->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() -green_tower->getPositionY(), 2) < pow(total_radius, 2)) {
+
+						green_tower->setColor(ccc3(200, 0, 0));
+
+					}
+
+					total_radius = static_objects[i]->_radius + 20*(floorSize/2048);
+
+					if (pow(static_objects[i]->_sprite->getPositionX() - green_slow->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() -green_slow->getPositionY(), 2) < pow(total_radius, 2)) {
+
+						green_slow->setColor(ccc3(200, 0, 0));
+
+					}
+
+					total_radius = static_objects[i]->_radius + 20*(floorSize/2048);
+
+					if (pow(static_objects[i]->_sprite->getPositionX() - green_monster->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() -green_monster->getPositionY(), 2) < pow(total_radius, 2)) {
+
+						green_monster->setColor(ccc3(200, 0, 0));
+
+					}
+
+				}
+
+				// SE COMPRUEBA QUE LA TORRE NO EST√Å TOCANDO NINGUNO DE LOS PUNTOS DE LA BEZIER DE UN CAMINO
+				for (int i = 0; i < num_active_pathstones; i++) {
+
+					for (int j = 0; j < 200; j++) {
+
+						// 60*1 es el radio de la futura torre
+						float stone_radius = 12*(floorSize/2048);
+						float total_radius = stone_radius + 12*(floorSize/2048);
+
+						if (pow(active_pathstones[i]->invisible_points[j].x - green_tower->getPositionX(), 2) + pow(active_pathstones[i]->invisible_points[j].y -green_tower->getPositionY(), 2) < pow(total_radius, 2)) {
+
+							green_tower->setColor(ccc3(200, 0, 0));
+
+						}
+
+					}
+
+				}
 
 	
-		// COLLISION DETECTION MOBILE VS MOBILE OBJECTS
+				// COLLISION DETECTION MOBILE VS MOBILE OBJECTS
 	
-			for (int i = 0; i < num_mobile_objects; i++) {
-				for (int j = 0; j < num_mobile_objects; j++) {
+					for (int i = 0; i < num_mobile_objects; i++) {
+						for (int j = 0; j < num_mobile_objects; j++) {
 
-					float total_radius = mobile_objects[i]->_radius + mobile_objects[j]->_radius;
+							float total_radius = mobile_objects[i]->_radius + mobile_objects[j]->_radius;
 
-					if (mobile_objects[i] != mobile_objects[j] && mobile_objects[i]->_health > 0 && mobile_objects[j]->_health > 0 && pow(mobile_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(mobile_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2) < pow(total_radius, 2)) {
-						// SON OBJETOS DIFERENTES Y COLISIONAN, Y ADEMAS LOS DOS ESTAN ACTIVOS (HEALTH > 0)
+							if (mobile_objects[i] != mobile_objects[j] && mobile_objects[i]->_health > 0 && mobile_objects[j]->_health > 0 && pow(mobile_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(mobile_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2) < pow(total_radius, 2)) {
+								// SON OBJETOS DIFERENTES Y COLISIONAN, Y ADEMAS LOS DOS ESTAN ACTIVOS (HEALTH > 0)
 
-						if (mobile_objects[i]->_type.compare("shot") == 0 || mobile_objects[j]->_type.compare("shot") == 0) {
-							// UNO DE LOS DOS ES UN SHOT
-							if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
-								// EL OTRO ES UN ENEMY
-								Entity* bala;
-								Entity* enemigo;
+								if (mobile_objects[i]->_type.compare("shot") == 0 || mobile_objects[j]->_type.compare("shot") == 0) {
+									// UNO DE LOS DOS ES UN SHOT
+									if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
+										// EL OTRO ES UN ENEMY
+										Entity* bala;
+										Entity* enemigo;
 
-								if (mobile_objects[i]->_type.compare("shot") == 0) bala = mobile_objects[i];
-								if (mobile_objects[j]->_type.compare("shot") == 0) bala = mobile_objects[j];
+										if (mobile_objects[i]->_type.compare("shot") == 0) bala = mobile_objects[i];
+										if (mobile_objects[j]->_type.compare("shot") == 0) bala = mobile_objects[j];
 
-								if (mobile_objects[i]->_type.compare("enemy") == 0) enemigo = mobile_objects[i];
-								if (mobile_objects[j]->_type.compare("enemy") == 0) enemigo = mobile_objects[j];
+										if (mobile_objects[i]->_type.compare("enemy") == 0) enemigo = mobile_objects[i];
+										if (mobile_objects[j]->_type.compare("enemy") == 0) enemigo = mobile_objects[j];
 
-								// LA BALA MUERE
-								bala->_health = 0;
+										// LA BALA MUERE
+										bala->_health = 0;
 
-								// EL ENEMIGO SE HIERE
-								enemigo->_health -= 20;
-								if (enemigo->_health > 0) { 
-									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
-									enemigo->_sprite->setColor(Color3B(255, 0, 0));
-									enemigo->_injured = 0.1;
-								}
-								else {
-									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
-								}
+										// EL ENEMIGO SE HIERE
+										enemigo->_health -= 20;
+										if (enemigo->_health > 0) { 
+											CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
+											enemigo->_sprite->setColor(Color3B(255, 0, 0));
+											enemigo->_injured = 0.1;
+										}
+										else {
+											CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+										}
 						
-							}
+									}
 					
-						}
-						else if (mobile_objects[i]->_type.compare("tower_shot") == 0 || mobile_objects[j]->_type.compare("tower_shot") == 0) {
-							// UNO DE LOS DOS ES UN TOWER_SHOT
-							if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
-								// EL OTRO ES UN ENEMY
-								TowerShot* bala;
-								Entity* enemigo;
-
-								if (mobile_objects[i]->_type.compare("tower_shot") == 0) bala = (TowerShot*) mobile_objects[i];
-								if (mobile_objects[j]->_type.compare("tower_shot") == 0) bala = (TowerShot*) mobile_objects[j];
-
-								if (mobile_objects[i]->_type.compare("enemy") == 0) enemigo = mobile_objects[i];
-								if (mobile_objects[j]->_type.compare("enemy") == 0) enemigo = mobile_objects[j];
-
-								// LA BALA MUERE
-								bala->_health = 0;
-
-								// EL ENEMIGO SE HIERE
-								enemigo->_health -= bala->_damage;
-								if (enemigo->_health > 0) { 
-									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
-									enemigo->_sprite->setColor(Color3B(255, 0, 0));
-									enemigo->_injured = 0.1;
 								}
-								else {
-									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
-								}
+								else if (mobile_objects[i]->_type.compare("tower_shot") == 0 || mobile_objects[j]->_type.compare("tower_shot") == 0) {
+									// UNO DE LOS DOS ES UN TOWER_SHOT
+									if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
+										// EL OTRO ES UN ENEMY
+										TowerShot* bala;
+										Entity* enemigo;
+
+										if (mobile_objects[i]->_type.compare("tower_shot") == 0) bala = (TowerShot*) mobile_objects[i];
+										if (mobile_objects[j]->_type.compare("tower_shot") == 0) bala = (TowerShot*) mobile_objects[j];
+
+										if (mobile_objects[i]->_type.compare("enemy") == 0) enemigo = mobile_objects[i];
+										if (mobile_objects[j]->_type.compare("enemy") == 0) enemigo = mobile_objects[j];
+
+										// LA BALA MUERE
+										bala->_health = 0;
+
+										// EL ENEMIGO SE HIERE
+										enemigo->_health -= bala->_damage;
+										if (enemigo->_health > 0) { 
+											CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
+											enemigo->_sprite->setColor(Color3B(255, 0, 0));
+											enemigo->_injured = 0.1;
+										}
+										else {
+											CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+										}
 						
-							}
+									}
 					
-						}
-						else if (mobile_objects[i]->_type.compare("player") == 0 || mobile_objects[j]->_type.compare("player") == 0) {
-							// UNO DE LOS DOS ES EL JUGADOR
-
-							if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
-								// EL OTRO ES UN ENEMY
-								Entity* player;
-								Entity* enemigo;
-
-								if (mobile_objects[i]->_type.compare("player") == 0) player = mobile_objects[i];
-								if (mobile_objects[j]->_type.compare("player") == 0) player = mobile_objects[j];
-
-								if (mobile_objects[i]->_type.compare("enemy") == 0) enemigo = mobile_objects[i];
-								if (mobile_objects[j]->_type.compare("enemy") == 0) enemigo = mobile_objects[j];
-
-								repulse(player, enemigo);
-
-								// EL JUGADOR SE HIERE
-								player->_health -= 20;
-								if (player->_health > 0) { 
-									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
-									player->_sprite->setColor(Color3B(255, 0, 0));
-									player->_injured = 0.1;
 								}
-								else {
-									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
-									player->_health = 200;
-									player->_sprite->setPosition3D(Vec3(0, 0, player->_sprite->getPositionZ()));
-								}
+								else if (mobile_objects[i]->_type.compare("player") == 0 || mobile_objects[j]->_type.compare("player") == 0) {
+									// UNO DE LOS DOS ES EL JUGADOR
+
+									if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
+										// EL OTRO ES UN ENEMY
+										Player* player;
+										Entity* enemigo;
+
+										if (mobile_objects[i]->_type.compare("player") == 0) player = (Player*)mobile_objects[i];
+										if (mobile_objects[j]->_type.compare("player") == 0) player = (Player*)mobile_objects[j];
+
+										if (mobile_objects[i]->_type.compare("enemy") == 0) enemigo = mobile_objects[i];
+										if (mobile_objects[j]->_type.compare("enemy") == 0) enemigo = mobile_objects[j];
+
+										repulse(player, enemigo);
+
+										// EL JUGADOR SE HIERE
+										player->_health -= 20;
+										if (player->_health > 0) { 
+											CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
+											player->_sprite->setColor(Color3B(255, 0, 0));
+											player->_injured = 0.1;
+										}
+										else {
+											CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+											player->_resurrect = true;
+											player->_health = 0.01;
+											player->_sprite->setPosition3D(Vec3(0, 0, player->_sprite->getPositionZ()));
+										}
 							
-							}
-						}
+									}
+									else if (mobile_objects[i]->_type.compare("resource") == 0 || mobile_objects[j]->_type.compare("resource") == 0) {
+										// EL OTRO ES EL JUGADOR
+										Resource* res;
+										Player* player;
 
-						else if (mobile_objects[i]->_type.compare("fireshot") == 0 || mobile_objects[j]->_type.compare("fireshot") == 0) {
-							// UNO DE LOS DOS ES UNA PARTÕCULA DE FUEGO
-							if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
-								// EL OTRO ES UN ENEMY
-								FireShot* bala;
-								Entity* enemigo;
+										if (mobile_objects[i]->_type.compare("resource") == 0) res = (Resource*)mobile_objects[i];
+										if (mobile_objects[j]->_type.compare("resource") == 0) res = (Resource*)mobile_objects[j];
 
-								if (mobile_objects[i]->_type.compare("fireshot") == 0) bala = (FireShot*)mobile_objects[i];
-								if (mobile_objects[j]->_type.compare("fireshot") == 0) bala = (FireShot*)mobile_objects[j];
+										res->_sprite->setVisible(false);
+										res->_active = false;
+										removeMobileObject(res->_num_in_array);
+										
+										resources += 20;
 
-								if (mobile_objects[i]->_type.compare("enemy") == 0) enemigo = mobile_objects[i];
-								if (mobile_objects[j]->_type.compare("enemy") == 0) enemigo = mobile_objects[j];
+										//if (mobile_objects[i]->_type.compare("player") == 0) enemigo = mobile_objects[i];
+										//if (mobile_objects[j]->_type.compare("player") == 0) enemigo = mobile_objects[j];
+									}
+								}
 
-								// LA BALA NO MUERE
+								else if (mobile_objects[i]->_type.compare("fireshot") == 0 || mobile_objects[j]->_type.compare("fireshot") == 0) {
+									// UNO DE LOS DOS ES UNA PART√çCULA DE FUEGO
+									if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
+										// EL OTRO ES UN ENEMY
+										FireShot* bala;
+										Entity* enemigo;
 
-								// EL ENEMIGO SE HIERE
-								enemigo->_health -= bala->_damage;
-								if (enemigo->_health > 0) {
-									//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
-									enemigo->_sprite->setColor(Color3B(255, 0, 0));
-									enemigo->_injured = 0.1;
+										if (mobile_objects[i]->_type.compare("fireshot") == 0) bala = (FireShot*)mobile_objects[i];
+										if (mobile_objects[j]->_type.compare("fireshot") == 0) bala = (FireShot*)mobile_objects[j];
+
+										if (mobile_objects[i]->_type.compare("enemy") == 0) enemigo = mobile_objects[i];
+										if (mobile_objects[j]->_type.compare("enemy") == 0) enemigo = mobile_objects[j];
+
+										// LA BALA NO MUERE
+
+										// EL ENEMIGO SE HIERE
+										enemigo->_health -= bala->_damage;
+										if (enemigo->_health > 0) {
+											//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
+											enemigo->_sprite->setColor(Color3B(255, 0, 0));
+											enemigo->_injured = 0.1;
+										}
+										else {
+											CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+										}
+									}
+								}
+								else if (mobile_objects[i]->_type.compare("airshot") == 0 || mobile_objects[j]->_type.compare("fireshot") == 0) {
+									// UNO DE LOS DOS ES UNA PART√çCULA DE AIRE
+									if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
+										// EL OTRO ES UN ENEMY
+										AirShot* bala;
+										Entity* enemigo;
+
+										if (mobile_objects[i]->_type.compare("airshot") == 0) bala = (AirShot*)mobile_objects[i];
+										if (mobile_objects[j]->_type.compare("airshot") == 0) bala = (AirShot*)mobile_objects[j];
+
+										if (mobile_objects[i]->_type.compare("enemy") == 0) enemigo = mobile_objects[i];
+										if (mobile_objects[j]->_type.compare("enemy") == 0) enemigo = mobile_objects[j];
+
+										// LA BALA NO MUERE
+										repulse(bala, enemigo);
+										// EL ENEMIGO SE HIERE
+										enemigo->_health -= bala->_damage;
+										if (enemigo->_health > 0) {
+											//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
+											enemigo->_sprite->setColor(Color3B(255, 0, 0));
+											enemigo->_injured = 0.1;
+										}
+										else {
+											CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+										}
+									}
+								}
+								else if (mobile_objects[i]->_type.compare("resource") == 0 || mobile_objects[j]->_type.compare("resource") == 0) {
+									// UNO ES UN RESOURCE
+									// NO CHOCA CON NADA
+								}
+								else if (mobile_objects[i]->_type.compare("enemy") == 0 && mobile_objects[j]->_type.compare("enemy") == 0) {
+									//LOS DOS SON ENEMIGOS
 								}
 								else {
-									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
-								}
-							}
-						}
-						else if (mobile_objects[i]->_type.compare("airshot") == 0 || mobile_objects[j]->_type.compare("fireshot") == 0) {
-							// UNO DE LOS DOS ES UNA PARTÕCULA DE FUEGO
-							if (mobile_objects[i]->_type.compare("enemy") == 0 || mobile_objects[j]->_type.compare("enemy") == 0) {
-								// EL OTRO ES UN ENEMY
-								AirShot* bala;
-								Entity* enemigo;
-
-								if (mobile_objects[i]->_type.compare("airshot") == 0) bala = (AirShot*)mobile_objects[i];
-								if (mobile_objects[j]->_type.compare("airshot") == 0) bala = (AirShot*)mobile_objects[j];
-
-								if (mobile_objects[i]->_type.compare("enemy") == 0) enemigo = mobile_objects[i];
-								if (mobile_objects[j]->_type.compare("enemy") == 0) enemigo = mobile_objects[j];
-
-								// LA BALA NO MUERE
-								repulse(bala, enemigo);
-								// EL ENEMIGO SE HIERE
-								enemigo->_health -= bala->_damage;
-								if (enemigo->_health > 0) {
-									//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
-									enemigo->_sprite->setColor(Color3B(255, 0, 0));
-									enemigo->_injured = 0.1;
-								}
-								else {
-									CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
-								}
-							}
-						}
-						else if (mobile_objects[i]->_type.compare("enemy") == 0 && mobile_objects[j]->_type.compare("enemy") == 0) {
-							//LOS DOS SON ENEMIGOS
-						}
-						else {
 						
-							repulse(mobile_objects[i], mobile_objects[j]);
+									repulse(mobile_objects[i], mobile_objects[j]);
 
-						}
+								}
 
-					}
+							}
 				
-				}
-			}
-		
-		
-		
-			// COLLISION DETECTION STATIC VS MOBILE OBJECTS
-			// VAN DESPUES QUE LA COLISION ENTRE MOVILES PORQUE LA COLISION ESTATICA SE TIENE QUE RESPETAR POR ENCIMA DE LA OTRA
-		
-			for (int i = 0; i < num_static_objects; i++) {
-				for (int j = 0; j < num_mobile_objects; j++) {
-
-					float total_radius = static_objects[i]->_radius + mobile_objects[j]->_radius;
-
-					if (static_objects[i] != mobile_objects[j] && pow(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2) < pow(total_radius, 2)) {
-
-						if (mobile_objects[j]->_type.compare("enemy") == 0 && static_objects[i]->_type.compare("nexus") == 0) {
-
-							Enemy* e = (Enemy*)mobile_objects[j];
-							e->harmNexus();
-
 						}
-						else if (mobile_objects[j]->_type.compare("player") == 0 && static_objects[i]->_type.compare("nexus") == 0) {
-							// EL PLAYER PUEDE ATRAVESAR EL NEXO
-						}
-						else if ((mobile_objects[j]->_type.compare("shot") == 0 || mobile_objects[j]->_type.compare("airshot") == 0 || mobile_objects[j]->_type.compare("fireshot") == 0) && static_objects[i]->_type.compare("nexus") == 0) {
-							// LOS SHOTS ATRAVIESAN EL NEXO
-						}
-						else if (mobile_objects[j]->_type.compare("tower_shot") == 0) {
-							// LOS TOWER_SHOT NO COLISIONAN CON NADA ESTATICO
-						}
-						else if (static_objects[i]->_type.compare("tower") == 0) {
+					}
+		
+					// COLLISION DETECTION STATIC VS MOBILE OBJECTS
+					// VAN DESPUES QUE LA COLISION ENTRE MOVILES PORQUE LA COLISION ESTATICA SE TIENE QUE RESPETAR POR ENCIMA DE LA OTRA
+		
+					for (int i = 0; i < num_static_objects; i++) {
+						for (int j = 0; j < num_mobile_objects; j++) {
+
+							float total_radius = static_objects[i]->_radius + mobile_objects[j]->_radius;
+
+							if (static_objects[i] != mobile_objects[j] && pow(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2) < pow(total_radius, 2)) {
+
+
+								if (mobile_objects[j]->_type.compare("enemy") == 0 && static_objects[i]->_type.compare("nexus") == 0) {
+
+									Enemy* e = (Enemy*)mobile_objects[j];
+									e->harmNexus();
+
+								}
+								else if (mobile_objects[j]->_type.compare("player") == 0 && static_objects[i]->_type.compare("nexus") == 0) {
+									// EL PLAYER PUEDE ATRAVESAR EL NEXO
+								}
+								else if ((mobile_objects[j]->_type.compare("shot") == 0 || mobile_objects[j]->_type.compare("airshot") == 0 || mobile_objects[j]->_type.compare("fireshot") == 0) && static_objects[i]->_type.compare("nexus") == 0) {
+									// LOS SHOTS ATRAVIESAN EL NEXO
+								}
+								else if (mobile_objects[j]->_type.compare("tower_shot") == 0) {
+									// LOS TOWER_SHOT NO COLISIONAN CON NADA ESTATICO
+								}
+								else if (mobile_objects[j]->_type.compare("resource") == 0) {
+									// LOS RESOURCES NO COLISIONAN CON NADA ESTATICO
+								}
+								else if (static_objects[i]->_type.compare("tower") == 0) {
 							
-							Tower* t = (Tower*) static_objects[i];
+									Tower* t = (Tower*) static_objects[i];
 
-							if (t->_subtype.compare("slow") == 0) {
+									if (t->_subtype.compare("slow") == 0) {
+								
+										if (mobile_objects[j]->_type.compare("enemy") == 0) {
+											((Enemy*) mobile_objects[j])->slowed = true;
+										}
+
+									}
+									else if (t->_subtype.compare("monster") == 0) {
+
+										if (t->_cooldown <= 0) {
+											if (mobile_objects[j]->_type.compare("enemy") == 0) {
+												((Enemy*)mobile_objects[j])->_health = 0;
+												CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+												t->_cooldown = 4;
+											}
+										}
+
+									}
+									else {
+										static_repulse(static_objects[i], mobile_objects[j]);
+									}
+
+								}
+								else {
+
+									static_repulse(static_objects[i], mobile_objects[j]);
+
+								}
 
 							}
-							else {
-								static_repulse(static_objects[i], mobile_objects[j]);
-							}
 
-						}
-						else {
-
-							static_repulse(static_objects[i], mobile_objects[j]);
-
-						}
-
-					}
-
-				}
-			}
-
-		// TOWER TARGETING (STATIC VS MOBILE OBJECTS)
-
-		for (int i = 0; i < num_static_objects; i++) {
-				
-			if (static_objects[i]->_type.compare("tower") == 0){
-				
-				if (static_objects[i]->_target == nullptr)
-				{
-					for (int j = 0; j < num_mobile_objects; j++)
-					{
-						//float total_radius = myTower->_range;
-						if (mobile_objects[j]->_type.compare("enemy") == 0 && mobile_objects[j]->_health > 0){
-							if (pow(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2) < pow(static_objects[i]->_range, 2)) {
-								static_objects[i]->_target = mobile_objects[j]; // Depurar: IMPLEMENT ITERATOR TO CHOOSE CLOSEST
-							}
 						}
 					}
+
+				// TOWER TARGETING (STATIC VS MOBILE OBJECTS)
+
+				for (int i = 0; i < num_static_objects; i++) {
+				
+					if (static_objects[i]->_type.compare("tower") == 0){
+				
+						if (static_objects[i]->_target == nullptr)
+						{
+							for (int j = 0; j < num_mobile_objects; j++)
+							{
+								//float total_radius = myTower->_range;
+								if (mobile_objects[j]->_type.compare("enemy") == 0 && mobile_objects[j]->_health > 0){
+									if (pow(static_objects[i]->_sprite->getPositionX() - mobile_objects[j]->_sprite->getPositionX(), 2) + pow(static_objects[i]->_sprite->getPositionY() - mobile_objects[j]->_sprite->getPositionY(), 2) < pow(static_objects[i]->_range, 2)) {
+										static_objects[i]->_target = mobile_objects[j]; // Depurar: IMPLEMENT ITERATOR TO CHOOSE CLOSEST
+									}
+								}
+							}
+						}
+					}
 				}
-			}
-		}
 
 
-			// DIE, BASTARDS, DIE!
+					// DIE, BASTARDS, DIE!
 		
-			for (int i = 0; i < num_mobile_objects; i++) {
+					for (int i = 0; i < num_mobile_objects; i++) {
 
-				if (mobile_objects[i]->_health <= 0) {
+						if (mobile_objects[i]->_health <= 0) {
 
-					mobile_objects[i]->_active = false;
+							mobile_objects[i]->_active = false;
 
-					if (mobile_objects[i]->_type.compare("enemy") == 0) {
-						EventCustom event_dead("enemy_dead");
-						_eventDispatcher->dispatchEvent(&event_dead);
+							if (mobile_objects[i]->_type.compare("enemy") == 0) {
+								Resource* r = new Resource(floorSize, Point(mobile_objects[i]->_sprite->getPositionX(), mobile_objects[i]->_sprite->getPositionY()), boss);
+								addMobileObject(r);
+								r = new Resource(floorSize, Point(mobile_objects[i]->_sprite->getPositionX(), mobile_objects[i]->_sprite->getPositionY()), boss);
+								addMobileObject(r);
+								r = new Resource(floorSize, Point(mobile_objects[i]->_sprite->getPositionX(), mobile_objects[i]->_sprite->getPositionY()), boss);
+								addMobileObject(r);
+								r = new Resource(floorSize, Point(mobile_objects[i]->_sprite->getPositionX(), mobile_objects[i]->_sprite->getPositionY()), boss);
+								addMobileObject(r);
+								r = new Resource(floorSize, Point(mobile_objects[i]->_sprite->getPositionX(), mobile_objects[i]->_sprite->getPositionY()), boss);
+								addMobileObject(r);
+
+								EventCustom event_dead("enemy_dead");
+								_eventDispatcher->dispatchEvent(&event_dead);
+							}
+
+							//mobile_objects[i]->_sprite->stopAllActions();
+							mobile_objects[i]->_sprite->removeFromParentAndCleanup(true);
+							mobile_objects[i]->_sprite = NULL;
+							_eventDispatcher->removeEventListenersForTarget(mobile_objects[i]);
+				
+							float* data_mobile = new float[1];
+							data_mobile[0] = mobile_objects[i]->_num_in_array;
+							EventCustom event_mobile("remove_mobile");
+							event_mobile.setUserData(data_mobile);
+							_eventDispatcher->dispatchEvent(&event_mobile);
+
+						}
+
 					}
 
-					//mobile_objects[i]->_sprite->stopAllActions();
-					mobile_objects[i]->_sprite->removeFromParentAndCleanup(true);
-					mobile_objects[i]->_sprite = NULL;
-					_eventDispatcher->removeEventListenersForTarget(mobile_objects[i]);
-				
-					float* data_mobile = new float[1];
-					data_mobile[0] = mobile_objects[i]->_num_in_array;
-					EventCustom event_mobile("remove_mobile");
-					event_mobile.setUserData(data_mobile);
-					_eventDispatcher->dispatchEvent(&event_mobile);
+				// TODOS LOS PUNTOS ROJOS DEL MINIMAPA REPRESENTANDO ENEMIGOS SE RESETEAN
+				for (int aux_bla = 0; aux_bla < 200; aux_bla++) {
+					enemy_points[aux_bla]->setVisible(false);
+				}
+
+				// AQUI SE VUELVEN A PONER LOS PUNTOS ROJOS DE LOS ENEMIGOS
+				for (int j = 0; j < num_mobile_objects; j++) {
+					if (mobile_objects[j]->_type.compare("enemy") == 0) {
+						enemy_points[j]->setVisible(true);
+						enemy_points[j]->setPositionX(960 -minimapa->getBoundingBox().size.width/2 -16 +(mobile_objects[j]->_sprite->getPositionX()/(floorSize/2))*(128/2));
+						enemy_points[j]->setPositionY(640 -minimapa->getBoundingBox().size.height/2 -16 +(mobile_objects[j]->_sprite->getPositionY()/(floorSize/2))*(128/2));
+					}
+				}
+		
+				if (nexus->_life > 0 && dead_enemies == total_enemies) {
+
+					nexus->_sprite->setColor(Color3B(0, 255, 0));
 
 				}
 
-			}
-		
-		if (nexus->_life > 0 && dead_enemies == total_enemies) {
+				camera->setRotation3D(Vec3(cameraAngle, 0, 0));
+				camera->setPosition3D(Vec3(boss->_sprite->getPositionX(), boss->_sprite->getPositionY() - sin(cameraAngle*(2*M_PI)/360)*zoom, boss->_sprite->getPositionZ() + cos(cameraAngle*(2*M_PI)/360)*zoom ));
 
-			nexus->_sprite->setColor(Color3B(0, 255, 0));
+			}
 
 		}
-
-		camera->setRotation3D(Vec3(cameraAngle, 0, 0));
-		camera->setPosition3D(Vec3(boss->_sprite->getPositionX(), boss->_sprite->getPositionY() - sin(cameraAngle*(2*M_PI)/360)*zoom, boss->_sprite->getPositionZ() + cos(cameraAngle*(2*M_PI)/360)*zoom ));
-
 	}
+
 
 }
 
@@ -1350,6 +1836,87 @@ void HelloWorld::readMapFromFile(const std::string nameOfFile) {
     }
 
 }
+
+void HelloWorld::keyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
+{
+	//CCLOG("PULSADA LA TECLA : %x", keyCode);
+
+	if (keyCode == EventKeyboard::KeyCode::KEY_W) { 
+		//CCLOG("W key was pressed"); 
+		pressed_W = true;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_A) {
+		pressed_A = true;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_S) {
+		pressed_S = true;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_D) {
+		pressed_D = true;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_UP_ARROW) {
+		pressed_UP = true;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_LEFT_ARROW) {
+		pressed_LEFT = true;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_DOWN_ARROW) {
+		pressed_DOWN = true;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_RIGHT_ARROW) {
+		pressed_RIGHT = true;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_SPACE) {
+		pressed_SPACE = true;
+		pressed_SPACE_PUSHED = true;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_ENTER || keyCode == EventKeyboard::KeyCode::KEY_KP_ENTER) {
+		pressed_ENTER = true;
+		pressed_ENTER_PUSHED = true;
+	}
+
+}
+
+
+void HelloWorld::keyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event)
+{
+
+	if (keyCode == EventKeyboard::KeyCode::KEY_W) { 
+		//CCLOG("W key was released"); 
+		pressed_W = false;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_A) {
+		pressed_A = false;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_S) {
+		pressed_S = false;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_D) {
+		pressed_D = false;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_UP_ARROW) {
+		pressed_UP = false;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_LEFT_ARROW) {
+		pressed_LEFT = false;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_DOWN_ARROW) {
+		pressed_DOWN = false;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_RIGHT_ARROW) {
+		pressed_RIGHT = false;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_SPACE) {
+		pressed_SPACE = false;
+		pressed_SPACE_PUSHED = false;
+	}
+	else if (keyCode == EventKeyboard::KeyCode::KEY_ENTER || keyCode == EventKeyboard::KeyCode::KEY_KP_ENTER) {
+		pressed_ENTER = false;
+		pressed_ENTER_PUSHED = false;
+	}
+
+}
+
 
 void HelloWorld::menuCloseCallback(Ref* pSender)
 {

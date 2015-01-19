@@ -21,7 +21,7 @@ Nexus::Nexus(int floorSize2, Point initial_point_2) {
 	// ESTE RADIO ES PERFECTO, NO TOCAR
 	_radius = scale_nexus*1;
 
-	position_z_nexus = -0.44*scale_nexus;
+	position_z_nexus = 0;
 
 	_sprite = Sprite3D::create("Shield.obj", "stone.png");
 	_sprite->setPosition3D(Vec3(initial_point_nexus.x, initial_point_nexus.y, position_z_nexus));

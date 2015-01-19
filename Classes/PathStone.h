@@ -27,6 +27,7 @@ public:
 	
 	Layer* getLayer();
 	void setNextPath(PathStone* nextPath2);
+	void rotateToPoint(Sprite3D* s, Point p);
 
 	~PathStone(void);
 };

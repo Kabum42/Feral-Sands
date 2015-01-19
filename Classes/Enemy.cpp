@@ -9,30 +9,18 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 	floorSize = floorSize2;
 	_principio = true;
 	_active = false;
-	_health = 200;
+	//_health = 200;
 	_injured = 0;
 	_type = "enemy";
 	_speed = 0;
 	num_location = 0;
 	established_location = false;
 	player = player2;
+	slowed = false;
 	
 	_subtype = s_enemy2;
 	initial_point_enemy = initial_point_enemy2;
 	seconds_enemy = seconds_enemy2;
-
-	if (_subtype.compare("grunt") == 0) {
-		_speed = 200;
-	}
-	else if (_subtype.compare("dog") == 0) {
-		_speed = 200;
-	}
-	else if (_subtype.compare("tank") == 0) {
-		_speed = 200;
-	}
-	else if (_subtype.compare("ghost") == 0) {
-		_speed = 200;
-	}
 
 	scale_enemy = 4*(floorSize/2048);
 	position_z_enemy = scale_enemy*4.7;
@@ -43,12 +31,50 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 
 	path = path2;
 
-	_sprite = Sprite3D::create("Enemy.obj", "stone.png");
-	_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
-	_sprite->setRotation3D(Vec3(90, 0, 270));
-	_sprite->setScale(scale_enemy);
+	if (_subtype.compare("grunt") == 0) {
+		
+		_speed = 200;
+		_health = 200;
 
-	
+		_sprite = Sprite3D::create("Enemy.obj", "stone.png");
+		_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
+		_sprite->setRotation3D(Vec3(90, 0, 270));
+		_sprite->setScale(scale_enemy);
+	}
+	else if (_subtype.compare("dog") == 0) {
+		
+		_speed = 200;
+		_health = 150;
+
+		_sprite = Sprite3D::create("Enemy.obj", "fire.jpg");
+		_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
+		_sprite->setRotation3D(Vec3(90, 0, 270));
+		_sprite->setScale(scale_enemy);
+	}
+	else if (_subtype.compare("tank") == 0) {
+		
+		_speed = 200;
+		_health = 400;
+
+		_sprite = Sprite3D::create("Enemy.obj", "stone.png");
+		_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
+		_sprite->setRotation3D(Vec3(90, 0, 270));
+		_sprite->setScale(scale_enemy*2);
+	}
+	else if (_subtype.compare("ghost") == 0) {
+		
+		_speed = 200;
+		_health = 150;
+
+		_sprite = Sprite3D::create("Enemy.obj", "stone.png");
+		_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
+		_sprite->setRotation3D(Vec3(90, 0, 270));
+		_sprite->setScale(scale_enemy);
+		GLubyte ubyteComponent = static_cast<GLubyte>(0.4f * 255.f); 
+		_sprite->setOpacity(ubyteComponent);
+	}
+
+
 	_eventDispatcher->addCustomEventListener("EnterFrame", [=](EventCustom* event) {
 		float* data = static_cast<float*>(event->getUserData());
 		update(data[0]);
@@ -125,6 +151,8 @@ void Enemy::update(float dt)
 			followPath(dt);
 		}	
 
+		slowed = false;
+
 	}
 
 	
@@ -186,8 +214,11 @@ void Enemy::followPath(float dt) {
 
 		Vec2 v = Vec2(location.x - _sprite->getPositionX(), location.y - _sprite->getPositionY());
 		v.normalize();
-		_sprite->setPositionX(_sprite->getPositionX() +v.x*dt*_speed);
-		_sprite->setPositionY(_sprite->getPositionY() +v.y*dt*_speed);
+		
+		float aux_s = 1;
+		if (slowed) { aux_s = 0.3; }
+		_sprite->setPositionX(_sprite->getPositionX() +v.x*dt*_speed*aux_s);
+		_sprite->setPositionY(_sprite->getPositionY() +v.y*dt*_speed*aux_s);
 
 		// ESTA COMPROBACION LO QUE VERIFICA ES QUE EL SIGNO DE LA DIRECCION TOMADA AHORA Y LA QUE SE TOMARIA EN UNA
 		// PROXIMA ITERACION SON EL MISMO, SI NO LO SON, ES QUE RETROCEDERÍA, Y POR TANTO, HA LLEGADO AL PUNTO
@@ -218,8 +249,11 @@ void Enemy::followPlayer(float dt) {
 
 	Vec2 v = Vec2(location2.x - _sprite->getPositionX(), location2.y - _sprite->getPositionY());
 	v.normalize();
-	_sprite->setPositionX(_sprite->getPositionX() +v.x*dt*_speed);
-	_sprite->setPositionY(_sprite->getPositionY() +v.y*dt*_speed);
+
+	float aux_s = 1;
+	if (slowed) { aux_s = 0.3; }
+	_sprite->setPositionX(_sprite->getPositionX() +v.x*dt*_speed*aux_s);
+	_sprite->setPositionY(_sprite->getPositionY() +v.y*dt*_speed*aux_s);
 
 
 	position1 = position2;
