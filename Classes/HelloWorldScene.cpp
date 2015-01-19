@@ -59,6 +59,7 @@ Label* dialog_label;
 
 Label* top_label;
 
+int deuda_resources = 0;
 int resources = 0;
 Sprite* resource;
 Label* resources_label;
@@ -78,6 +79,10 @@ Sprite3D* boss1;
 
 int total_enemies = 0;
 int dead_enemies = 0;
+
+int tower_price = 500;
+int slow_price = 200;
+int monster_price = 1000;
 
 Entity* static_objects [400] = { };
 int num_static_objects = 0;
@@ -646,20 +651,59 @@ void HelloWorld::update(float dt)
 		}
 		else { // NO HAY NINGUN DIALOGO ACTIVO Y NO ESTA PAUSADO
 
-			top_label->setVisible(true);
-			std::string s_aux = std::to_string(nexus->_life) + "/5";
-			top_label->setString(s_aux);
-			s_aux = std::to_string(resources);
-			resources_label->setString(s_aux);
-			resources_label->setPosition(Vec2(resource->getPositionX() +resource->getBoundingBox().size.width/2 + resources_label->getBoundingBox().size.width/2 +10, resource->getPositionY()));
-			dialog_box->setVisible(false);
-			dialog_label->setVisible(false);
-			button_a->setVisible(false);
-			button_enter->setVisible(false);
 
 			data[0] = dt;
 			event.setUserData(data);
 			_eventDispatcher->dispatchEvent(&event);
+
+			// SE HACE 2 VECES PARA QUE EL NÚMERO SUBA MÁS RÁPIDO
+			if (deuda_resources > 0) {
+				deuda_resources--;
+				resources++;
+				
+				if (deuda_resources > 0) {
+				deuda_resources--;
+				resources++;
+				}
+			}
+
+			top_label->setVisible(true);
+			std::string s_aux = std::to_string(nexus->_life) + "/5";
+			top_label->setString(s_aux);
+
+			s_aux = std::to_string(resources);
+			resources_label->setString(s_aux);
+			resources_label->setPosition(Vec2(resource->getPositionX() +resource->getBoundingBox().size.width/2 + resources_label->getBoundingBox().size.width/2 +10, resource->getPositionY()));
+			resources_label->setColor(Color3B(255, 255, 255));
+			if (green_tower->isVisible()) {
+				if (resources >= tower_price) {
+					resources_label->setColor(Color3B(50, 255, 50));
+				}
+				else {
+					resources_label->setColor(Color3B(255, 50, 50));
+				}
+			}
+			else if (green_slow->isVisible()) {
+				if (resources >= slow_price) {
+					resources_label->setColor(Color3B(50, 255, 50));
+				}
+				else {
+					resources_label->setColor(Color3B(255, 50, 50));
+				}
+			}
+			else if (green_monster->isVisible()) {
+				if (resources >= monster_price) {
+					resources_label->setColor(Color3B(50, 255, 50));
+				}
+				else {
+					resources_label->setColor(Color3B(255, 50, 50));
+				}
+			}
+
+			dialog_box->setVisible(false);
+			dialog_label->setVisible(false);
+			button_a->setVisible(false);
+			button_enter->setVisible(false);
 
 			EventCustom eventVisible("checkVisible");
 			eventVisible.setUserData(new Point(boss->_sprite->getPositionX(), boss->_sprite->getPositionY()));
@@ -735,7 +779,7 @@ void HelloWorld::update(float dt)
 								if (green_tower->getColor().r == 200) {
 
 								}
-								else if (green_tower->getColor().g == 200) {
+								else if (green_tower->getColor().g == 200 && resources >= tower_price) {
 
 									Point p = Point(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + (rightThumbY/500)*(floorSize/2048));
 
@@ -746,6 +790,8 @@ void HelloWorld::update(float dt)
 									t->_sprite->setCameraMask(2);
 									this->addChild(t->_sprite, 1);
 
+									resources -= tower_price;
+
 								}
 
 							}
@@ -754,7 +800,7 @@ void HelloWorld::update(float dt)
 								if (green_slow->getColor().r == 200) {
 
 								}
-								else if (green_slow->getColor().g == 200) {
+								else if (green_slow->getColor().g == 200 && resources >= slow_price) {
 
 									Point p = Point(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + (rightThumbY/500)*(floorSize/2048));
 
@@ -765,6 +811,8 @@ void HelloWorld::update(float dt)
 									t->_sprite->setCameraMask(2);
 									this->addChild(t->_sprite, 1);
 
+									resources -= slow_price;
+
 								}
 
 							}
@@ -773,7 +821,7 @@ void HelloWorld::update(float dt)
 								if (green_monster->getColor().r == 200) {
 
 								}
-								else if (green_monster->getColor().g == 200) {
+								else if (green_monster->getColor().g == 200 && resources >= monster_price) {
 
 									Point p = Point(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + (rightThumbY/500)*(floorSize/2048));
 
@@ -783,6 +831,8 @@ void HelloWorld::update(float dt)
 									num_static_objects++;
 									t->_sprite->setCameraMask(2);
 									this->addChild(t->_sprite, 1);
+
+									resources -= monster_price;
 
 								}
 
@@ -1361,14 +1411,12 @@ void HelloWorld::update(float dt)
 										if (mobile_objects[i]->_type.compare("resource") == 0) res = (Resource*)mobile_objects[i];
 										if (mobile_objects[j]->_type.compare("resource") == 0) res = (Resource*)mobile_objects[j];
 
+										deuda_resources += res->value;
+
 										res->_sprite->setVisible(false);
 										res->_active = false;
 										removeMobileObject(res->_num_in_array);
-										
-										resources += 20;
 
-										//if (mobile_objects[i]->_type.compare("player") == 0) enemigo = mobile_objects[i];
-										//if (mobile_objects[j]->_type.compare("player") == 0) enemigo = mobile_objects[j];
 									}
 								}
 
@@ -1542,16 +1590,29 @@ void HelloWorld::update(float dt)
 							mobile_objects[i]->_active = false;
 
 							if (mobile_objects[i]->_type.compare("enemy") == 0) {
-								Resource* r = new Resource(floorSize, Point(mobile_objects[i]->_sprite->getPositionX(), mobile_objects[i]->_sprite->getPositionY()), boss);
-								addMobileObject(r);
-								r = new Resource(floorSize, Point(mobile_objects[i]->_sprite->getPositionX(), mobile_objects[i]->_sprite->getPositionY()), boss);
-								addMobileObject(r);
-								r = new Resource(floorSize, Point(mobile_objects[i]->_sprite->getPositionX(), mobile_objects[i]->_sprite->getPositionY()), boss);
-								addMobileObject(r);
-								r = new Resource(floorSize, Point(mobile_objects[i]->_sprite->getPositionX(), mobile_objects[i]->_sprite->getPositionY()), boss);
-								addMobileObject(r);
-								r = new Resource(floorSize, Point(mobile_objects[i]->_sprite->getPositionX(), mobile_objects[i]->_sprite->getPositionY()), boss);
-								addMobileObject(r);
+
+								Enemy* e = (Enemy*)mobile_objects[i];
+
+								int aux_value = e->value;
+
+								while (aux_value > 0) {
+
+									int maxi = ceil((float)aux_value/(float)2);
+									int aux_local = (rand() % maxi);
+									
+									if (aux_local < 5) {
+										aux_local = 5;
+									}
+
+									if (aux_local > aux_value) {
+										aux_local = aux_value;
+									}
+									
+									Resource* r = new Resource(floorSize, Point(mobile_objects[i]->_sprite->getPositionX(), mobile_objects[i]->_sprite->getPositionY()), boss, aux_local);
+									addMobileObject(r);
+									aux_value -= aux_local;
+
+								}
 
 								EventCustom event_dead("enemy_dead");
 								_eventDispatcher->dispatchEvent(&event_dead);

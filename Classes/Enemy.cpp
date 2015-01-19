@@ -13,6 +13,7 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 	_injured = 0;
 	_type = "enemy";
 	_speed = 0;
+	value = 0;
 	num_location = 0;
 	established_location = false;
 	player = player2;
@@ -35,6 +36,7 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 		
 		_speed = 200;
 		_health = 200;
+		value = 100;
 
 		_sprite = Sprite3D::create("Enemy.obj", "stone.png");
 		_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
@@ -45,6 +47,7 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 		
 		_speed = 200;
 		_health = 150;
+		value = 50;
 
 		_sprite = Sprite3D::create("Enemy.obj", "fire.jpg");
 		_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
@@ -55,6 +58,7 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 		
 		_speed = 200;
 		_health = 400;
+		value = 300;
 
 		_sprite = Sprite3D::create("Enemy.obj", "stone.png");
 		_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
@@ -65,6 +69,7 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 		
 		_speed = 200;
 		_health = 150;
+		value = 150;
 
 		_sprite = Sprite3D::create("Enemy.obj", "stone.png");
 		_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
