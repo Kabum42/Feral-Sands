@@ -1,15 +1,13 @@
 #include "Resource.h"
 #include "Player.h"
 
-Point initial_point_nexus;
-int scale_nexus;
-
 Resource::Resource(void) {
 
 }
 
-Resource::Resource(Point initial_point, Player* _player2) {
+Resource::Resource(int floorSize2, Point initial_point, Player* _player2) {
 	
+	floorSize = floorSize2;
 	_player = _player2;
 
 	_sprite = Sprite3D::create("Shot.obj", "stone.png");
@@ -29,7 +27,7 @@ Resource::Resource(Point initial_point, Player* _player2) {
 
 	_eventDispatcher->addCustomEventListener("checkVisible", [=](EventCustom* event) {
 		if (true) {
-
+			
 			Point* data = static_cast<Point*>(event->getUserData());
 			Point* point_sprite = new Point(_sprite->getPositionX(), _sprite->getPositionY());
 			bool distance_bool = false;
@@ -41,6 +39,7 @@ Resource::Resource(Point initial_point, Player* _player2) {
 			else if (!distance_bool && _sprite->isVisible()) {
 				_sprite->setVisible(false);
 			}
+			
 		}
 	});
 	
