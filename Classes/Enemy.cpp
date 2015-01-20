@@ -36,30 +36,30 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 		_speed = 200;
 		_health = 200;
 
-		_sprite = Sprite3D::create("Enemy.obj", "stone.png");
+		_sprite = Sprite3D::create("NormalEnemy.obj", "NormalEnemy.png");
 		_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
 		_sprite->setRotation3D(Vec3(90, 0, 270));
-		_sprite->setScale(scale_enemy);
+		_sprite->setScale(scale_enemy/20);
 	}
 	else if (_subtype.compare("dog") == 0) {
 		
 		_speed = 200;
 		_health = 150;
 
-		_sprite = Sprite3D::create("Enemy.obj", "fire.jpg");
+		_sprite = Sprite3D::create("SmallEnemy.obj", "SmallEnemy.png");
 		_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
 		_sprite->setRotation3D(Vec3(90, 0, 270));
-		_sprite->setScale(scale_enemy);
+		_sprite->setScale(scale_enemy/20);
 	}
 	else if (_subtype.compare("tank") == 0) {
 		
 		_speed = 200;
 		_health = 400;
 
-		_sprite = Sprite3D::create("Enemy.obj", "stone.png");
+		_sprite = Sprite3D::create("BigEnemy.obj", "BigEnemy.png");
 		_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
 		_sprite->setRotation3D(Vec3(90, 0, 270));
-		_sprite->setScale(scale_enemy*2);
+		_sprite->setScale(scale_enemy/20);
 	}
 	else if (_subtype.compare("ghost") == 0) {
 		
