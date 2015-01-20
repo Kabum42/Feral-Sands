@@ -16,6 +16,7 @@
 #include "Atrezzo.h"
 #include "QuadBezier.h"
 #include "Dialog.h"
+#include "Resource.h"
 
 class HelloWorld : public cocos2d::Layer
 {
