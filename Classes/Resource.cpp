@@ -39,6 +39,9 @@ Resource::Resource(int floorSize2, Point initial_point, Player* _player2, int va
 	}
 	escape = Vec2(cos(angle*2*M_PI/(360)), sin(angle*2*M_PI/(360)));
 	escape.normalize();
+
+	speed = 75 + (rand() % (25));
+	speed = speed/100;
 	
 	_eventDispatcher->addCustomEventListener("EnterFrame", [=](EventCustom* event) {
 		float* data = static_cast<float*>(event->getUserData());
@@ -82,8 +85,8 @@ void Resource::update(float dt)
 		Vec3 vec_to_player = Vec3(_player->_sprite->getPosition3D() - _sprite->getPosition3D());
 		vec_to_player.normalize();
 
-		_sprite->setPositionX(_sprite->getPositionX() + escape.x*dt*(0.3*5000) + vec_to_player.x*dt*(time_passed*5000));
-		_sprite->setPositionY(_sprite->getPositionY() + escape.y*dt*(0.3*5000) + vec_to_player.y*dt*(time_passed*5000));
-		_sprite->setPositionZ(_sprite->getPositionZ() + 0.5*dt*(0.3*5000) + vec_to_player.z*dt*(time_passed*5000));
+		_sprite->setPositionX(_sprite->getPositionX() + escape.x*dt*(0.3*5000) + vec_to_player.x*dt*(time_passed*5000)*speed);
+		_sprite->setPositionY(_sprite->getPositionY() + escape.y*dt*(0.3*5000) + vec_to_player.y*dt*(time_passed*5000)*speed);
+		_sprite->setPositionZ(_sprite->getPositionZ() + 0.5*dt*(0.3*5000) + vec_to_player.z*dt*(time_passed*5000)*speed);
 	}
 }

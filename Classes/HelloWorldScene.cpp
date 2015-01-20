@@ -1330,6 +1330,7 @@ void HelloWorld::update(float dt)
 
 										// EL ENEMIGO SE HIERE
 										enemigo->_health -= 20;
+										((Enemy*)enemigo)->_aggro += (20/((Enemy*)enemigo)->_health_max)*100;
 										if (enemigo->_health > 0) { 
 											CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
 											enemigo->_sprite->setColor(Color3B(255, 0, 0));
@@ -1360,6 +1361,7 @@ void HelloWorld::update(float dt)
 
 										// EL ENEMIGO SE HIERE
 										enemigo->_health -= bala->_damage;
+										((Enemy*)enemigo)->_aggro += (bala->_damage/((Enemy*)enemigo)->_health_max)*100;
 										if (enemigo->_health > 0) { 
 											CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
 											enemigo->_sprite->setColor(Color3B(255, 0, 0));
@@ -1437,6 +1439,7 @@ void HelloWorld::update(float dt)
 
 										// EL ENEMIGO SE HIERE
 										enemigo->_health -= bala->_damage;
+										((Enemy*)enemigo)->_aggro += (bala->_damage/((Enemy*)enemigo)->_health_max)*100;
 										if (enemigo->_health > 0) {
 											//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
 											enemigo->_sprite->setColor(Color3B(255, 0, 0));
@@ -1464,6 +1467,7 @@ void HelloWorld::update(float dt)
 										repulse(bala, enemigo);
 										// EL ENEMIGO SE HIERE
 										enemigo->_health -= bala->_damage;
+										((Enemy*)enemigo)->_aggro += (bala->_damage/((Enemy*)enemigo)->_health_max)*100;
 										if (enemigo->_health > 0) {
 											//CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
 											enemigo->_sprite->setColor(Color3B(255, 0, 0));

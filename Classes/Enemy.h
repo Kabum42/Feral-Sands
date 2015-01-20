@@ -31,6 +31,11 @@ public:
 	Player* player;
 	bool slowed;
 	int value;
+	float _agressiveness;
+	String _status;
+	float _enrage;
+	float _health_max;
+	float _aggro;
 
 	Enemy(void);
 	Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathStone* path2, float seconds_enemy2, Player* player2);
