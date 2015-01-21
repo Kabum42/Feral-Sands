@@ -45,8 +45,9 @@ Player::Player(int floorSize2, Point initial_point_player2) {
 
 	weaponModel = Sprite3D::create("Weapon.c3b", "WeaponText.png");
 	_sprite->getAttachNode("FemaleBaseMesh:Spine")->addChild(weaponModel);
-	weaponModel->setRotation3D(Vec3(0, 90, 0));
-	weaponModel->setScale(10);
+	weaponModel->setRotation3D(Vec3(90, 90, 0));
+	weaponModel->setPosition3D(Vec3(0, -40, 20));
+	weaponModel->setScale(12);
 	//***********************************************************************************
 	//legsLex = _sprite->getAttachNode("FemaleBaseMesh:Spine");
 	
