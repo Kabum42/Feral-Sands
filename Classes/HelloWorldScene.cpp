@@ -58,6 +58,7 @@ Dialog* active_dialog = NULL;
 Label* dialog_label;
 
 Label* top_label;
+Label* stop_label;
 
 int deuda_resources = 0;
 int resources = 0;
@@ -209,6 +210,11 @@ bool HelloWorld::init()
     top_label->setPosition(Vec2(origin.x + visibleSize.width/2, origin.y + visibleSize.height - top_label->getContentSize().height));
     this->addChild(top_label, 1);
 	top_label->setVisible(false);
+
+	stop_label = Label::createWithTTF("PAUSE","fonts/Volkoff.otf", 32);
+    stop_label->setPosition(Vec2(origin.x + visibleSize.width/2, origin.y + visibleSize.height - top_label->getContentSize().height -50));
+    this->addChild(stop_label, 1);
+	stop_label->setVisible(false);
 
 	minimapa = Sprite::create("sand_guia.png");
 	minimapa->setScale(0.0625); // ESTO ES 1/16, pasando de 2048 pixeles a 128
@@ -787,6 +793,8 @@ void HelloWorld::update(float dt)
 		eventVisible.setUserData(new Point(boss->_sprite->getPositionX(), boss->_sprite->getPositionY()));
 		_eventDispatcher->dispatchEvent(&eventVisible);
 
+		stop_label->setVisible(true);
+
 		if (dwResult == ERROR_SUCCESS) { // Controller is connected 
 
 			WORD wButtons = state.Gamepad.wButtons;
@@ -823,6 +831,8 @@ void HelloWorld::update(float dt)
 				dialog_label->setString(active_dialog->_text);
 			}
 			dialog_label->setVisible(true);
+
+			stop_label->setVisible(false);
 
 			EventCustom eventVisible("checkVisible");
 			eventVisible.setUserData(new Point(boss->_sprite->getPositionX(), boss->_sprite->getPositionY()));
@@ -884,6 +894,8 @@ void HelloWorld::update(float dt)
 			top_label->setVisible(true);
 			std::string s_aux = std::to_string(nexus->_life) + "/10";
 			top_label->setString(s_aux);
+
+			stop_label->setVisible(false);
 
 			s_aux = std::to_string(resources);
 			resources_label->setString(s_aux);

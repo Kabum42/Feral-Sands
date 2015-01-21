@@ -322,7 +322,7 @@ void Enemy::followPath(float dt) {
 
 	if (!established_location) { 
 
-		if (num_location < (199)) {
+		if (num_location < (path->num_points -1)) {
 			//num_location++;
 			//location = Point(path->invisible_points[num_location].x, path->invisible_points[num_location].y);
 
