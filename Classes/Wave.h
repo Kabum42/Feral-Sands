@@ -5,7 +5,8 @@ using namespace std;
 #include "Player.h"
 USING_NS_CC;
 
-
+#ifndef WAVE_H
+#define WAVE_H
 
 class Wave : public Sprite3D
 {
@@ -16,6 +17,7 @@ public:
 	String enemies_type [50];
 	float enemies_delay [50];
 	int num_enemies;
+	int num_deads;
 	int current_enemy;
 	float current_delay;
 	Point initial_point;
@@ -29,3 +31,4 @@ public:
 	void addEnemy(String type, float e_delay);
 };
 
+#endif

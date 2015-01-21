@@ -90,7 +90,7 @@ Entity* mobile_objects [200] = { };
 int num_mobile_objects = 0;
 Sprite* enemy_points [200] = { };
 
-PathStone* active_pathstones [10] = { };
+PathStone* active_pathstones [60] = { };
 int num_active_pathstones = 0;
 
 bool paused = false;
@@ -471,22 +471,23 @@ bool HelloWorld::init()
 	bezier.endPosition = Point(-1300, 0);
 	*/
 
-	QuadBezier* q = new QuadBezier(Point(-400*(floorSize/2048), 0), Point(-330*(floorSize/2048), -200*(floorSize/2048)), Point(-260*(floorSize/2048), 0));
+	// PATHSTONES, EMPIEZA POR LA DE LA IZQUIERDA DEL TODO Y SIGUE EN SENTIDO DE LAS AGUJAS DEL RELOJ
+
+	QuadBezier* q = new QuadBezier(Point(-900*(floorSize/2048), 0), Point(-850*(floorSize/2048), 100*(floorSize/2048)), Point(-600*(floorSize/2048), 0));
 
 	PathStone* path = new PathStone(floorSize, 30, q);
 	this->addChild(path->getLayer());
 	active_pathstones[num_active_pathstones] = path;
 	num_active_pathstones++;
-
-
-	q = new QuadBezier(Point(-260*(floorSize/2048), 0), Point(-200*(floorSize/2048), 200*(floorSize/2048)), Point(-140*(floorSize/2048), 0));
+	
+	q = new QuadBezier(Point(-600*(floorSize/2048), 0), Point(-400*(floorSize/2048), -130*(floorSize/2048)),Point(-200*(floorSize/2048), -20*(floorSize/2048)));
 
 	PathStone* path2 = new PathStone(floorSize, 30, q);
 	this->addChild(path2->getLayer());
 	active_pathstones[num_active_pathstones] = path2;
 	num_active_pathstones++;
-
-	q = new QuadBezier(Point(-140*(floorSize/2048), 0), Point(-70*(floorSize/2048), -200*(floorSize/2048)), Point(0, 0));
+	
+	q = new QuadBezier(Point(-200*(floorSize/2048), -20*(floorSize/2048)), Point(-100*(floorSize/2048), 20*(floorSize/2048)), Point(0, 0));
 
 	PathStone* path3 = new PathStone(floorSize, 30, q);
 	this->addChild(path3->getLayer());
@@ -495,7 +496,62 @@ bool HelloWorld::init()
 	
 	path->_nextPath = path2;
 	path2->_nextPath = path3;
+
+
+
+
 	
+	q = new QuadBezier(Point(-380*(floorSize/2048), 800*(floorSize/2048)), Point(-520*(floorSize/2048), 600*(floorSize/2048)), Point(-290*(floorSize/2048), 575*(floorSize/2048)));
+
+	PathStone* path11 = new PathStone(floorSize, 30, q);
+	this->addChild(path11->getLayer());
+	active_pathstones[num_active_pathstones] = path11;
+	num_active_pathstones++;
+
+	q = new QuadBezier(Point(-290*(floorSize/2048), 575*(floorSize/2048)), Point(-30*(floorSize/2048), 500*(floorSize/2048)), Point(-100*(floorSize/2048), 350*(floorSize/2048)));
+
+	PathStone* path12 = new PathStone(floorSize, 30, q);
+	this->addChild(path12->getLayer());
+	active_pathstones[num_active_pathstones] = path12;
+	num_active_pathstones++;
+
+	q = new QuadBezier(Point(-100*(floorSize/2048), 350*(floorSize/2048)), Point(-200*(floorSize/2048), 250*(floorSize/2048)), Point(0, 0));
+
+	PathStone* path13 = new PathStone(floorSize, 30, q);
+	this->addChild(path13->getLayer());
+	active_pathstones[num_active_pathstones] = path13;
+	num_active_pathstones++;
+
+	path11->_nextPath = path12;
+	path12->_nextPath = path13;
+	
+	
+
+	q = new QuadBezier(Point(430*(floorSize/2048), 750*(floorSize/2048)), Point(350*(floorSize/2048), 625*(floorSize/2048)), Point(400*(floorSize/2048), 500*(floorSize/2048)));
+
+	PathStone* path21 = new PathStone(floorSize, 30, q);
+	this->addChild(path21->getLayer());
+	active_pathstones[num_active_pathstones] = path21;
+	num_active_pathstones++;
+
+	q = new QuadBezier(Point(400*(floorSize/2048), 500*(floorSize/2048)), Point(450*(floorSize/2048), 430*(floorSize/2048)), Point(250*(floorSize/2048), 330*(floorSize/2048)));
+
+	PathStone* path22 = new PathStone(floorSize, 30, q);
+	this->addChild(path22->getLayer());
+	active_pathstones[num_active_pathstones] = path22;
+	num_active_pathstones++;
+
+	q = new QuadBezier(Point(250*(floorSize/2048), 330*(floorSize/2048)), Point(100*(floorSize/2048), 230*(floorSize/2048)), Point(0, 0));
+
+	PathStone* path23 = new PathStone(floorSize, 30, q);
+	this->addChild(path23->getLayer());
+	active_pathstones[num_active_pathstones] = path23;
+	num_active_pathstones++;
+
+	path21->_nextPath = path22;
+	path22->_nextPath = path23;
+
+	// WAVES
 
 	Wave* w = new Wave(floorSize, path, boss);
 	w->addEnemy("grunt", 1.5);

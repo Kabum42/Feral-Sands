@@ -9,6 +9,7 @@ Wave::Wave(int floorSize2, PathStone* path2, Player* player2) {
 	//bezier = bezier2;
 	path = path2;
 	num_enemies = 0;
+	num_deads = 0;
 	current_enemy = 0;
 	player = player2;
 
