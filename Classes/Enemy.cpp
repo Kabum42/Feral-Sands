@@ -28,7 +28,7 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 	seconds_enemy = seconds_enemy2;
 
 	scale_enemy = 4*(floorSize/2048);
-	position_z_enemy = scale_enemy*4.7;
+	position_z_enemy = 0;
 
 	_radius = scale_enemy*1.0;
 

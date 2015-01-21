@@ -207,7 +207,7 @@ bool HelloWorld::init()
     this->addChild(top_label, 1);
 	top_label->setVisible(false);
 
-	minimapa = Sprite::create("sand.png");
+	minimapa = Sprite::create("sand_guia.png");
 	minimapa->setScale(0.0625); // ESTO ES 1/16, pasando de 2048 pixeles a 128
 	minimapa->setPositionX(960 -minimapa->getBoundingBox().size.width/2 -6 -10);
 	minimapa->setPositionY(640 -minimapa->getBoundingBox().size.height/2 -6 -10);
