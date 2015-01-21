@@ -434,12 +434,14 @@ bool HelloWorld::init()
 	walls->setCameraMask(2);
 	this->addChild(walls, 0);
 
+	/*
 	auto lake = Sprite3D::create("Lake.obj");
 	lake->setScale(100 * (floorSize / 2048));
 	lake->setRotation3D(Vec3(90, 0, 0));
 	lake->setPosition3D(Vec3(-5*(floorSize/2048), -520*(floorSize/2048), 0));
 	lake->setCameraMask(2);
 	this->addChild(lake, 0);
+	*/
 
 	auto ruin1 = Sprite3D::create("RuinStructure.obj", "RuinStructureText.png");
 	ruin1->setScale(25 * (floorSize / 2048));
@@ -465,7 +467,7 @@ bool HelloWorld::init()
 	green_tower->setVisible(false);
 	this->addChild(green_tower, 0);
 
-	green_slow = Sprite3D::create("Floor.obj", "stone.png");
+	green_slow = Sprite3D::create("Floor.obj", "alquitran.png");
 	green_slow->setScale(30*(floorSize/2048));
 	green_slow->setCameraMask(2);
 	green_slow->setColor(ccc3(0, 200, 0));
