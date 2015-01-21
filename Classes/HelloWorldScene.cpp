@@ -73,6 +73,9 @@ Sprite* gun_normal;
 Sprite* gun_fire;
 Sprite* gun_air;
 
+Sprite* bar_back;
+Sprite* bar;
+
 Nexus* nexus;
 Player* boss;
 Sprite3D* boss1;
@@ -137,7 +140,6 @@ float coolDownNow = coolDownMax;
 float coolDownFireNow = coolDownMax;
 float coolDownAirNow = coolDownMax;
 float airPower = 0;
-bool  airCharging;
 
 EventCustom event("EnterFrame");
 EventCustom event_add_mobile("add_mobile");
@@ -302,6 +304,18 @@ bool HelloWorld::init()
 	gun_air->setPositionY(gun_air->getBoundingBox().size.height/2 +10);
 	gun_air->setVisible(false);
 	this->addChild(gun_air, 1);
+
+	bar_back = Sprite::create("bar_back.png");
+	bar_back->setPositionX(960 - bar_back->getBoundingBox().size.width / 2 - 30);
+	bar_back->setPositionY(bar_back->getBoundingBox().size.height / 2 + 30);
+	this->addChild(bar_back, 1);
+
+	bar = Sprite::create("bar.png");
+	bar->setPositionX(960 - bar->getBoundingBox().size.width / 2 - 30);
+	bar->setPositionY(bar->getBoundingBox().size.height / 2 + 30);
+	this->addChild(bar, 1);
+
+
 
 	dialog_box = Sprite::create("dialog_box.png");
 	dialog_box->setPositionX(960/2);
@@ -1183,7 +1197,9 @@ void HelloWorld::update(float dt)
 					// DISPARO
 					if (state.Gamepad.bRightTrigger != 0) {
 						if (boss->_weapon == 0 && !boss->_resurrect){ //NORMAL
-							if (coolDownNow >= coolDownMax ) {
+							if (coolDownNow >= coolDownMax && boss->energyN >= 2*2) {
+								boss->normalShooting = true;
+								boss->energyN -= 2;
 								coolDownNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
 								CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
 								WeaponShot* _shotInstance = new WeaponShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
@@ -1191,7 +1207,9 @@ void HelloWorld::update(float dt)
 							}
 						}
 						else if (boss->_weapon == 1 && !boss->_resurrect){ // FUEGO
-							if (coolDownFireNow >= coolDownMax){
+							if (coolDownFireNow >= coolDownMax && boss->energyF >= 5*2){
+								boss->fireShooting = true;
+								boss->energyF -= 5;
 								//coolDownFireNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
 								coolDownFireNow = 0.14;
 								CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
@@ -1216,21 +1234,31 @@ void HelloWorld::update(float dt)
 						}
 						else if (boss->_weapon == 2 && !boss->_resurrect){ //AIRE
 							if (coolDownAirNow >= coolDownMax){
-								airCharging = true;
-								if (airPower < 5) airPower += dt;
+								boss->airCharging = true;
+								if (airPower < 5 && boss->energyA >= (log(airPower + 0.6) * 4 + 1) * 10 * 2.5) airPower += dt;
 							}
 
+						}
+
+						if (boss->_weapon != 0) boss->normalShooting = false;
+						else if (boss->_weapon != 1) boss->fireShooting = false;
+						else if (boss->_weapon != 2) {
+							boss->airCharging = false;
+							airPower = 0;
 						}
 					}
 
 					if (state.Gamepad.bRightTrigger == 0) {
+						boss->normalShooting = false;
+						boss->fireShooting = false;
 						if (boss->_weapon == 2 && !boss->_resurrect){ //AIRE
-							if (airCharging){
+							if (boss->airCharging){
 
 								airPower = log(airPower + 0.6) * 4 + 1;
+								boss->energyA -= airPower * 10 * 2.5;
 								if (airPower >= 3.99) airPower = 8;
 
-								airCharging = false;
+								boss->airCharging = false;
 								coolDownAirNow = 0;
 
 								CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
@@ -1350,6 +1378,20 @@ void HelloWorld::update(float dt)
 								airPower = 0;
 							}
 						}
+					}
+
+					// BARRA ENERGÍA ARMAS
+					if (boss->_weapon == 0){
+						bar->setScaleX(boss->energyN / 100);
+						bar->setColor(ccc3(200, 200, 0));
+					}
+					else if (boss->_weapon == 1) {
+						bar->setScaleX(boss->energyF / 100);
+						bar->setColor(ccc3(200, 0, 0));
+					}
+					else if (boss->_weapon == 2) {
+						bar->setScaleX(boss->energyA / 100);
+						bar->setColor(ccc3(0, 200, 200));
 					}
 
 					// ROTAR CAMARA

@@ -17,8 +17,16 @@ Player::Player(int floorSize2, Point initial_point_player2) {
 	speed = 1.5;
 	speed_cooldown = 0;
 
+	normalShooting = false;
+	fireShooting = false;
+	airCharging = false;
+
 	moving = false;
 	forward = true;
+
+	energyN = 100;
+	energyF = 100;
+	energyA = 100;
 
 	initial_point_player = initial_point_player2;
 
@@ -155,5 +163,9 @@ void Player::update(float dt)
 			_sprite->setOpacity(ubyteComponent);
 		}
 	}
+
+	if (energyN < 100 && !normalShooting) energyN += dt * 20; // 40 = 2.5 seg
+	if (energyF < 100 && !fireShooting) energyF += dt * 20;
+	if (energyA < 100 && !airCharging) energyA += dt * 40;
 	
 }

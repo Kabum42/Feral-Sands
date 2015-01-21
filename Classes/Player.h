@@ -37,6 +37,14 @@ public:
 	int _weapon;
 	bool _resurrect;
 
+	bool normalShooting;
+	bool fireShooting;
+	bool airCharging;
+
+	float energyN;
+	float energyF;
+	float energyA;
+
 	float speed;
 	float speed_cooldown;
 
