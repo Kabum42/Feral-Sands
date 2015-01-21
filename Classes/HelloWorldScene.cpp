@@ -492,21 +492,21 @@ bool HelloWorld::init()
 
 	QuadBezier* q = new QuadBezier(Point(-900*(floorSize/2048), 0), Point(-850*(floorSize/2048), 100*(floorSize/2048)), Point(-600*(floorSize/2048), 0));
 
-	PathStone* path = new PathStone(floorSize, 30, q);
+	PathStone* path = new PathStone(floorSize, 15, q);
 	this->addChild(path->getLayer());
 	active_pathstones[num_active_pathstones] = path;
 	num_active_pathstones++;
 	
 	q = new QuadBezier(Point(-600*(floorSize/2048), 0), Point(-400*(floorSize/2048), -130*(floorSize/2048)),Point(-200*(floorSize/2048), -20*(floorSize/2048)));
 
-	PathStone* path2 = new PathStone(floorSize, 30, q);
+	PathStone* path2 = new PathStone(floorSize, 15, q);
 	this->addChild(path2->getLayer());
 	active_pathstones[num_active_pathstones] = path2;
 	num_active_pathstones++;
 	
 	q = new QuadBezier(Point(-200*(floorSize/2048), -20*(floorSize/2048)), Point(-100*(floorSize/2048), 20*(floorSize/2048)), Point(0, 0));
 
-	PathStone* path3 = new PathStone(floorSize, 30, q);
+	PathStone* path3 = new PathStone(floorSize, 15, q);
 	this->addChild(path3->getLayer());
 	active_pathstones[num_active_pathstones] = path3;
 	num_active_pathstones++;
@@ -520,21 +520,21 @@ bool HelloWorld::init()
 	
 	q = new QuadBezier(Point(-380*(floorSize/2048), 800*(floorSize/2048)), Point(-520*(floorSize/2048), 600*(floorSize/2048)), Point(-290*(floorSize/2048), 575*(floorSize/2048)));
 
-	PathStone* path11 = new PathStone(floorSize, 30, q);
+	PathStone* path11 = new PathStone(floorSize, 15, q);
 	this->addChild(path11->getLayer());
 	active_pathstones[num_active_pathstones] = path11;
 	num_active_pathstones++;
 
 	q = new QuadBezier(Point(-290*(floorSize/2048), 575*(floorSize/2048)), Point(-30*(floorSize/2048), 500*(floorSize/2048)), Point(-100*(floorSize/2048), 350*(floorSize/2048)));
 
-	PathStone* path12 = new PathStone(floorSize, 30, q);
+	PathStone* path12 = new PathStone(floorSize, 15, q);
 	this->addChild(path12->getLayer());
 	active_pathstones[num_active_pathstones] = path12;
 	num_active_pathstones++;
 
 	q = new QuadBezier(Point(-100*(floorSize/2048), 350*(floorSize/2048)), Point(-200*(floorSize/2048), 250*(floorSize/2048)), Point(0, 0));
 
-	PathStone* path13 = new PathStone(floorSize, 30, q);
+	PathStone* path13 = new PathStone(floorSize, 15, q);
 	this->addChild(path13->getLayer());
 	active_pathstones[num_active_pathstones] = path13;
 	num_active_pathstones++;
@@ -546,21 +546,21 @@ bool HelloWorld::init()
 
 	q = new QuadBezier(Point(430*(floorSize/2048), 750*(floorSize/2048)), Point(350*(floorSize/2048), 625*(floorSize/2048)), Point(400*(floorSize/2048), 500*(floorSize/2048)));
 
-	PathStone* path21 = new PathStone(floorSize, 30, q);
+	PathStone* path21 = new PathStone(floorSize, 15, q);
 	this->addChild(path21->getLayer());
 	active_pathstones[num_active_pathstones] = path21;
 	num_active_pathstones++;
 
 	q = new QuadBezier(Point(400*(floorSize/2048), 500*(floorSize/2048)), Point(450*(floorSize/2048), 430*(floorSize/2048)), Point(250*(floorSize/2048), 330*(floorSize/2048)));
 
-	PathStone* path22 = new PathStone(floorSize, 30, q);
+	PathStone* path22 = new PathStone(floorSize, 15, q);
 	this->addChild(path22->getLayer());
 	active_pathstones[num_active_pathstones] = path22;
 	num_active_pathstones++;
 
 	q = new QuadBezier(Point(250*(floorSize/2048), 330*(floorSize/2048)), Point(100*(floorSize/2048), 230*(floorSize/2048)), Point(0, 0));
 
-	PathStone* path23 = new PathStone(floorSize, 30, q);
+	PathStone* path23 = new PathStone(floorSize, 15, q);
 	this->addChild(path23->getLayer());
 	active_pathstones[num_active_pathstones] = path23;
 	num_active_pathstones++;
@@ -572,21 +572,21 @@ bool HelloWorld::init()
 
 	q = new QuadBezier(Point(900*(floorSize/2048), 0), Point(800*(floorSize/2048), -100*(floorSize/2048)), Point(700*(floorSize/2048), 0));
 
-	PathStone* path31 = new PathStone(floorSize, 30, q);
+	PathStone* path31 = new PathStone(floorSize, 15, q);
 	this->addChild(path31->getLayer());
 	active_pathstones[num_active_pathstones] = path31;
 	num_active_pathstones++;
 
 	q = new QuadBezier(Point(700*(floorSize/2048), 0), Point(500*(floorSize/2048), 200*(floorSize/2048)), Point(300*(floorSize/2048), 50*(floorSize/2048)));
 
-	PathStone* path32 = new PathStone(floorSize, 30, q);
+	PathStone* path32 = new PathStone(floorSize, 15, q);
 	this->addChild(path32->getLayer());
 	active_pathstones[num_active_pathstones] = path32;
 	num_active_pathstones++;
 
 	q = new QuadBezier(Point(300*(floorSize/2048), 50*(floorSize/2048)), Point(200*(floorSize/2048), -50*(floorSize/2048)), Point(0, 0));
 
-	PathStone* path33 = new PathStone(floorSize, 30, q);
+	PathStone* path33 = new PathStone(floorSize, 15, q);
 	this->addChild(path33->getLayer());
 	active_pathstones[num_active_pathstones] = path33;
 	num_active_pathstones++;
@@ -598,35 +598,35 @@ bool HelloWorld::init()
 
 	q = new QuadBezier(Point(500*(floorSize/2048), -700*(floorSize/2048)), Point(650*(floorSize/2048), -500*(floorSize/2048)), Point(400*(floorSize/2048), -300*(floorSize/2048)));
 
-	PathStone* path41 = new PathStone(floorSize, 30, q);
+	PathStone* path41 = new PathStone(floorSize, 15, q);
 	this->addChild(path41->getLayer());
 	active_pathstones[num_active_pathstones] = path41;
 	num_active_pathstones++;
 
 	q = new QuadBezier(Point(400*(floorSize/2048), -300*(floorSize/2048)), Point(310*(floorSize/2048), -230*(floorSize/2048)), Point(280*(floorSize/2048), -350*(floorSize/2048)));
 
-	PathStone* path42 = new PathStone(floorSize, 30, q);
+	PathStone* path42 = new PathStone(floorSize, 15, q);
 	this->addChild(path42->getLayer());
 	active_pathstones[num_active_pathstones] = path42;
 	num_active_pathstones++;
 
 	q = new QuadBezier (Point(280*(floorSize/2048), -350*(floorSize/2048)), Point(200*(floorSize/2048), -470*(floorSize/2048)), Point(100*(floorSize/2048), -380*(floorSize/2048)));
 
-	PathStone* path43 = new PathStone(floorSize, 30, q);
+	PathStone* path43 = new PathStone(floorSize, 15, q);
 	this->addChild(path43->getLayer());
 	active_pathstones[num_active_pathstones] = path43;
 	num_active_pathstones++;
 
 	q = new QuadBezier (Point(100*(floorSize/2048), -380*(floorSize/2048)), Point(40*(floorSize/2048), -330*(floorSize/2048)), Point(130*(floorSize/2048), -280*(floorSize/2048)));
 
-	PathStone* path44 = new PathStone(floorSize, 30, q);
+	PathStone* path44 = new PathStone(floorSize, 15, q);
 	this->addChild(path44->getLayer());
 	active_pathstones[num_active_pathstones] = path44;
 	num_active_pathstones++;
 
 	q = new QuadBezier (Point(130*(floorSize/2048), -280*(floorSize/2048)), Point(190*(floorSize/2048), -230*(floorSize/2048)), Point(0, 0));
 
-	PathStone* path45 = new PathStone(floorSize, 30, q);
+	PathStone* path45 = new PathStone(floorSize, 15, q);
 	this->addChild(path45->getLayer());
 	active_pathstones[num_active_pathstones] = path45;
 	num_active_pathstones++;
@@ -641,14 +641,14 @@ bool HelloWorld::init()
 
 	q = new QuadBezier(Point(-380*(floorSize/2048), -800*(floorSize/2048)), Point(-520*(floorSize/2048), -500*(floorSize/2048)), Point(-290*(floorSize/2048), -325*(floorSize/2048)));
 
-	PathStone* path51 = new PathStone(floorSize, 30, q);
+	PathStone* path51 = new PathStone(floorSize, 15, q);
 	this->addChild(path51->getLayer());
 	active_pathstones[num_active_pathstones] = path51;
 	num_active_pathstones++;
 
 	q = new QuadBezier(Point(-290*(floorSize/2048), -325*(floorSize/2048)), Point(-50*(floorSize/2048), -200*(floorSize/2048)), Point(0, 0));
 
-	PathStone* path52 = new PathStone(floorSize, 30, q);
+	PathStone* path52 = new PathStone(floorSize, 15, q);
 	this->addChild(path52->getLayer());
 	active_pathstones[num_active_pathstones] = path52;
 	num_active_pathstones++;

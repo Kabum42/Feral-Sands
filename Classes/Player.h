@@ -20,6 +20,7 @@ public:
 	//Skeleton3D* skeletonLex;
 	Sprite3D* torsoLex;
 	Bone3D* torsoBoneLex;
+	Sprite3D* weaponModel;
 
 	Animation3D* idleAnimation;
 	Animate3D* idleAnimate;

@@ -43,6 +43,9 @@ Player::Player(int floorSize2, Point initial_point_player2) {
 	//_sprite->setScale(scale_player);
 	_sprite->setScale(0.75);
 
+	weaponModel = Sprite3D::create("Weapon.OBJ", "WeaponText.png");
+	_sprite->getAttachNode("FemaleBaseMesh:Spine")->addChild(weaponModel);
+	weaponModel->setScale(5);
 	//***********************************************************************************
 	//legsLex = _sprite->getAttachNode("FemaleBaseMesh:Spine");
 	
