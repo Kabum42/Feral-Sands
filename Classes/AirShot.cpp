@@ -26,7 +26,7 @@ AirShot::AirShot(int floorSize2, Vec3 start, Vec3 aim, float pow)
 	_sprite->setPosition3D(_origin);
 	_sprite->setPositionZ(80);
 	_sprite->setRotation3D(_direction);
-	_sprite->setScale(6*(floorSize/2048));
+	_sprite->setScale(2*(floorSize/2048));
 	_shrink = 60;
 
 	_radius = 35;

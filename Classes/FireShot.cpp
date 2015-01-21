@@ -23,7 +23,7 @@ FireShot::FireShot(int floorSize2, Vec3 start, Vec3 aim)
 	_sprite->setPosition3D(_origin);
 	_sprite->setPositionZ(80);
 	_sprite->setRotation3D(_direction);
-	_sprite->setScale(3*(floorSize/2048));
+	_sprite->setScale(1*(floorSize/2048));
 	_shrink = 15;
 
 	_radius = 20;

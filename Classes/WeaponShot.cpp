@@ -20,7 +20,7 @@ WeaponShot::WeaponShot(int floorSize2, Vec3 start, Vec3 aim)
 	_sprite->setPosition3D(_origin);
 	_sprite->setPositionZ(80);
 	_sprite->setRotation3D(_direction);
-	_sprite->setScale(2.5*(floorSize/2048));
+	_sprite->setScale(1*(floorSize/2048));
 
 	_radius = 20;
 
