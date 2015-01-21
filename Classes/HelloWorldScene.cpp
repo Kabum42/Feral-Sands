@@ -60,7 +60,7 @@ Label* dialog_label;
 Label* top_label;
 
 int deuda_resources = 0;
-int resources = 0;
+int resources = 1000;
 Sprite* resource;
 Label* resources_label;
 
@@ -442,14 +442,14 @@ bool HelloWorld::init()
 	lake->setCameraMask(2);
 	this->addChild(lake, 0);
 	*/
-
+	/*
 	auto ruin1 = Sprite3D::create("RuinStructure.obj", "RuinStructureText.png");
 	ruin1->setScale(25 * (floorSize / 2048));
 	ruin1->setRotation3D(Vec3(90, 0, 0));
 	ruin1->setPosition3D(Vec3(0*(floorSize/2048), -150*(floorSize/2048), 0));
 	ruin1->setCameraMask(2);
 	this->addChild(ruin1, 0);
-
+	*/
 	
 	Point p = Point(0, 0);
 
