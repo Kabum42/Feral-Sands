@@ -14,10 +14,14 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 	_type = "enemy";
 	_speed = 0;
 	value = 0;
+	_agressiveness = 0;
+	_status = "relaxed";
+	_enrage = 0;
 	num_location = 0;
 	established_location = false;
 	player = player2;
 	slowed = false;
+	_aggro = 0;
 	
 	_subtype = s_enemy2;
 	initial_point_enemy = initial_point_enemy2;
@@ -36,7 +40,9 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 		
 		_speed = 200;
 		_health = 200;
+		_health_max = _health;
 		value = 100;
+		_agressiveness = 50;
 
 		//_sprite = Sprite3D::create("Enemy.obj", "stone.png");
 		_sprite = Sprite3D::create("NormalEnemy.c3b","NormalEnemy.png");
@@ -50,7 +56,9 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 		
 		_speed = 200;
 		_health = 150;
+		_health_max = _health;
 		value = 50;
+		_agressiveness = 70;
 
 		//_sprite = Sprite3D::create("Enemy.obj", "fire.jpg");
 		_sprite = Sprite3D::create("SmallEnemy.c3b", "SmallEnemy.png");
@@ -63,7 +71,9 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 		
 		_speed = 200;
 		_health = 400;
+		_health_max = _health;
 		value = 300;
+		_agressiveness = 30;
 
 		//_sprite = Sprite3D::create("Enemy.obj", "stone.png");
 		_sprite = Sprite3D::create("BigEnemy.c3b","BigEnemy.png");
@@ -76,7 +86,9 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 		
 		_speed = 200;
 		_health = 150;
+		_health_max = _health;
 		value = 150;
+		_agressiveness = 0;
 
 		//_sprite = Sprite3D::create("Enemy.obj", "stone.png");
 		_sprite = Sprite3D::create("NormalEnemy.c3b", "NormalEnemy.png");
@@ -150,20 +162,123 @@ void Enemy::update(float dt)
 
 		if (_subtype.compare("grunt") == 0) {
 
-			float total_radius = 400;
-			if (pow(_sprite->getPositionX() - player->_sprite->getPositionX(), 2) + pow(_sprite->getPositionY() -player->_sprite->getPositionY(), 2) < pow(total_radius, 2)) {
-				followPlayer(dt);
-			}
-			else {
+			// ES UN GRUNT
+
+			if (_status.compare("relaxed") == 0) {
+				
 				followPath(dt);
+
+				float total_radius = 800*(_agressiveness/100);
+
+				if (pow(_sprite->getPositionX() - player->_sprite->getPositionX(), 2) + pow(_sprite->getPositionY() -player->_sprite->getPositionY(), 2) < pow(total_radius, 2)) {
+					_status = "enrage";
+					_enrage = 5;
+				}
+				else if (_aggro >= (100 - _agressiveness)) {
+					_aggro = 0;
+					_status = "enrage";
+					_enrage = 5;
+				}
+			}
+			else if (_status.compare("enrage") == 0) {
+				
+				followPlayer(dt);
+				_enrage -= dt;
+
+				float total_radius_2 = 800*(_agressiveness/100)*1.5;
+
+				if (pow(_sprite->getPositionX() - player->_sprite->getPositionX(), 2) + pow(_sprite->getPositionY() -player->_sprite->getPositionY(), 2) < pow(total_radius_2, 2)) {
+					// NO CAMBIA NADA
+				}
+				else {
+					if (_enrage <= 0) {
+						_enrage = 0;
+						_status = "relaxed";
+					}
+				}
+
 			}
 			
 		}
 		else if (_subtype.compare("dog") == 0) {
-			followPath(dt);
+			
+			// ES UN DPS
+
+			if (_status.compare("relaxed") == 0) {
+				
+				followPath(dt);
+
+				float total_radius = 800*(_agressiveness/100);
+
+				if (pow(_sprite->getPositionX() - player->_sprite->getPositionX(), 2) + pow(_sprite->getPositionY() -player->_sprite->getPositionY(), 2) < pow(total_radius, 2)) {
+					_status = "enrage";
+					_enrage = 5;
+				}
+				else if (_aggro >= (100 - _agressiveness)) {
+					_aggro = 0;
+					_status = "enrage";
+					_enrage = 5;
+				}
+			}
+			else if (_status.compare("enrage") == 0) {
+				
+				followPlayer(dt);
+				_enrage -= dt;
+
+				float total_radius_2 = 800*(_agressiveness/100)*1.5;
+
+				if (pow(_sprite->getPositionX() - player->_sprite->getPositionX(), 2) + pow(_sprite->getPositionY() -player->_sprite->getPositionY(), 2) < pow(total_radius_2, 2)) {
+					// NO CAMBIA NADA
+				}
+				else {
+					if (_enrage <= 0) {
+						_enrage = 0;
+						_status = "relaxed";
+					}
+				}
+
+			}
+
 		}
 		else if (_subtype.compare("tank") == 0) {
-			followPath(dt);
+			
+			// ES UN  TANK
+
+			if (_status.compare("relaxed") == 0) {
+				
+				followPath(dt);
+
+				float total_radius = 800*(_agressiveness/100);
+
+				if (pow(_sprite->getPositionX() - player->_sprite->getPositionX(), 2) + pow(_sprite->getPositionY() -player->_sprite->getPositionY(), 2) < pow(total_radius, 2)) {
+					_status = "enrage";
+					_enrage = 5;
+				}
+				else if (_aggro >= (100 - _agressiveness)) {
+					_aggro = 0;
+					_status = "enrage";
+					_enrage = 5;
+				}
+			}
+			else if (_status.compare("enrage") == 0) {
+				
+				followPlayer(dt);
+				_enrage -= dt;
+
+				float total_radius_2 = 800*(_agressiveness/100)*1.5;
+
+				if (pow(_sprite->getPositionX() - player->_sprite->getPositionX(), 2) + pow(_sprite->getPositionY() -player->_sprite->getPositionY(), 2) < pow(total_radius_2, 2)) {
+					// NO CAMBIA NADA
+				}
+				else {
+					if (_enrage <= 0) {
+						_enrage = 0;
+						_status = "relaxed";
+					}
+				}
+
+			}
+
 		}
 		else if (_subtype.compare("ghost") == 0) {
 			followPath(dt);
