@@ -38,10 +38,13 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 		_health = 200;
 		value = 100;
 
-		_sprite = Sprite3D::create("Enemy.obj", "stone.png");
+		//_sprite = Sprite3D::create("Enemy.obj", "stone.png");
+		_sprite = Sprite3D::create("NormalEnemy.c3b","NormalEnemy.png");
 		_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
 		_sprite->setRotation3D(Vec3(90, 0, 270));
-		_sprite->setScale(scale_enemy);
+		//_sprite->setScale(scale_enemy);
+		enemyAnimation = Animation3D::create("NormalEnemy.c3b");
+
 	}
 	else if (_subtype.compare("dog") == 0) {
 		
@@ -49,10 +52,12 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 		_health = 150;
 		value = 50;
 
-		_sprite = Sprite3D::create("Enemy.obj", "fire.jpg");
+		//_sprite = Sprite3D::create("Enemy.obj", "fire.jpg");
+		_sprite = Sprite3D::create("SmallEnemy.c3b", "SmallEnemy.png");
 		_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
 		_sprite->setRotation3D(Vec3(90, 0, 270));
-		_sprite->setScale(scale_enemy);
+		//_sprite->setScale(scale_enemy);
+		enemyAnimation = Animation3D::create("SmallEnemy.c3b");
 	}
 	else if (_subtype.compare("tank") == 0) {
 		
@@ -60,10 +65,12 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 		_health = 400;
 		value = 300;
 
-		_sprite = Sprite3D::create("Enemy.obj", "stone.png");
+		//_sprite = Sprite3D::create("Enemy.obj", "stone.png");
+		_sprite = Sprite3D::create("BigEnemy.c3b","BigEnemy.png");
 		_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
 		_sprite->setRotation3D(Vec3(90, 0, 270));
-		_sprite->setScale(scale_enemy*2);
+		//_sprite->setScale(scale_enemy*2);
+		enemyAnimation = Animation3D::create("BigEnemy.c3b");
 	}
 	else if (_subtype.compare("ghost") == 0) {
 		
@@ -71,14 +78,20 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 		_health = 150;
 		value = 150;
 
-		_sprite = Sprite3D::create("Enemy.obj", "stone.png");
+		//_sprite = Sprite3D::create("Enemy.obj", "stone.png");
+		_sprite = Sprite3D::create("NormalEnemy.c3b", "NormalEnemy.png");
 		_sprite->setPosition3D(Vec3(initial_point_enemy.x, initial_point_enemy.y, position_z_enemy));
 		_sprite->setRotation3D(Vec3(90, 0, 270));
-		_sprite->setScale(scale_enemy);
+		//_sprite->setScale(scale_enemy);
+		enemyAnimation = Animation3D::create("NormalEnemy.c3b");
 		GLubyte ubyteComponent = static_cast<GLubyte>(0.4f * 255.f); 
 		_sprite->setOpacity(ubyteComponent);
 	}
-
+	_sprite->setScale(0.75);
+	enemyAnimate = Animate3D::create(enemyAnimation);
+	enemyAnimate->setSpeed(3.0);
+	enemyAction = RepeatForever::create(enemyAnimate);
+	_sprite->runAction(enemyAction);
 
 	_eventDispatcher->addCustomEventListener("EnterFrame", [=](EventCustom* event) {
 		float* data = static_cast<float*>(event->getUserData());

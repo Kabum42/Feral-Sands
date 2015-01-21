@@ -12,6 +12,10 @@ class Enemy : public Entity
 {
 
 public:
+	Animation3D* enemyAnimation;
+	Animate3D* enemyAnimate;
+	Action* enemyAction;
+
 	float floorSize;
 	bool _principio;
 	PathStone* path;

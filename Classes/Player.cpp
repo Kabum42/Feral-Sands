@@ -25,12 +25,37 @@ Player::Player(int floorSize2, Point initial_point_player2) {
 	_radius = scale_player*0.1;
 
 
-	_sprite = Sprite3D::create("Lex_High.obj", "stone.png");
+	//_sprite = Sprite3D::create("Lex_High.obj", "stone.png");
+	_sprite = Sprite3D::create("Lex_FrontRun.c3b","Lex_Uved_AO.png");
 	_sprite->setPosition3D(Vec3(initial_point_player.x, initial_point_player.y, 0));
 	_sprite->setRotation3D(Vec3(90, 0, 180));
-	_sprite->setScale(scale_player);
+	//_sprite->setScale(scale_player);
+	_sprite->setScale(0.75);
 
+	//legsLex = _sprite->getAttachNode("Spine");
 	
+	legsLex = _sprite->getSkeleton()->getBoneByName("FemaleBaseMesh:Spine");
+	float translation = 0;
+	float rotation = 0;
+	float scale = 0;
+	//legsLex->setAnimationValue(&translation, &rotation, &scale);
+	//legsLex->removeAllChildBone();
+
+
+	runAnimation = Animation3D::create("Lex.c3b");
+	runAnimate = Animate3D::create(runAnimation);
+	runAnimate->setSpeed(3.0);
+	runAction = RepeatForever::create(runAnimate);
+	//_sprite->runAction(runAction);
+
+	idleAnimation = Animation3D::create("Lex.c3b");
+	idleAnimate = Animate3D::create(idleAnimation);
+	idleAnimate->setSpeed(3.0);
+	idleAction = RepeatForever::create(idleAnimate);
+
+	_sprite->runAction(idleAction);
+
+
 	_eventDispatcher->addCustomEventListener("EnterFrame", [=](EventCustom* event) {
 		float* data = static_cast<float*>(event->getUserData());
 		update(data[0]);
