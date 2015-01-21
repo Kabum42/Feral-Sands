@@ -551,21 +551,168 @@ bool HelloWorld::init()
 	path21->_nextPath = path22;
 	path22->_nextPath = path23;
 
+
+
+	q = new QuadBezier(Point(900*(floorSize/2048), 0), Point(800*(floorSize/2048), -100*(floorSize/2048)), Point(700*(floorSize/2048), 0));
+
+	PathStone* path31 = new PathStone(floorSize, 30, q);
+	this->addChild(path31->getLayer());
+	active_pathstones[num_active_pathstones] = path31;
+	num_active_pathstones++;
+
+	q = new QuadBezier(Point(700*(floorSize/2048), 0), Point(500*(floorSize/2048), 200*(floorSize/2048)), Point(300*(floorSize/2048), 50*(floorSize/2048)));
+
+	PathStone* path32 = new PathStone(floorSize, 30, q);
+	this->addChild(path32->getLayer());
+	active_pathstones[num_active_pathstones] = path32;
+	num_active_pathstones++;
+
+	q = new QuadBezier(Point(300*(floorSize/2048), 50*(floorSize/2048)), Point(200*(floorSize/2048), -50*(floorSize/2048)), Point(0, 0));
+
+	PathStone* path33 = new PathStone(floorSize, 30, q);
+	this->addChild(path33->getLayer());
+	active_pathstones[num_active_pathstones] = path33;
+	num_active_pathstones++;
+
+	path31->_nextPath = path32;
+	path32->_nextPath = path33;
+
+
+
+	q = new QuadBezier(Point(500*(floorSize/2048), -700*(floorSize/2048)), Point(650*(floorSize/2048), -500*(floorSize/2048)), Point(400*(floorSize/2048), -300*(floorSize/2048)));
+
+	PathStone* path41 = new PathStone(floorSize, 30, q);
+	this->addChild(path41->getLayer());
+	active_pathstones[num_active_pathstones] = path41;
+	num_active_pathstones++;
+
+	q = new QuadBezier(Point(400*(floorSize/2048), -300*(floorSize/2048)), Point(310*(floorSize/2048), -230*(floorSize/2048)), Point(280*(floorSize/2048), -350*(floorSize/2048)));
+
+	PathStone* path42 = new PathStone(floorSize, 30, q);
+	this->addChild(path42->getLayer());
+	active_pathstones[num_active_pathstones] = path42;
+	num_active_pathstones++;
+
+	q = new QuadBezier (Point(280*(floorSize/2048), -350*(floorSize/2048)), Point(200*(floorSize/2048), -470*(floorSize/2048)), Point(100*(floorSize/2048), -380*(floorSize/2048)));
+
+	PathStone* path43 = new PathStone(floorSize, 30, q);
+	this->addChild(path43->getLayer());
+	active_pathstones[num_active_pathstones] = path43;
+	num_active_pathstones++;
+
+	q = new QuadBezier (Point(100*(floorSize/2048), -380*(floorSize/2048)), Point(40*(floorSize/2048), -330*(floorSize/2048)), Point(130*(floorSize/2048), -280*(floorSize/2048)));
+
+	PathStone* path44 = new PathStone(floorSize, 30, q);
+	this->addChild(path44->getLayer());
+	active_pathstones[num_active_pathstones] = path44;
+	num_active_pathstones++;
+
+	q = new QuadBezier (Point(130*(floorSize/2048), -280*(floorSize/2048)), Point(190*(floorSize/2048), -230*(floorSize/2048)), Point(0, 0));
+
+	PathStone* path45 = new PathStone(floorSize, 30, q);
+	this->addChild(path45->getLayer());
+	active_pathstones[num_active_pathstones] = path45;
+	num_active_pathstones++;
+
+
+	path41->_nextPath = path42;
+	path42->_nextPath = path43;
+	path43->_nextPath = path44;
+	path44->_nextPath = path45;
+
+
+
+	q = new QuadBezier(Point(-380*(floorSize/2048), -800*(floorSize/2048)), Point(-520*(floorSize/2048), -500*(floorSize/2048)), Point(-290*(floorSize/2048), -325*(floorSize/2048)));
+
+	PathStone* path51 = new PathStone(floorSize, 30, q);
+	this->addChild(path51->getLayer());
+	active_pathstones[num_active_pathstones] = path51;
+	num_active_pathstones++;
+
+	q = new QuadBezier(Point(-290*(floorSize/2048), -325*(floorSize/2048)), Point(-50*(floorSize/2048), -200*(floorSize/2048)), Point(0, 0));
+
+	PathStone* path52 = new PathStone(floorSize, 30, q);
+	this->addChild(path52->getLayer());
+	active_pathstones[num_active_pathstones] = path52;
+	num_active_pathstones++;
+
+	path51->_nextPath = path52;
+
 	// WAVES
 
 	Wave* w = new Wave(floorSize, path, boss);
 	w->addEnemy("grunt", 1.5);
-	w->addEnemy("dog", 1);
-	w->addEnemy("tank", 1);
-	w->addEnemy("ghost", 1);
-	w->addEnemy("grunt", 20);
 	w->addEnemy("grunt", 2);
 	w->addEnemy("grunt", 2);
 	w->addEnemy("grunt", 2);
 	w->addEnemy("grunt", 2);
 	w->addEnemy("grunt", 2);
+	w->addEnemy("dog", 48.5);
+	w->addEnemy("dog", 2);
+	w->addEnemy("dog", 2);
 	total_enemies += w->num_enemies;
 	w->_active = true;
+
+	Wave* w2 = new Wave(floorSize, path31, boss);
+	w2->addEnemy("grunt", 20);
+	w2->addEnemy("grunt", 2);
+	w2->addEnemy("grunt", 2);
+	w2->addEnemy("grunt", 2);
+	w2->addEnemy("grunt", 2);
+	w2->addEnemy("tank", 2);
+	w2->addEnemy("dog", 30);
+	w2->addEnemy("dog", 2);
+	w2->addEnemy("dog", 2);
+	total_enemies += w2->num_enemies;
+	w2->_active = true;
+
+	Wave* w3 = new Wave(floorSize, path21, boss);
+	w3->addEnemy("grunt", 40);
+	w3->addEnemy("grunt", 2);
+	w3->addEnemy("grunt", 2);
+	w3->addEnemy("grunt", 2);
+	w3->addEnemy("grunt", 2);
+	w3->addEnemy("tank", 2);
+	total_enemies += w3->num_enemies;
+	w3->_active = true;
+
+	Wave* w4 = new Wave(floorSize, path51, boss);
+	w4->addEnemy("grunt", 40);
+	w4->addEnemy("grunt", 2);
+	w4->addEnemy("grunt", 2);
+	w4->addEnemy("grunt", 2);
+	w4->addEnemy("grunt", 2);
+	w4->addEnemy("tank", 2);
+	total_enemies += w4->num_enemies;
+	w4->_active = true;
+
+	Wave* w5 = new Wave(floorSize, path11, boss);
+	w5->addEnemy("grunt", 60);
+	w5->addEnemy("grunt", 2);
+	w5->addEnemy("grunt", 2);
+	w5->addEnemy("grunt", 2);
+	w5->addEnemy("grunt", 2);
+	w5->addEnemy("grunt", 2);
+	w5->addEnemy("grunt", 2);
+	w5->addEnemy("grunt", 2);
+	w5->addEnemy("grunt", 2);
+	w5->addEnemy("tank", 2);
+	total_enemies += w5->num_enemies;
+	w5->_active = true;
+
+	Wave* w6 = new Wave(floorSize, path41, boss);
+	w6->addEnemy("grunt", 60);
+	w6->addEnemy("grunt", 2);
+	w6->addEnemy("grunt", 2);
+	w6->addEnemy("grunt", 2);
+	w6->addEnemy("grunt", 2);
+	w6->addEnemy("grunt", 2);
+	w6->addEnemy("grunt", 2);
+	w6->addEnemy("grunt", 2);
+	w6->addEnemy("grunt", 2);
+	w6->addEnemy("tank", 2);
+	total_enemies += w6->num_enemies;
+	w6->_active = true;
 
 	p = Point(0, 0);
 
@@ -633,6 +780,10 @@ void HelloWorld::update(float dt)
 
 	if (paused) { // ESTA PAUSADO
 
+		EventCustom eventVisible("checkVisible");
+		eventVisible.setUserData(new Point(boss->_sprite->getPositionX(), boss->_sprite->getPositionY()));
+		_eventDispatcher->dispatchEvent(&eventVisible);
+
 		if (dwResult == ERROR_SUCCESS) { // Controller is connected 
 
 			WORD wButtons = state.Gamepad.wButtons;
@@ -669,6 +820,10 @@ void HelloWorld::update(float dt)
 				dialog_label->setString(active_dialog->_text);
 			}
 			dialog_label->setVisible(true);
+
+			EventCustom eventVisible("checkVisible");
+			eventVisible.setUserData(new Point(boss->_sprite->getPositionX(), boss->_sprite->getPositionY()));
+			_eventDispatcher->dispatchEvent(&eventVisible);
 
 			if (dwResult == ERROR_SUCCESS) { // Controller is connected 
 
@@ -724,7 +879,7 @@ void HelloWorld::update(float dt)
 			}
 
 			top_label->setVisible(true);
-			std::string s_aux = std::to_string(nexus->_life) + "/5";
+			std::string s_aux = std::to_string(nexus->_life) + "/10";
 			top_label->setString(s_aux);
 
 			s_aux = std::to_string(resources);
