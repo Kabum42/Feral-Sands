@@ -17,6 +17,9 @@ Player::Player(int floorSize2, Point initial_point_player2) {
 	speed = 1.5;
 	speed_cooldown = 0;
 
+	moving = false;
+	forward = true;
+
 	initial_point_player = initial_point_player2;
 
 	scale_player = 40*(floorSize/2048);
@@ -25,12 +28,68 @@ Player::Player(int floorSize2, Point initial_point_player2) {
 	_radius = scale_player*0.1;
 
 
+<<<<<<< HEAD
 	_sprite = Sprite3D::create("Lex_Uved_AO.obj", "Lex_Uved_AO.png");
 	_sprite->setPosition3D(Vec3(initial_point_player.x, initial_point_player.y, 0));
 	_sprite->setRotation3D(Vec3(90, 0, 180));
 	_sprite->setScale(scale_player/200);
+=======
+	//_sprite = Sprite3D::create("Lex_High.obj", "stone.png");
+	_sprite = Sprite3D::create("Lex.c3b","Lex_Uved_AO.png");
+	_sprite->setPosition3D(Vec3(initial_point_player.x, initial_point_player.y, 0));
+	_sprite->setRotation3D(Vec3(90, 0, 180));
+	//_sprite->setScale(scale_player);
+	_sprite->setScale(0.75);
 
+	//***********************************************************************************
+	//legsLex = _sprite->getAttachNode("FemaleBaseMesh:Spine");
 	
+	//legsLex = _sprite->getSkeleton()->getBoneByName("FemaleBaseMesh:Spine");
+	
+	//float translation = 0;
+	//float rotation = 0;
+	//float scale = 0;
+	//legsLex->setAnimationValue(&translation, &rotation, &scale);
+	//legsLex->removeAllChildBone();
+
+	/* THIS SHOULD WORK
+	skeletonLex = _sprite->getSkeleton();
+	skeletonLex->getBoneByName("FemaleBaseMesh:Spine")->removeAllChildBone();
+
+	torsoLex = Sprite3D::create("Lex.c3b", "Lex_Uved_AO.png");
+	_sprite->getAttachNode("FemaleBaseMesh:Spine")->addChild(torsoLex);
+	torsoLex->setRotation3D(Vec3(0, 45, 45));
+	*/
+	//torsoLex = Sprite3D::create("Lex.c3b");
+	//torsoBoneLex = torsoLex->getSkeleton()->getBoneByName("FemaleBaseMesh:Spine");
+	//addChild(torsoLex);
+
+	//legsLex->addChildBone(torsoBoneLex);
+	//_sprite->getSkeleton()->getBoneByName("FemaleBaseMesh:Spine")->removeAllChildBone();
+	//_sprite->getSkeleton()->getBoneByName("FemaleBaseMesh:Spine")->addChildBone(torsoLex->getSkeleton()->getBoneByName("FemaleBaseMesh:Spine"));
+	
+>>>>>>> origin/master
+
+	//torsoLex->setRotation3D(Vec3(0, 45, 45));
+	
+	//_sprite->getSkeleton()->updateBoneMatrix();
+	//***************************************************************************************************************
+
+	moveAnimation = Animation3D::create("Lex.c3b");
+	moveAnimate = Animate3D::create(moveAnimation);
+	moveAnimate->setSpeed(3.0);
+	moveAction = RepeatForever::create(moveAnimate);
+	_sprite->runAction(moveAction);
+
+	idleAnimation = Animation3D::create("Lex.c3b");
+	idleAnimate = Animate3D::create(idleAnimation);
+	idleAnimate->setSpeed(-1.0);
+	idleAction = RepeatForever::create(idleAnimate);
+
+	//_sprite->runAction(idleAction);
+	
+
+
 	_eventDispatcher->addCustomEventListener("EnterFrame", [=](EventCustom* event) {
 		float* data = static_cast<float*>(event->getUserData());
 		update(data[0]);

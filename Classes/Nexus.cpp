@@ -11,7 +11,7 @@ Nexus::Nexus(void) {
 Nexus::Nexus(int floorSize2, Point initial_point_2) {
 	
 	floorSize = floorSize2;
-	_life = 5;
+	_life = 10;
 	_type = "nexus";
 
 	initial_point_nexus = initial_point_2;

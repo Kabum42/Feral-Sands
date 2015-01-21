@@ -11,9 +11,11 @@ public:
 	Player* _player;
 	Vec2 escape;
 	float time_passed;
+	int value;
+	float speed;
 
 	Resource(void);
-	Resource(int floorSize2, Point initial_point, Player* _player2);
+	Resource(int floorSize2, Point initial_point, Player* _player2, int value2);
 	~Resource(void);
 
 	void Resource::update(float dt);

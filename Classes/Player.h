@@ -11,6 +11,23 @@ class Player : public Entity
 {
 
 public:
+	Animation3D* moveAnimation;
+	Animate3D* moveAnimate;
+	Action* moveAction;
+	//Mesh* legsLex;
+	//AttachNode* legsLex;
+	Bone3D* legsLex;
+	//Skeleton3D* skeletonLex;
+	Sprite3D* torsoLex;
+	Bone3D* torsoBoneLex;
+
+	Animation3D* idleAnimation;
+	Animate3D* idleAnimate;
+	Action* idleAction;
+
+	bool moving;
+	bool forward;
+
 	float floorSize;
 	Point initial_point_player;
 	int scale_player;
