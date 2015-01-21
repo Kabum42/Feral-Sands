@@ -2,4 +2,4 @@
 # ToolType: PolyMesh3D
 # www.zbrush.com
 newmtl defaultMat
-map_Kd Shot.bmp
+map_Kd Weapon.bmp

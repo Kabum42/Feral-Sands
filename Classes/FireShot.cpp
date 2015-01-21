@@ -19,7 +19,7 @@ FireShot::FireShot(int floorSize2, Vec3 start, Vec3 aim)
 	_range = 100;
 	_damage = 0.5;
 
-	_sprite = Sprite3D::create("Shot.obj", "fire.jpg");
+	_sprite = Sprite3D::create("Shot.obj", "ShotFire.png");
 	_sprite->setPosition3D(_origin);
 	_sprite->setRotation3D(_direction);
 	_sprite->setScale(3*(floorSize/2048));

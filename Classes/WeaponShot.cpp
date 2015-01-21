@@ -16,7 +16,7 @@ WeaponShot::WeaponShot(int floorSize2, Vec3 start, Vec3 aim)
 	_speed = 3000;
 	_range = 100;
 
-	_sprite = Sprite3D::create("Shot.obj", "stone.png");
+	_sprite = Sprite3D::create("Shot.obj", "ShotNormal.png");
 	_sprite->setPosition3D(_origin);
 	_sprite->setRotation3D(_direction);
 	_sprite->setScale(5*(floorSize/2048));

@@ -15,37 +15,37 @@ Atrezzo::Atrezzo(int floorSize2, Point initial_point_2, String type2) {
 	if (type2.compare("rock") == 0) {
 		scale = 40*(floorSize/2048);
 		_radius = scale*1;
-		_sprite = Sprite3D::create("Rock.obj", "stone.png");
+		_sprite = Sprite3D::create("Rock.obj", "RockText.png");
 	}
 	else if (type2.compare("rock2") == 0) {
 		scale = 40*(floorSize/2048);
 		_radius = scale*0.5;
-		_sprite = Sprite3D::create("Rock2.obj", "stone.png");
+		_sprite = Sprite3D::create("Rock2.obj", "Rock2Text.png");
 	}
 	else if (type2.compare("rock3") == 0) {
 		scale = 40*(floorSize/2048);
 		_radius = scale*0.5;
-		_sprite = Sprite3D::create("Rock3.obj", "stone.png");
+		_sprite = Sprite3D::create("Rock3.obj", "Rock3Text.png");
 	}
 	else if (type2.compare("rock4") == 0) {
 		scale = 40*(floorSize/2048);
 		_radius = scale*0.5;
-		_sprite = Sprite3D::create("Rock4.obj", "stone.png");
+		_sprite = Sprite3D::create("Rock4.obj", "Rock4Text.png");
 	}
 	else if (type2.compare("palmTree") == 0) {
 		scale = 50*(floorSize/2048);
 		_radius = scale*0.05;
-		_sprite = Sprite3D::create("PalmTree.obj", "stone.png");
+		_sprite = Sprite3D::create("PalmTree.obj", "PalmTreeText.png");
 	}
 	else if (type2.compare("pilar") == 0) {
 		scale = 100*(floorSize/2048);
 		_radius = scale*0.2;
-		_sprite = Sprite3D::create("Pilar.obj", "stone.png");
+		_sprite = Sprite3D::create("Pilar.obj", "PilarText.png");
 	}
 	else if (type2.compare("pilar2") == 0) {
 		scale = 100*(floorSize/2048);
 		_radius = scale*0.2;
-		_sprite = Sprite3D::create("Pilar.obj", "stone.png");
+		_sprite = Sprite3D::create("Pilar.obj", "PilarText.png");
 	}
 
 	

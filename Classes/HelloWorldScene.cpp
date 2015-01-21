@@ -428,7 +428,7 @@ bool HelloWorld::init()
 	floor->setCameraMask(2);
 	this->addChild(floor, 0);
 
-	auto walls = Sprite3D::create("Mountains.obj", "stone.png");
+	auto walls = Sprite3D::create("Mountains.obj", "MountainsText.png");
 	walls->setScale(100 * (floorSize / 2048));
 	walls->setRotation3D(Vec3(90, 0, 0));
 	walls->setCameraMask(2);
@@ -441,7 +441,7 @@ bool HelloWorld::init()
 	lake->setCameraMask(2);
 	this->addChild(lake, 0);
 
-	auto ruin1 = Sprite3D::create("RuinStructure.obj", "stone.png");
+	auto ruin1 = Sprite3D::create("RuinStructure.obj", "RuinStructureText.png");
 	ruin1->setScale(25 * (floorSize / 2048));
 	ruin1->setRotation3D(Vec3(90, 0, 0));
 	ruin1->setPosition3D(Vec3(0*(floorSize/2048), -150*(floorSize/2048), 0));
