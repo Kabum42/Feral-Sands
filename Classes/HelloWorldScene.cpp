@@ -129,6 +129,9 @@ bool aPushed = false;
 float rightThumbX = 0;
 float rightThumbY = 32767;
 
+float leftThumbX = 0;
+float leftThumbY = 32767;
+
 float coolDownMax = 0.2;
 float coolDownNow = coolDownMax;
 float coolDownFireNow = coolDownMax;
@@ -910,8 +913,32 @@ void HelloWorld::update(float dt)
 					}
 
 					// CONTROL DE PLAYER
-					if (boss->dashing == 0 && !boss->_resurrect) {
+					/*if (boss->dashing == 0 && !boss->_resurrect) {
+						if (state.Gamepad.sThumbLX != 0 || state.Gamepad.sThumbLY != 0){
+							boss->_sprite->setPosition3D(boss->_sprite->getPosition3D() + Vec3(state.Gamepad.sThumbLX*dt*boss->speed / 70, state.Gamepad.sThumbLY*dt*boss->speed / 70, 0));
+							boss->_sprite->runAction(boss->_sprite->runAction);
+						}
+					}*/
+					if (boss->dashing == 0 && !boss->_resurrect && (state.Gamepad.sThumbLX != 0 || state.Gamepad.sThumbLY != 0)) {
 						boss->_sprite->setPosition3D(boss->_sprite->getPosition3D() + Vec3(state.Gamepad.sThumbLX*dt*boss->speed / 70, state.Gamepad.sThumbLY*dt*boss->speed / 70, 0));
+						if (boss->moving == false){
+							//boss->_sprite->stopAction(boss->idleAction);
+							//boss->_sprite->runAction(boss->moveAction);
+							boss->moving = true;
+							//boss->moveAnimate->setSpeed(3.0);
+							//boss->moveAnimate->setSpeed(Vec3(state.Gamepad.sThumbLX*dt*boss->speed / 70, state.Gamepad.sThumbLY*dt*boss->speed / 70, 0).length());
+						}
+						boss->moveAnimate->setSpeed(Vec3(state.Gamepad.sThumbLX*dt*boss->speed / 70, state.Gamepad.sThumbLY*dt*boss->speed / 70, 0).length()*0.85);
+						if (!boss->forward)
+							boss->moveAnimate->setSpeed(-boss->moveAnimate->getSpeed()*0.8);
+					}
+					else{
+						if (boss->moving == true) {
+							//boss->_sprite->stopAction(boss->moveAction);
+							//boss->_sprite->runAction(boss->idleAction);
+							boss->moving = false;
+							boss->moveAnimate->setSpeed(0.0);
+						}
 					}
 
 
@@ -950,10 +977,53 @@ void HelloWorld::update(float dt)
 
 
 					// ROTACION DE PLAYER
-					if (state.Gamepad.sThumbRY != 0) rightThumbY = state.Gamepad.sThumbRY;
-					if (state.Gamepad.sThumbRX != 0) rightThumbX = state.Gamepad.sThumbRX;
+					/*if (state.Gamepad.bRightTrigger != 0){
+						if (state.Gamepad.sThumbRY != 0) rightThumbY = state.Gamepad.sThumbRY;
+						if (state.Gamepad.sThumbRX != 0) rightThumbX = state.Gamepad.sThumbRX;
 
-					boss->_sprite->setRotation3D(Vec3(90, 0, -90 - atan2(rightThumbY, rightThumbX) * 360 / (2 * M_PI)));
+						boss->_sprite->setRotation3D(Vec3(90, 0, -90 - atan2(rightThumbY, rightThumbX) * 360 / (2 * M_PI)));
+					}
+					else { //if (state.Gamepad.bRightTrigger == 0)
+						if (state.Gamepad.sThumbLY != 0) leftThumbY = state.Gamepad.sThumbLY;
+						if (state.Gamepad.sThumbLX != 0) leftThumbX = state.Gamepad.sThumbLX;
+
+						boss->_sprite->setRotation3D(Vec3(90, 0, -90 - atan2(leftThumbY, leftThumbX) * 360 / (2 * M_PI)));
+					}*/
+					
+					if (state.Gamepad.sThumbRY != 0 || state.Gamepad.sThumbRX != 0) {
+						rightThumbY = state.Gamepad.sThumbRY;
+						rightThumbX = state.Gamepad.sThumbRX;
+
+						leftThumbY = state.Gamepad.sThumbLY;
+						leftThumbX = state.Gamepad.sThumbLX;
+
+						boss->_sprite->setRotation3D(Vec3(90, 0, -90 - atan2(rightThumbY, rightThumbX) * 360 / (2 * M_PI)));
+
+						if (boss->forward){
+							if (Vec3(0, 0, 0).angle(Vec3(rightThumbX, rightThumbY, 0), Vec3(leftThumbX, leftThumbY, 0)) > 2.1){
+								boss->forward = false;
+							}
+						}
+						else {
+							if (Vec3(0, 0, 0).angle(Vec3(rightThumbX, rightThumbY, 0), Vec3(leftThumbX, leftThumbY, 0)) < 1.8){
+								boss->forward = true;
+							}
+						}
+							
+					}
+					else if (state.Gamepad.sThumbLY != 0 || state.Gamepad.sThumbLX != 0) {
+						boss->forward = true;
+						leftThumbY = state.Gamepad.sThumbLY;
+						state.Gamepad.sThumbRY = state.Gamepad.sThumbLY;
+						rightThumbY = state.Gamepad.sThumbRY;
+
+						leftThumbX = state.Gamepad.sThumbLX;
+						state.Gamepad.sThumbRX = state.Gamepad.sThumbLX;
+						rightThumbX = state.Gamepad.sThumbRX;
+
+						boss->_sprite->setRotation3D(Vec3(90, 0, -90 - atan2(leftThumbY, leftThumbX) * 360 / (2 * M_PI)));
+					}
+
 
 					// DISPARO
 					if (state.Gamepad.bRightTrigger != 0) {
@@ -1240,6 +1310,11 @@ void HelloWorld::update(float dt)
 				if (pressed_D || pressed_RIGHT) {
 					virtual_vec.x += 1;
 				}
+
+				if (!pressed_W && !pressed_S && !pressed_A && !pressed_D && !pressed_UP && !pressed_DOWN && !pressed_LEFT && !pressed_RIGHT)
+					boss->moveAnimate->setSpeed(0);
+				else if (boss->dashing == 0) boss->moveAnimate->setSpeed(7);
+				else boss->moveAnimate->setSpeed(0);
 				virtual_vec.normalize();
 
 				// CONTROLA EL MOVIMIENTO
