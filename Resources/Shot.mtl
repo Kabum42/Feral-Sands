@@ -1,11 +1,5 @@
-#
-#
-#
-
-newmtl pSphere10 Mesh_initialShadingGroup
-illum 2
-Ka 0.000000 0.000000 0.000000
-Kd 0.500000 0.500000 0.500000
-Ks 0.000000 0.000000 0.000000
-Ns 0.000000
-
+# File created by ZBrush
+# ToolType: PolyMesh3D
+# www.zbrush.com
+newmtl defaultMat
+map_Kd Shot.bmp

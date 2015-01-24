@@ -61,7 +61,7 @@ Label* top_label;
 Label* stop_label;
 
 int deuda_resources = 0;
-int resources = 0;
+int resources = 1000;
 Sprite* resource;
 Label* resources_label;
 
@@ -73,6 +73,9 @@ Sprite* icon_monster;
 Sprite* gun_normal;
 Sprite* gun_fire;
 Sprite* gun_air;
+
+Sprite* bar_back;
+Sprite* bar;
 
 Nexus* nexus;
 Player* boss;
@@ -138,7 +141,6 @@ float coolDownNow = coolDownMax;
 float coolDownFireNow = coolDownMax;
 float coolDownAirNow = coolDownMax;
 float airPower = 0;
-bool  airCharging;
 
 EventCustom event("EnterFrame");
 EventCustom event_add_mobile("add_mobile");
@@ -309,6 +311,18 @@ bool HelloWorld::init()
 	gun_air->setVisible(false);
 	this->addChild(gun_air, 1);
 
+	bar_back = Sprite::create("bar_back.png");
+	bar_back->setPositionX(960 - bar_back->getBoundingBox().size.width / 2 - 30);
+	bar_back->setPositionY(bar_back->getBoundingBox().size.height / 2 + 30);
+	this->addChild(bar_back, 1);
+
+	bar = Sprite::create("bar.png");
+	bar->setPositionX(960 - bar->getBoundingBox().size.width / 2 - 30);
+	bar->setPositionY(bar->getBoundingBox().size.height / 2 + 30);
+	this->addChild(bar, 1);
+
+
+
 	dialog_box = Sprite::create("dialog_box.png");
 	dialog_box->setPositionX(960/2);
 	dialog_box->setPositionY(dialog_box->getBoundingBox().size.height/2 +10);
@@ -420,26 +434,28 @@ bool HelloWorld::init()
 	floor->setCameraMask(2);
 	this->addChild(floor, 0);
 
-	auto walls = Sprite3D::create("Mountains.obj", "stone.png");
+	auto walls = Sprite3D::create("Mountains.obj", "MountainsText.png");
 	walls->setScale(100 * (floorSize / 2048));
 	walls->setRotation3D(Vec3(90, 0, 0));
 	walls->setCameraMask(2);
 	this->addChild(walls, 0);
 
+	/*
 	auto lake = Sprite3D::create("Lake.obj");
 	lake->setScale(100 * (floorSize / 2048));
 	lake->setRotation3D(Vec3(90, 0, 0));
 	lake->setPosition3D(Vec3(-5*(floorSize/2048), -520*(floorSize/2048), 0));
 	lake->setCameraMask(2);
 	this->addChild(lake, 0);
-
-	auto ruin1 = Sprite3D::create("RuinStructure.obj", "stone.png");
+	*/
+	/*
+	auto ruin1 = Sprite3D::create("RuinStructure.obj", "RuinStructureText.png");
 	ruin1->setScale(25 * (floorSize / 2048));
 	ruin1->setRotation3D(Vec3(90, 0, 0));
 	ruin1->setPosition3D(Vec3(0*(floorSize/2048), -150*(floorSize/2048), 0));
 	ruin1->setCameraMask(2);
 	this->addChild(ruin1, 0);
-
+	*/
 	
 	Point p = Point(0, 0);
 
@@ -457,7 +473,7 @@ bool HelloWorld::init()
 	green_tower->setVisible(false);
 	this->addChild(green_tower, 0);
 
-	green_slow = Sprite3D::create("Floor.obj", "stone.png");
+	green_slow = Sprite3D::create("Floor.obj", "alquitran.png");
 	green_slow->setScale(30*(floorSize/2048));
 	green_slow->setCameraMask(2);
 	green_slow->setColor(ccc3(0, 200, 0));
@@ -484,21 +500,21 @@ bool HelloWorld::init()
 
 	QuadBezier* q = new QuadBezier(Point(-900*(floorSize/2048), 0), Point(-850*(floorSize/2048), 100*(floorSize/2048)), Point(-600*(floorSize/2048), 0));
 
-	PathStone* path = new PathStone(floorSize, 30, q);
+	PathStone* path = new PathStone(floorSize, 15, q);
 	this->addChild(path->getLayer());
 	active_pathstones[num_active_pathstones] = path;
 	num_active_pathstones++;
 	
 	q = new QuadBezier(Point(-600*(floorSize/2048), 0), Point(-400*(floorSize/2048), -130*(floorSize/2048)),Point(-200*(floorSize/2048), -20*(floorSize/2048)));
 
-	PathStone* path2 = new PathStone(floorSize, 30, q);
+	PathStone* path2 = new PathStone(floorSize, 15, q);
 	this->addChild(path2->getLayer());
 	active_pathstones[num_active_pathstones] = path2;
 	num_active_pathstones++;
 	
 	q = new QuadBezier(Point(-200*(floorSize/2048), -20*(floorSize/2048)), Point(-100*(floorSize/2048), 20*(floorSize/2048)), Point(0, 0));
 
-	PathStone* path3 = new PathStone(floorSize, 30, q);
+	PathStone* path3 = new PathStone(floorSize, 15, q);
 	this->addChild(path3->getLayer());
 	active_pathstones[num_active_pathstones] = path3;
 	num_active_pathstones++;
@@ -512,21 +528,21 @@ bool HelloWorld::init()
 	
 	q = new QuadBezier(Point(-380*(floorSize/2048), 800*(floorSize/2048)), Point(-520*(floorSize/2048), 600*(floorSize/2048)), Point(-290*(floorSize/2048), 575*(floorSize/2048)));
 
-	PathStone* path11 = new PathStone(floorSize, 30, q);
+	PathStone* path11 = new PathStone(floorSize, 15, q);
 	this->addChild(path11->getLayer());
 	active_pathstones[num_active_pathstones] = path11;
 	num_active_pathstones++;
 
 	q = new QuadBezier(Point(-290*(floorSize/2048), 575*(floorSize/2048)), Point(-30*(floorSize/2048), 500*(floorSize/2048)), Point(-100*(floorSize/2048), 350*(floorSize/2048)));
 
-	PathStone* path12 = new PathStone(floorSize, 30, q);
+	PathStone* path12 = new PathStone(floorSize, 15, q);
 	this->addChild(path12->getLayer());
 	active_pathstones[num_active_pathstones] = path12;
 	num_active_pathstones++;
 
 	q = new QuadBezier(Point(-100*(floorSize/2048), 350*(floorSize/2048)), Point(-200*(floorSize/2048), 250*(floorSize/2048)), Point(0, 0));
 
-	PathStone* path13 = new PathStone(floorSize, 30, q);
+	PathStone* path13 = new PathStone(floorSize, 15, q);
 	this->addChild(path13->getLayer());
 	active_pathstones[num_active_pathstones] = path13;
 	num_active_pathstones++;
@@ -538,21 +554,21 @@ bool HelloWorld::init()
 
 	q = new QuadBezier(Point(430*(floorSize/2048), 750*(floorSize/2048)), Point(350*(floorSize/2048), 625*(floorSize/2048)), Point(400*(floorSize/2048), 500*(floorSize/2048)));
 
-	PathStone* path21 = new PathStone(floorSize, 30, q);
+	PathStone* path21 = new PathStone(floorSize, 15, q);
 	this->addChild(path21->getLayer());
 	active_pathstones[num_active_pathstones] = path21;
 	num_active_pathstones++;
 
 	q = new QuadBezier(Point(400*(floorSize/2048), 500*(floorSize/2048)), Point(450*(floorSize/2048), 430*(floorSize/2048)), Point(250*(floorSize/2048), 330*(floorSize/2048)));
 
-	PathStone* path22 = new PathStone(floorSize, 30, q);
+	PathStone* path22 = new PathStone(floorSize, 15, q);
 	this->addChild(path22->getLayer());
 	active_pathstones[num_active_pathstones] = path22;
 	num_active_pathstones++;
 
 	q = new QuadBezier(Point(250*(floorSize/2048), 330*(floorSize/2048)), Point(100*(floorSize/2048), 230*(floorSize/2048)), Point(0, 0));
 
-	PathStone* path23 = new PathStone(floorSize, 30, q);
+	PathStone* path23 = new PathStone(floorSize, 15, q);
 	this->addChild(path23->getLayer());
 	active_pathstones[num_active_pathstones] = path23;
 	num_active_pathstones++;
@@ -564,21 +580,21 @@ bool HelloWorld::init()
 
 	q = new QuadBezier(Point(900*(floorSize/2048), 0), Point(800*(floorSize/2048), -100*(floorSize/2048)), Point(700*(floorSize/2048), 0));
 
-	PathStone* path31 = new PathStone(floorSize, 30, q);
+	PathStone* path31 = new PathStone(floorSize, 15, q);
 	this->addChild(path31->getLayer());
 	active_pathstones[num_active_pathstones] = path31;
 	num_active_pathstones++;
 
 	q = new QuadBezier(Point(700*(floorSize/2048), 0), Point(500*(floorSize/2048), 200*(floorSize/2048)), Point(300*(floorSize/2048), 50*(floorSize/2048)));
 
-	PathStone* path32 = new PathStone(floorSize, 30, q);
+	PathStone* path32 = new PathStone(floorSize, 15, q);
 	this->addChild(path32->getLayer());
 	active_pathstones[num_active_pathstones] = path32;
 	num_active_pathstones++;
 
 	q = new QuadBezier(Point(300*(floorSize/2048), 50*(floorSize/2048)), Point(200*(floorSize/2048), -50*(floorSize/2048)), Point(0, 0));
 
-	PathStone* path33 = new PathStone(floorSize, 30, q);
+	PathStone* path33 = new PathStone(floorSize, 15, q);
 	this->addChild(path33->getLayer());
 	active_pathstones[num_active_pathstones] = path33;
 	num_active_pathstones++;
@@ -590,35 +606,35 @@ bool HelloWorld::init()
 
 	q = new QuadBezier(Point(500*(floorSize/2048), -700*(floorSize/2048)), Point(650*(floorSize/2048), -500*(floorSize/2048)), Point(400*(floorSize/2048), -300*(floorSize/2048)));
 
-	PathStone* path41 = new PathStone(floorSize, 30, q);
+	PathStone* path41 = new PathStone(floorSize, 15, q);
 	this->addChild(path41->getLayer());
 	active_pathstones[num_active_pathstones] = path41;
 	num_active_pathstones++;
 
 	q = new QuadBezier(Point(400*(floorSize/2048), -300*(floorSize/2048)), Point(310*(floorSize/2048), -230*(floorSize/2048)), Point(280*(floorSize/2048), -350*(floorSize/2048)));
 
-	PathStone* path42 = new PathStone(floorSize, 30, q);
+	PathStone* path42 = new PathStone(floorSize, 15, q);
 	this->addChild(path42->getLayer());
 	active_pathstones[num_active_pathstones] = path42;
 	num_active_pathstones++;
 
 	q = new QuadBezier (Point(280*(floorSize/2048), -350*(floorSize/2048)), Point(200*(floorSize/2048), -470*(floorSize/2048)), Point(100*(floorSize/2048), -380*(floorSize/2048)));
 
-	PathStone* path43 = new PathStone(floorSize, 30, q);
+	PathStone* path43 = new PathStone(floorSize, 15, q);
 	this->addChild(path43->getLayer());
 	active_pathstones[num_active_pathstones] = path43;
 	num_active_pathstones++;
 
 	q = new QuadBezier (Point(100*(floorSize/2048), -380*(floorSize/2048)), Point(40*(floorSize/2048), -330*(floorSize/2048)), Point(130*(floorSize/2048), -280*(floorSize/2048)));
 
-	PathStone* path44 = new PathStone(floorSize, 30, q);
+	PathStone* path44 = new PathStone(floorSize, 15, q);
 	this->addChild(path44->getLayer());
 	active_pathstones[num_active_pathstones] = path44;
 	num_active_pathstones++;
 
 	q = new QuadBezier (Point(130*(floorSize/2048), -280*(floorSize/2048)), Point(190*(floorSize/2048), -230*(floorSize/2048)), Point(0, 0));
 
-	PathStone* path45 = new PathStone(floorSize, 30, q);
+	PathStone* path45 = new PathStone(floorSize, 15, q);
 	this->addChild(path45->getLayer());
 	active_pathstones[num_active_pathstones] = path45;
 	num_active_pathstones++;
@@ -633,14 +649,14 @@ bool HelloWorld::init()
 
 	q = new QuadBezier(Point(-380*(floorSize/2048), -800*(floorSize/2048)), Point(-520*(floorSize/2048), -500*(floorSize/2048)), Point(-290*(floorSize/2048), -325*(floorSize/2048)));
 
-	PathStone* path51 = new PathStone(floorSize, 30, q);
+	PathStone* path51 = new PathStone(floorSize, 15, q);
 	this->addChild(path51->getLayer());
 	active_pathstones[num_active_pathstones] = path51;
 	num_active_pathstones++;
 
 	q = new QuadBezier(Point(-290*(floorSize/2048), -325*(floorSize/2048)), Point(-50*(floorSize/2048), -200*(floorSize/2048)), Point(0, 0));
 
-	PathStone* path52 = new PathStone(floorSize, 30, q);
+	PathStone* path52 = new PathStone(floorSize, 15, q);
 	this->addChild(path52->getLayer());
 	active_pathstones[num_active_pathstones] = path52;
 	num_active_pathstones++;
@@ -1195,7 +1211,9 @@ void HelloWorld::update(float dt)
 					// DISPARO
 					if (state.Gamepad.bRightTrigger != 0) {
 						if (boss->_weapon == 0 && !boss->_resurrect){ //NORMAL
-							if (coolDownNow >= coolDownMax ) {
+							if (coolDownNow >= coolDownMax && boss->energyN >= 2*2) {
+								boss->normalShooting = true;
+								boss->energyN -= 2;
 								coolDownNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
 								CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
 								WeaponShot* _shotInstance = new WeaponShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
@@ -1203,7 +1221,9 @@ void HelloWorld::update(float dt)
 							}
 						}
 						else if (boss->_weapon == 1 && !boss->_resurrect){ // FUEGO
-							if (coolDownFireNow >= coolDownMax){
+							if (coolDownFireNow >= coolDownMax && boss->energyF >= 5*2){
+								boss->fireShooting = true;
+								boss->energyF -= 5;
 								//coolDownFireNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
 								coolDownFireNow = 0.14;
 								CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
@@ -1228,21 +1248,31 @@ void HelloWorld::update(float dt)
 						}
 						else if (boss->_weapon == 2 && !boss->_resurrect){ //AIRE
 							if (coolDownAirNow >= coolDownMax){
-								airCharging = true;
-								if (airPower < 5) airPower += dt;
+								boss->airCharging = true;
+								if (airPower < 5 && boss->energyA >= (log(airPower + 0.6) * 4 + 1) * 10 * 2.5) airPower += dt;
 							}
 
+						}
+
+						if (boss->_weapon != 0) boss->normalShooting = false;
+						else if (boss->_weapon != 1) boss->fireShooting = false;
+						else if (boss->_weapon != 2) {
+							boss->airCharging = false;
+							airPower = 0;
 						}
 					}
 
 					if (state.Gamepad.bRightTrigger == 0) {
+						boss->normalShooting = false;
+						boss->fireShooting = false;
 						if (boss->_weapon == 2 && !boss->_resurrect){ //AIRE
-							if (airCharging){
+							if (boss->airCharging){
 
 								airPower = log(airPower + 0.6) * 4 + 1;
+								boss->energyA -= airPower * 10 * 2.5;
 								if (airPower >= 3.99) airPower = 8;
 
-								airCharging = false;
+								boss->airCharging = false;
 								coolDownAirNow = 0;
 
 								CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
@@ -1362,6 +1392,20 @@ void HelloWorld::update(float dt)
 								airPower = 0;
 							}
 						}
+					}
+
+					// BARRA ENERGÍA ARMAS
+					if (boss->_weapon == 0){
+						bar->setScaleX(boss->energyN / 100);
+						bar->setColor(ccc3(200, 200, 0));
+					}
+					else if (boss->_weapon == 1) {
+						bar->setScaleX(boss->energyF / 100);
+						bar->setColor(ccc3(200, 0, 0));
+					}
+					else if (boss->_weapon == 2) {
+						bar->setScaleX(boss->energyA / 100);
+						bar->setColor(ccc3(0, 200, 200));
 					}
 
 					// ROTAR CAMARA

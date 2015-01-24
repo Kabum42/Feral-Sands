@@ -29,7 +29,7 @@ Tower::Tower(int floorSize2, String _subtype2, Point initial_point_2) {
 
 		position_z_tower = -1*scale_tower;
 
-		_sprite = Sprite3D::create("Tower.obj", "stone.png");
+		_sprite = Sprite3D::create("tower.obj", "towerText.png");
 		_sprite->setPosition3D(Vec3(initial_point_tower.x, initial_point_tower.y, position_z_tower));
 		_sprite->setRotation3D(Vec3(90, 0, 270));
 		_sprite->setScale(scale_tower);
@@ -46,6 +46,7 @@ Tower::Tower(int floorSize2, String _subtype2, Point initial_point_2) {
 		_sprite->setPosition3D(Vec3(initial_point_tower.x, initial_point_tower.y, position_z_tower));
 		_sprite->setRotation3D(Vec3(90, 0, 270));
 		_sprite->setScale(scale_tower);
+		_sprite->setPositionZ(20);
 
 	}
 	else if (_subtype.compare("monster") == 0) {
@@ -60,6 +61,7 @@ Tower::Tower(int floorSize2, String _subtype2, Point initial_point_2) {
 		_sprite->setPosition3D(Vec3(initial_point_tower.x, initial_point_tower.y, position_z_tower));
 		_sprite->setRotation3D(Vec3(90, 0, 270));
 		_sprite->setScale(scale_tower);
+		_sprite->setPositionZ(20);
 
 	}
 

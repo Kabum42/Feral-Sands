@@ -20,6 +20,7 @@ public:
 	//Skeleton3D* skeletonLex;
 	Sprite3D* torsoLex;
 	Bone3D* torsoBoneLex;
+	Sprite3D* weaponModel;
 
 	Animation3D* idleAnimation;
 	Animate3D* idleAnimate;
@@ -36,6 +37,14 @@ public:
 	Vec2 dashingVector;
 	int _weapon;
 	bool _resurrect;
+
+	bool normalShooting;
+	bool fireShooting;
+	bool airCharging;
+
+	float energyN;
+	float energyF;
+	float energyA;
 
 	float speed;
 	float speed_cooldown;
