@@ -83,7 +83,7 @@ Player::Player(int floorSize2, Point initial_point_player2) {
 
 	moveAnimation = Animation3D::create("Lex.c3b");
 	moveAnimate = Animate3D::create(moveAnimation);
-	moveAnimate->setSpeed(3.0);
+	moveAnimate->setSpeed(0.0);
 	moveAction = RepeatForever::create(moveAnimate);
 	_sprite->runAction(moveAction);
 
@@ -91,7 +91,6 @@ Player::Player(int floorSize2, Point initial_point_player2) {
 	idleAnimate = Animate3D::create(idleAnimation);
 	idleAnimate->setSpeed(-1.0);
 	idleAction = RepeatForever::create(idleAnimate);
-
 	//_sprite->runAction(idleAction);
 	
 
@@ -169,8 +168,25 @@ void Player::update(float dt)
 		}
 	}
 
-	if (energyN < 100 && !normalShooting) energyN += dt * 20; // 40 = 2.5 seg
-	if (energyF < 100 && !fireShooting) energyF += dt * 20;
-	if (energyA < 100 && !airCharging) energyA += dt * 40;
+	if (energyN < 100 && !normalShooting) {
+		energyN += dt * 20; // 40 = 2.5 seg
+	}
+	else if (energyN < 100) {
+		energyN += dt * 5; // 40 = 2.5 seg
+	}
+
+	if (energyF < 100 && !fireShooting) { 
+		energyF += dt * 20;
+	}
+	else if (energyF < 100) {
+		energyF += dt * 5;
+	}
+
+	if (energyA < 100 && !airCharging) {
+		energyA += dt * 40;
+	}
+	else if (energyA < 100) {
+		energyA += dt * 10;
+	}
 	
 }

@@ -82,6 +82,9 @@ PathStone::PathStone(int floorSize2, int number_tiles_2, QuadBezier* bezier_2) {
 		int angle_variation = 10;
 		int aux_angle = tiles[i]->getRotation3D().z - angle_variation + rand()%(angle_variation*2);
 		tiles[i]->setRotation3D(Vec3(90, 0, aux_angle));
+
+		// SE HUNDEN UN POCO
+		tiles[i]->setPositionZ(-tiles[i]->getScale()*0.3);
 		
 
 	}
