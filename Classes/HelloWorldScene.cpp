@@ -499,6 +499,13 @@ bool HelloWorld::init()
 
 	// PATHSTONES, EMPIEZA POR LA DE LA IZQUIERDA DEL TODO Y SIGUE EN SENTIDO DE LAS AGUJAS DEL RELOJ
 
+	Atrezzo* gate = new Atrezzo(floorSize, Point(-940*(floorSize/2048), -20*(floorSize/2048)), "gate");
+	static_objects [num_static_objects] = gate;
+	num_static_objects++;
+	gate->_sprite->setCameraMask(2);
+	this->addChild(gate->_sprite, 1);
+	gate->_sprite->setRotation3D(Vec3(90, 0, 140));
+
 	QuadBezier* q = new QuadBezier(Point(-900*(floorSize/2048), 0), Point(-750*(floorSize/2048), 100*(floorSize/2048)), Point(-600*(floorSize/2048), 0));
 
 	PathStone* path = new PathStone(floorSize, 10, q);
@@ -526,6 +533,12 @@ bool HelloWorld::init()
 
 
 
+	gate = new Atrezzo(floorSize, Point(-360*(floorSize/2048), 840*(floorSize/2048)), "gate");
+	static_objects [num_static_objects] = gate;
+	num_static_objects++;
+	gate->_sprite->setCameraMask(2);
+	this->addChild(gate->_sprite, 1);
+	gate->_sprite->setRotation3D(Vec3(90, 0, 310));
 	
 	q = new QuadBezier(Point(-380*(floorSize/2048), 800*(floorSize/2048)), Point(-520*(floorSize/2048), 600*(floorSize/2048)), Point(-290*(floorSize/2048), 575*(floorSize/2048)));
 
@@ -553,7 +566,14 @@ bool HelloWorld::init()
 	
 	
 
-	q = new QuadBezier(Point(430*(floorSize/2048), 750*(floorSize/2048)), Point(350*(floorSize/2048), 625*(floorSize/2048)), Point(400*(floorSize/2048), 500*(floorSize/2048)));
+	gate = new Atrezzo(floorSize, Point(435*(floorSize/2048), 765*(floorSize/2048)), "gate");
+	static_objects [num_static_objects] = gate;
+	num_static_objects++;
+	gate->_sprite->setCameraMask(2);
+	this->addChild(gate->_sprite, 1);
+	gate->_sprite->setRotation3D(Vec3(90, 0, 310));
+
+	q = new QuadBezier(Point(410*(floorSize/2048), 730*(floorSize/2048)), Point(350*(floorSize/2048), 625*(floorSize/2048)), Point(400*(floorSize/2048), 500*(floorSize/2048)));
 
 	PathStone* path21 = new PathStone(floorSize, 7, q);
 	this->addChild(path21->getLayer());
@@ -579,7 +599,14 @@ bool HelloWorld::init()
 
 
 
-	q = new QuadBezier(Point(900*(floorSize/2048), 0), Point(800*(floorSize/2048), -100*(floorSize/2048)), Point(700*(floorSize/2048), 0));
+	gate = new Atrezzo(floorSize, Point(900*(floorSize/2048), 20*(floorSize/2048)), "gate");
+	static_objects [num_static_objects] = gate;
+	num_static_objects++;
+	gate->_sprite->setCameraMask(2);
+	this->addChild(gate->_sprite, 1);
+	gate->_sprite->setRotation3D(Vec3(90, 0, -40));
+
+	q = new QuadBezier(Point(870*(floorSize/2048), -5*(floorSize/2048)), Point(800*(floorSize/2048), -100*(floorSize/2048)), Point(700*(floorSize/2048), 0));
 
 	PathStone* path31 = new PathStone(floorSize, 6, q);
 	this->addChild(path31->getLayer());
@@ -604,6 +631,12 @@ bool HelloWorld::init()
 	path32->_nextPath = path33;
 
 
+	gate = new Atrezzo(floorSize, Point(500*(floorSize/2048), -750*(floorSize/2048)), "gate");
+	static_objects [num_static_objects] = gate;
+	num_static_objects++;
+	gate->_sprite->setCameraMask(2);
+	this->addChild(gate->_sprite, 1);
+	gate->_sprite->setRotation3D(Vec3(90, 0, 90));
 
 	q = new QuadBezier(Point(500*(floorSize/2048), -700*(floorSize/2048)), Point(650*(floorSize/2048), -500*(floorSize/2048)), Point(400*(floorSize/2048), -300*(floorSize/2048)));
 
@@ -648,7 +681,15 @@ bool HelloWorld::init()
 
 
 
-	q = new QuadBezier(Point(-380*(floorSize/2048), -800*(floorSize/2048)), Point(-520*(floorSize/2048), -500*(floorSize/2048)), Point(-290*(floorSize/2048), -325*(floorSize/2048)));
+
+	gate = new Atrezzo(floorSize, Point(-380*(floorSize/2048), -830*(floorSize/2048)), "gate");
+	static_objects [num_static_objects] = gate;
+	num_static_objects++;
+	gate->_sprite->setCameraMask(2);
+	this->addChild(gate->_sprite, 1);
+	gate->_sprite->setRotation3D(Vec3(90, 0, 90));
+
+	q = new QuadBezier(Point(-380*(floorSize/2048), -780*(floorSize/2048)), Point(-520*(floorSize/2048), -500*(floorSize/2048)), Point(-290*(floorSize/2048), -325*(floorSize/2048)));
 
 	PathStone* path51 = new PathStone(floorSize, 15, q);
 	this->addChild(path51->getLayer());
