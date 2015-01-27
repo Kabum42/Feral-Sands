@@ -10,6 +10,7 @@ TO DO:
 */
 
 #include "HelloWorldScene.h"
+#include "MainMenu.h"
 
 #include "XInput.h"
 
@@ -56,6 +57,9 @@ Sprite* button_enter;
 
 Dialog* active_dialog = NULL;
 Label* dialog_label;
+
+Dialog* dialog_win;
+Dialog* dialog_end;
 
 Label* top_label;
 Label* stop_label;
@@ -343,6 +347,9 @@ bool HelloWorld::init()
 	Dialog* dialog_3 = new Dialog("or using WASD if you don't have a gamepad");
 	dialog_2->_nextDialog = dialog_3;
 
+	dialog_win = new Dialog("I'm a pro");
+	dialog_end = new Dialog("Oh Shit!");
+
 
 	active_dialog = dialog_1;
 
@@ -417,6 +424,7 @@ bool HelloWorld::init()
 		if (nexus->_life < 0) { nexus->_life = 0; }
 		if (nexus->_life == 0) {
 			nexus->_sprite->setColor(Color3B(200, 0, 0));
+			active_dialog = dialog_end;
 		}
 	});
 
@@ -866,7 +874,7 @@ bool HelloWorld::init()
 
 	//SET BACKGROUND MUSIC
 	// La background music al usarse junto a efectos de sonido da lagazos del copón
-	//CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("sandstorm.wav", true);
+	//CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("arabesque.wav", true);
 
 	this->scheduleUpdate();
 
@@ -945,6 +953,12 @@ void HelloWorld::update(float dt)
 
 				if (wButtons & XINPUT_GAMEPAD_A) {
 					if (!aPushed) {
+						if (active_dialog == dialog_end) {
+							GameOver();
+						}
+						else if (active_dialog == dialog_win) {
+							GameOver();
+						}
 						active_dialog = active_dialog->_nextDialog;
 					}
 					aPushed = true;
@@ -959,6 +973,12 @@ void HelloWorld::update(float dt)
 				button_enter->setVisible(true);
 
 				if (pressed_ENTER_PUSHED) {
+					if (active_dialog == dialog_end) {
+						GameOver();
+					}
+					else if (active_dialog == dialog_win) {
+							GameOver();
+						}
 					active_dialog = active_dialog->_nextDialog;
 				}
 
@@ -969,6 +989,11 @@ void HelloWorld::update(float dt)
 
 			camera->setRotation3D(Vec3(cameraAngle, 0, 0));
 			camera->setPosition3D(Vec3(boss->_sprite->getPositionX(), boss->_sprite->getPositionY() - sin(cameraAngle*(2*M_PI)/360)*zoom, boss->_sprite->getPositionZ() + cos(cameraAngle*(2*M_PI)/360)*zoom ));
+
+			if (nexus->_life <= 0) {
+				camera->setPosition3D(camera->getPosition3D() + Vec3(-5 + rand()%10, -5 + rand()%10, -5 + rand()%10));
+			}
+			
 
 		}
 		else { // NO HAY NINGUN DIALOGO ACTIVO Y NO ESTA PAUSADO
@@ -2083,6 +2108,7 @@ void HelloWorld::update(float dt)
 				if (nexus->_life > 0 && dead_enemies == total_enemies) {
 
 					nexus->_sprite->setColor(Color3B(0, 255, 0));
+					active_dialog = dialog_win;
 
 				}
 
@@ -2409,6 +2435,12 @@ void HelloWorld::keyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::E
 		pressed_ENTER_PUSHED = false;
 	}
 
+}
+
+void HelloWorld::GameOver()
+{
+	auto scene = MainMenu::createScene();
+	Director::getInstance()->replaceScene(TransitionFade::create(1.0, scene)); //va a HelloWorldScene con un fundido
 }
 
 
