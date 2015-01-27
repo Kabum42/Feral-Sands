@@ -901,6 +901,8 @@ void HelloWorld::update(float dt)
 
 		stop_label->setVisible(true);
 
+		boss->moveAnimate->setSpeed(0);
+
 		if (dwResult == ERROR_SUCCESS) { // Controller is connected 
 
 			WORD wButtons = state.Gamepad.wButtons;
@@ -939,6 +941,8 @@ void HelloWorld::update(float dt)
 			dialog_label->setVisible(true);
 
 			stop_label->setVisible(false);
+
+			boss->moveAnimate->setSpeed(0);
 
 			EventCustom eventVisible("checkVisible");
 			eventVisible.setUserData(new Point(boss->_sprite->getPositionX(), boss->_sprite->getPositionY()));
