@@ -83,12 +83,12 @@ bool MainMenu::init()
 	
 	
 	highlight = Sprite::create("Highlight.png");
-	highlight->setPosition(visibleSize.width / 2, visibleSize.height / 2 + 120 - 92 * selection);
+	highlight->setPosition(visibleSize.width / 2, visibleSize.height / 2 + 140 - 92 * selection);
 	addChild(highlight, 0);
 
 
     title = Sprite::create("title.png");
-	title->setPosition(visibleSize.width / 2, visibleSize.height / 1.2);
+	title->setPosition(visibleSize.width / 2, visibleSize.height / 1.27);
 	title->setScale(0.5, 0.5);
 	titleOrigin = title->getPosition();
 	this->addChild(title, 2);
@@ -135,7 +135,7 @@ void MainMenu::btnToControls(Ref *pSender) {
 		showControls();
 		submenu = true;
 		selection = 2;
-		highlight->setPosition(visibleSize.width / 2, visibleSize.height / 2 + 120 - 92 * selection);
+		highlight->setPosition(visibleSize.width / 2, visibleSize.height / 2 + 140 - 92 * selection);
 	}
 }
 
@@ -144,7 +144,7 @@ void MainMenu::btnToCredits(Ref *pSender) {
 		showCredits();
 		submenu = true;
 		selection = 3;
-		highlight->setPosition(visibleSize.width / 2, visibleSize.height / 2 + 120 - 92 * selection);
+		highlight->setPosition(visibleSize.width / 2, visibleSize.height / 2 + 140 - 92 * selection);
 	}
 }
 
@@ -230,14 +230,14 @@ void MainMenu::DOWN() {
 	if (!submenu){
 		selection++;
 		if (selection == 4) selection = 1;
-		highlight->setPosition(visibleSize.width / 2, visibleSize.height / 2 + 120 - 92 * selection);
+		highlight->setPosition(visibleSize.width / 2, visibleSize.height / 2 + 140 - 92 * selection);
 	}
 }
 void MainMenu::UP() {
 	if (!submenu){
 		selection--;
 		if (selection == 0) selection = 3;
-		highlight->setPosition(visibleSize.width / 2, visibleSize.height / 2 + 120 - 92 * selection);
+		highlight->setPosition(visibleSize.width / 2, visibleSize.height / 2 + 140 - 92 * selection);
 	}
 }
 void MainMenu::A() {

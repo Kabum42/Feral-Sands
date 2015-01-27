@@ -29,10 +29,10 @@ PathStone::PathStone(int floorSize2, int number_tiles_2, QuadBezier* bezier_2) {
 			+ (float)bezier->control_point.y*2*(float)(1 - t)*t
 			+ (float)bezier->end_point.y*(float)pow(t, 2);
 
-		Sprite3D* stone = Sprite3D::create("Floor.obj", "stone.png");
+		Sprite3D* stone = Sprite3D::create("PathStone.obj", "PathStoneText.png");
 		stone->setPosition3D(Vec3(aux_x, aux_y, 0));
 		stone->setRotation3D(Vec3(90, 0, 270));
-		stone->setScale(20*(floorSize/2048));
+		stone->setScale(20*(floorSize/2048)/5);
 
 		layer->addChild(stone, 0);
 
@@ -42,9 +42,11 @@ PathStone::PathStone(int floorSize2, int number_tiles_2, QuadBezier* bezier_2) {
 
 	layer->setCameraMask(2);
 
-	for (int i = 0; i < 200; i++) {
+	num_points = 50;
 
-		float t = (float)i/(float)200;
+	for (int i = 0; i < num_points; i++) {
+
+		float t = (float)i/(float)num_points;
 
 		float aux_x = (float)bezier->initial_point.x*(float)pow((float)(1 - t), 2)
 			+ (float)bezier->control_point.x*2*(float)(1 - t)*t
@@ -62,13 +64,13 @@ PathStone::PathStone(int floorSize2, int number_tiles_2, QuadBezier* bezier_2) {
 	// ESTO SIRVE PARA ORIENTAR LOS TILES
 	for (int i = 0; i < number_tiles; i++) {
 
-		int invisible_point_similar = ceil((float(float(i)/float(number_tiles))*200)+1);
-		if (invisible_point_similar > 200) { invisible_point_similar = 200; }
+		int invisible_point_similar = ceil((float(float(i)/float(number_tiles))*num_points)+1);
+		if (invisible_point_similar > num_points) { invisible_point_similar = num_points; }
 		//CCLOG("This is a madafacking number: %d", invisible_point_similar);
 
 		rotateToPoint(tiles[i], invisible_points[invisible_point_similar]);
 
-		/*
+		
 		// VARIACIONES
 
 		// VARIACION DE TAMAÑO
@@ -80,7 +82,10 @@ PathStone::PathStone(int floorSize2, int number_tiles_2, QuadBezier* bezier_2) {
 		int angle_variation = 10;
 		int aux_angle = tiles[i]->getRotation3D().z - angle_variation + rand()%(angle_variation*2);
 		tiles[i]->setRotation3D(Vec3(90, 0, aux_angle));
-		*/
+
+		// SE HUNDEN UN POCO
+		tiles[i]->setPositionZ(-tiles[i]->getScale()*0.3);
+		
 
 	}
 

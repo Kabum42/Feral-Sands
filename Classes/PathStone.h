@@ -14,6 +14,7 @@ public:
 	bool _active;
 	Sprite3D* tiles[50];
 	Point invisible_points[200];
+	int num_points;
 	Layer* layer;
 	int number_tiles;
 	Point initial_point;

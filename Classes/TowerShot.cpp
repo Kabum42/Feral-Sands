@@ -17,7 +17,7 @@ TowerShot::TowerShot(float floorSize2, Vec3 origin, Entity* enemy)
 	
 	//_initial_position = origin;
 	_target = enemy;
-	_sprite = Sprite3D::create("boss.obj", "boss.png");
+	_sprite = Sprite3D::create("Shot.obj", "ShotTurret.png");
 	_sprite->setPosition3D(origin+Vec3(0,0,100));
 	//Vec3 target_position = _target->_sprite->getPosition3D();
 	//_sprite->setRotation3D(Vec3(90, 0, acos(target_position.z - origin.z)*180/M_PI));

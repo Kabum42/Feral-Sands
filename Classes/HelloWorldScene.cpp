@@ -58,8 +58,14 @@ Dialog* active_dialog = NULL;
 Label* dialog_label;
 
 Label* top_label;
+Label* stop_label;
 
+<<<<<<< HEAD
 int resources = 0;
+=======
+int deuda_resources = 0;
+int resources = 1000;
+>>>>>>> origin/master
 Sprite* resource;
 Label* resources_label;
 
@@ -71,6 +77,9 @@ Sprite* icon_monster;
 Sprite* gun_normal;
 Sprite* gun_fire;
 Sprite* gun_air;
+
+Sprite* bar_back;
+Sprite* bar;
 
 Nexus* nexus;
 Player* boss;
@@ -129,7 +138,6 @@ float coolDownNow = coolDownMax;
 float coolDownFireNow = coolDownMax;
 float coolDownAirNow = coolDownMax;
 float airPower = 0;
-bool  airCharging;
 
 EventCustom event("EnterFrame");
 EventCustom event_add_mobile("add_mobile");
@@ -202,7 +210,16 @@ bool HelloWorld::init()
     this->addChild(top_label, 1);
 	top_label->setVisible(false);
 
+<<<<<<< HEAD
 	minimapa = Sprite::create("sand.png");
+=======
+	stop_label = Label::createWithTTF("PAUSE","fonts/Volkoff.otf", 32);
+    stop_label->setPosition(Vec2(origin.x + visibleSize.width/2, origin.y + visibleSize.height - top_label->getContentSize().height -50));
+    this->addChild(stop_label, 1);
+	stop_label->setVisible(false);
+
+	minimapa = Sprite::create("sand_guia.png");
+>>>>>>> origin/master
 	minimapa->setScale(0.0625); // ESTO ES 1/16, pasando de 2048 pixeles a 128
 	minimapa->setPositionX(960 -minimapa->getBoundingBox().size.width/2 -6 -10);
 	minimapa->setPositionY(640 -minimapa->getBoundingBox().size.height/2 -6 -10);
@@ -295,6 +312,18 @@ bool HelloWorld::init()
 	gun_air->setVisible(false);
 	this->addChild(gun_air, 1);
 
+	bar_back = Sprite::create("bar_back.png");
+	bar_back->setPositionX(960 - bar_back->getBoundingBox().size.width / 2 - 30);
+	bar_back->setPositionY(bar_back->getBoundingBox().size.height / 2 + 30);
+	this->addChild(bar_back, 1);
+
+	bar = Sprite::create("bar.png");
+	bar->setPositionX(960 - bar->getBoundingBox().size.width / 2 - 30);
+	bar->setPositionY(bar->getBoundingBox().size.height / 2 + 30);
+	this->addChild(bar, 1);
+
+
+
 	dialog_box = Sprite::create("dialog_box.png");
 	dialog_box->setPositionX(960/2);
 	dialog_box->setPositionY(dialog_box->getBoundingBox().size.height/2 +10);
@@ -386,7 +415,8 @@ bool HelloWorld::init()
 	_eventDispatcher->addCustomEventListener("nexus_life", [=](EventCustom* event){
 		int* data_nexus = static_cast<int*>(event->getUserData());
 		nexus->_life += data_nexus[0];
-		if (nexus->_life <= 0) {
+		if (nexus->_life < 0) { nexus->_life = 0; }
+		if (nexus->_life == 0) {
 			nexus->_sprite->setColor(Color3B(200, 0, 0));
 		}
 	});
@@ -406,26 +436,20 @@ bool HelloWorld::init()
 	floor->setCameraMask(2);
 	this->addChild(floor, 0);
 
-	auto walls = Sprite3D::create("Mountains.obj", "stone.png");
+	auto walls = Sprite3D::create("Mountains.obj", "MountainsText.png");
 	walls->setScale(100 * (floorSize / 2048));
 	walls->setRotation3D(Vec3(90, 0, 0));
 	walls->setCameraMask(2);
 	this->addChild(walls, 0);
 
+	/*
 	auto lake = Sprite3D::create("Lake.obj");
 	lake->setScale(100 * (floorSize / 2048));
 	lake->setRotation3D(Vec3(90, 0, 0));
 	lake->setPosition3D(Vec3(-5*(floorSize/2048), -520*(floorSize/2048), 0));
 	lake->setCameraMask(2);
 	this->addChild(lake, 0);
-
-	auto ruin1 = Sprite3D::create("RuinStructure.obj", "stone.png");
-	ruin1->setScale(25 * (floorSize / 2048));
-	ruin1->setRotation3D(Vec3(90, 0, 0));
-	ruin1->setPosition3D(Vec3(0*(floorSize/2048), -150*(floorSize/2048), 0));
-	ruin1->setCameraMask(2);
-	this->addChild(ruin1, 0);
-
+	*/
 	
 	Point p = Point(0, 0);
 
@@ -443,7 +467,7 @@ bool HelloWorld::init()
 	green_tower->setVisible(false);
 	this->addChild(green_tower, 0);
 
-	green_slow = Sprite3D::create("Floor.obj", "stone.png");
+	green_slow = Sprite3D::create("Floor.obj", "alquitran.png");
 	green_slow->setScale(30*(floorSize/2048));
 	green_slow->setCameraMask(2);
 	green_slow->setColor(ccc3(0, 200, 0));
@@ -466,9 +490,70 @@ bool HelloWorld::init()
 	bezier.endPosition = Point(-1300, 0);
 	*/
 
+<<<<<<< HEAD
 	QuadBezier* q = new QuadBezier(Point(-400*(floorSize/2048), 0), Point(-330*(floorSize/2048), -200*(floorSize/2048)), Point(-260*(floorSize/2048), 0));
+=======
+	Atrezzo* ruin = new Atrezzo(floorSize, Point(30*(floorSize/2048), -100*(floorSize/2048)), "ruin");
+	static_objects [num_static_objects] = ruin;
+	num_static_objects++;
+	ruin->_sprite->setCameraMask(2);
+	this->addChild(ruin->_sprite, 1);
+	rotateToPoint(ruin->_sprite, Point(0, 0));
+	ruin->_sprite->setRotation3D(Vec3(90, 0, ruin->_sprite->getRotation3D().z +180));
 
-	PathStone* path = new PathStone(floorSize, 30, q);
+	ruin = new Atrezzo(floorSize, Point(-90*(floorSize/2048), -55*(floorSize/2048)), "ruin");
+	static_objects [num_static_objects] = ruin;
+	num_static_objects++;
+	ruin->_sprite->setCameraMask(2);
+	this->addChild(ruin->_sprite, 1);
+	rotateToPoint(ruin->_sprite, Point(0, 0));
+	ruin->_sprite->setRotation3D(Vec3(90, 0, ruin->_sprite->getRotation3D().z +180));
+
+	ruin = new Atrezzo(floorSize, Point(-90*(floorSize/2048), 55*(floorSize/2048)), "ruin");
+	static_objects [num_static_objects] = ruin;
+	num_static_objects++;
+	ruin->_sprite->setCameraMask(2);
+	this->addChild(ruin->_sprite, 1);
+	rotateToPoint(ruin->_sprite, Point(0, 0));
+	ruin->_sprite->setRotation3D(Vec3(90, 0, ruin->_sprite->getRotation3D().z +180));
+
+	ruin = new Atrezzo(floorSize, Point(-10*(floorSize/2048), 100*(floorSize/2048)), "ruin");
+	static_objects [num_static_objects] = ruin;
+	num_static_objects++;
+	ruin->_sprite->setCameraMask(2);
+	this->addChild(ruin->_sprite, 1);
+	rotateToPoint(ruin->_sprite, Point(0, 0));
+	ruin->_sprite->setRotation3D(Vec3(90, 0, ruin->_sprite->getRotation3D().z +180));
+
+	ruin = new Atrezzo(floorSize, Point(90*(floorSize/2048), 55*(floorSize/2048)), "ruin");
+	static_objects [num_static_objects] = ruin;
+	num_static_objects++;
+	ruin->_sprite->setCameraMask(2);
+	this->addChild(ruin->_sprite, 1);
+	rotateToPoint(ruin->_sprite, Point(0, 0));
+	ruin->_sprite->setRotation3D(Vec3(90, 0, ruin->_sprite->getRotation3D().z +180));
+
+	ruin = new Atrezzo(floorSize, Point(110*(floorSize/2048), -50*(floorSize/2048)), "ruin");
+	static_objects [num_static_objects] = ruin;
+	num_static_objects++;
+	ruin->_sprite->setCameraMask(2);
+	this->addChild(ruin->_sprite, 1);
+	rotateToPoint(ruin->_sprite, Point(0, 0));
+	ruin->_sprite->setRotation3D(Vec3(90, 0, ruin->_sprite->getRotation3D().z +180));
+
+	// PATHSTONES, EMPIEZA POR LA DE LA IZQUIERDA DEL TODO Y SIGUE EN SENTIDO DE LAS AGUJAS DEL RELOJ
+
+	Atrezzo* gate = new Atrezzo(floorSize, Point(-940*(floorSize/2048), -20*(floorSize/2048)), "gate");
+	static_objects [num_static_objects] = gate;
+	num_static_objects++;
+	gate->_sprite->setCameraMask(2);
+	this->addChild(gate->_sprite, 1);
+	gate->_sprite->setRotation3D(Vec3(90, 0, 140));
+
+	QuadBezier* q = new QuadBezier(Point(-900*(floorSize/2048), 0), Point(-750*(floorSize/2048), 100*(floorSize/2048)), Point(-600*(floorSize/2048), 0));
+>>>>>>> origin/master
+
+	PathStone* path = new PathStone(floorSize, 10, q);
 	this->addChild(path->getLayer());
 	active_pathstones[num_active_pathstones] = path;
 	num_active_pathstones++;
@@ -476,22 +561,203 @@ bool HelloWorld::init()
 
 	q = new QuadBezier(Point(-260*(floorSize/2048), 0), Point(-200*(floorSize/2048), 200*(floorSize/2048)), Point(-140*(floorSize/2048), 0));
 
-	PathStone* path2 = new PathStone(floorSize, 30, q);
+	PathStone* path2 = new PathStone(floorSize, 15, q);
 	this->addChild(path2->getLayer());
 	active_pathstones[num_active_pathstones] = path2;
 	num_active_pathstones++;
 
 	q = new QuadBezier(Point(-140*(floorSize/2048), 0), Point(-70*(floorSize/2048), -200*(floorSize/2048)), Point(0, 0));
 
-	PathStone* path3 = new PathStone(floorSize, 30, q);
+	PathStone* path3 = new PathStone(floorSize, 6, q);
 	this->addChild(path3->getLayer());
 	active_pathstones[num_active_pathstones] = path3;
 	num_active_pathstones++;
 	
 	path->_nextPath = path2;
 	path2->_nextPath = path3;
+<<<<<<< HEAD
 	
 
+=======
+
+
+
+
+	gate = new Atrezzo(floorSize, Point(-360*(floorSize/2048), 840*(floorSize/2048)), "gate");
+	static_objects [num_static_objects] = gate;
+	num_static_objects++;
+	gate->_sprite->setCameraMask(2);
+	this->addChild(gate->_sprite, 1);
+	gate->_sprite->setRotation3D(Vec3(90, 0, 310));
+	
+	q = new QuadBezier(Point(-380*(floorSize/2048), 800*(floorSize/2048)), Point(-520*(floorSize/2048), 600*(floorSize/2048)), Point(-290*(floorSize/2048), 575*(floorSize/2048)));
+
+	PathStone* path11 = new PathStone(floorSize, 8, q);
+	this->addChild(path11->getLayer());
+	active_pathstones[num_active_pathstones] = path11;
+	num_active_pathstones++;
+
+	q = new QuadBezier(Point(-290*(floorSize/2048), 575*(floorSize/2048)), Point(-30*(floorSize/2048), 500*(floorSize/2048)), Point(-100*(floorSize/2048), 350*(floorSize/2048)));
+
+	PathStone* path12 = new PathStone(floorSize, 7, q);
+	this->addChild(path12->getLayer());
+	active_pathstones[num_active_pathstones] = path12;
+	num_active_pathstones++;
+
+	q = new QuadBezier(Point(-100*(floorSize/2048), 350*(floorSize/2048)), Point(-200*(floorSize/2048), 250*(floorSize/2048)), Point(0, 0));
+
+	PathStone* path13 = new PathStone(floorSize, 9, q);
+	this->addChild(path13->getLayer());
+	active_pathstones[num_active_pathstones] = path13;
+	num_active_pathstones++;
+
+	path11->_nextPath = path12;
+	path12->_nextPath = path13;
+	
+	
+
+	gate = new Atrezzo(floorSize, Point(435*(floorSize/2048), 765*(floorSize/2048)), "gate");
+	static_objects [num_static_objects] = gate;
+	num_static_objects++;
+	gate->_sprite->setCameraMask(2);
+	this->addChild(gate->_sprite, 1);
+	gate->_sprite->setRotation3D(Vec3(90, 0, 310));
+
+	q = new QuadBezier(Point(410*(floorSize/2048), 730*(floorSize/2048)), Point(350*(floorSize/2048), 625*(floorSize/2048)), Point(400*(floorSize/2048), 500*(floorSize/2048)));
+
+	PathStone* path21 = new PathStone(floorSize, 7, q);
+	this->addChild(path21->getLayer());
+	active_pathstones[num_active_pathstones] = path21;
+	num_active_pathstones++;
+
+	q = new QuadBezier(Point(400*(floorSize/2048), 500*(floorSize/2048)), Point(400*(floorSize/2048), 330*(floorSize/2048)), Point(250*(floorSize/2048), 330*(floorSize/2048)));
+
+	PathStone* path22 = new PathStone(floorSize, 7, q);
+	this->addChild(path22->getLayer());
+	active_pathstones[num_active_pathstones] = path22;
+	num_active_pathstones++;
+
+	q = new QuadBezier(Point(250*(floorSize/2048), 330*(floorSize/2048)), Point(100*(floorSize/2048), 230*(floorSize/2048)), Point(0, 0));
+
+	PathStone* path23 = new PathStone(floorSize, 12, q);
+	this->addChild(path23->getLayer());
+	active_pathstones[num_active_pathstones] = path23;
+	num_active_pathstones++;
+
+	path21->_nextPath = path22;
+	path22->_nextPath = path23;
+
+
+
+	gate = new Atrezzo(floorSize, Point(900*(floorSize/2048), 20*(floorSize/2048)), "gate");
+	static_objects [num_static_objects] = gate;
+	num_static_objects++;
+	gate->_sprite->setCameraMask(2);
+	this->addChild(gate->_sprite, 1);
+	gate->_sprite->setRotation3D(Vec3(90, 0, -40));
+
+	q = new QuadBezier(Point(870*(floorSize/2048), -5*(floorSize/2048)), Point(800*(floorSize/2048), -100*(floorSize/2048)), Point(700*(floorSize/2048), 0));
+
+	PathStone* path31 = new PathStone(floorSize, 6, q);
+	this->addChild(path31->getLayer());
+	active_pathstones[num_active_pathstones] = path31;
+	num_active_pathstones++;
+
+	q = new QuadBezier(Point(700*(floorSize/2048), 0), Point(500*(floorSize/2048), 200*(floorSize/2048)), Point(300*(floorSize/2048), 50*(floorSize/2048)));
+
+	PathStone* path32 = new PathStone(floorSize, 12, q);
+	this->addChild(path32->getLayer());
+	active_pathstones[num_active_pathstones] = path32;
+	num_active_pathstones++;
+
+	q = new QuadBezier(Point(300*(floorSize/2048), 50*(floorSize/2048)), Point(200*(floorSize/2048), -50*(floorSize/2048)), Point(0, 0));
+
+	PathStone* path33 = new PathStone(floorSize, 8, q);
+	this->addChild(path33->getLayer());
+	active_pathstones[num_active_pathstones] = path33;
+	num_active_pathstones++;
+
+	path31->_nextPath = path32;
+	path32->_nextPath = path33;
+
+
+	gate = new Atrezzo(floorSize, Point(500*(floorSize/2048), -750*(floorSize/2048)), "gate");
+	static_objects [num_static_objects] = gate;
+	num_static_objects++;
+	gate->_sprite->setCameraMask(2);
+	this->addChild(gate->_sprite, 1);
+	gate->_sprite->setRotation3D(Vec3(90, 0, 90));
+
+	q = new QuadBezier(Point(500*(floorSize/2048), -700*(floorSize/2048)), Point(650*(floorSize/2048), -500*(floorSize/2048)), Point(400*(floorSize/2048), -300*(floorSize/2048)));
+
+	PathStone* path41 = new PathStone(floorSize, 12, q);
+	this->addChild(path41->getLayer());
+	active_pathstones[num_active_pathstones] = path41;
+	num_active_pathstones++;
+
+	q = new QuadBezier(Point(400*(floorSize/2048), -300*(floorSize/2048)), Point(310*(floorSize/2048), -230*(floorSize/2048)), Point(280*(floorSize/2048), -350*(floorSize/2048)));
+
+	PathStone* path42 = new PathStone(floorSize, 4, q);
+	this->addChild(path42->getLayer());
+	active_pathstones[num_active_pathstones] = path42;
+	num_active_pathstones++;
+
+	q = new QuadBezier (Point(280*(floorSize/2048), -350*(floorSize/2048)), Point(200*(floorSize/2048), -470*(floorSize/2048)), Point(100*(floorSize/2048), -380*(floorSize/2048)));
+
+	PathStone* path43 = new PathStone(floorSize, 4, q);
+	this->addChild(path43->getLayer());
+	active_pathstones[num_active_pathstones] = path43;
+	num_active_pathstones++;
+
+	q = new QuadBezier (Point(100*(floorSize/2048), -380*(floorSize/2048)), Point(40*(floorSize/2048), -330*(floorSize/2048)), Point(130*(floorSize/2048), -280*(floorSize/2048)));
+
+	PathStone* path44 = new PathStone(floorSize, 3, q);
+	this->addChild(path44->getLayer());
+	active_pathstones[num_active_pathstones] = path44;
+	num_active_pathstones++;
+
+	q = new QuadBezier (Point(130*(floorSize/2048), -280*(floorSize/2048)), Point(190*(floorSize/2048), -130*(floorSize/2048)), Point(0, 0));
+
+	PathStone* path45 = new PathStone(floorSize, 8, q);
+	this->addChild(path45->getLayer());
+	active_pathstones[num_active_pathstones] = path45;
+	num_active_pathstones++;
+
+
+	path41->_nextPath = path42;
+	path42->_nextPath = path43;
+	path43->_nextPath = path44;
+	path44->_nextPath = path45;
+
+
+
+
+	gate = new Atrezzo(floorSize, Point(-380*(floorSize/2048), -830*(floorSize/2048)), "gate");
+	static_objects [num_static_objects] = gate;
+	num_static_objects++;
+	gate->_sprite->setCameraMask(2);
+	this->addChild(gate->_sprite, 1);
+	gate->_sprite->setRotation3D(Vec3(90, 0, 90));
+
+	q = new QuadBezier(Point(-380*(floorSize/2048), -780*(floorSize/2048)), Point(-520*(floorSize/2048), -500*(floorSize/2048)), Point(-290*(floorSize/2048), -325*(floorSize/2048)));
+
+	PathStone* path51 = new PathStone(floorSize, 15, q);
+	this->addChild(path51->getLayer());
+	active_pathstones[num_active_pathstones] = path51;
+	num_active_pathstones++;
+
+	q = new QuadBezier(Point(-290*(floorSize/2048), -325*(floorSize/2048)), Point(-50*(floorSize/2048), -200*(floorSize/2048)), Point(0, 0));
+
+	PathStone* path52 = new PathStone(floorSize, 12, q);
+	this->addChild(path52->getLayer());
+	active_pathstones[num_active_pathstones] = path52;
+	num_active_pathstones++;
+
+	path51->_nextPath = path52;
+
+	// WAVES
+
+>>>>>>> origin/master
 	Wave* w = new Wave(floorSize, path, boss);
 	w->addEnemy("grunt", 1.5);
 	w->addEnemy("dog", 1);
@@ -572,6 +838,15 @@ void HelloWorld::update(float dt)
 
 	if (paused) { // ESTA PAUSADO
 
+<<<<<<< HEAD
+=======
+		EventCustom eventVisible("checkVisible");
+		eventVisible.setUserData(new Point(boss->_sprite->getPositionX(), boss->_sprite->getPositionY()));
+		_eventDispatcher->dispatchEvent(&eventVisible);
+
+		stop_label->setVisible(true);
+
+>>>>>>> origin/master
 		if (dwResult == ERROR_SUCCESS) { // Controller is connected 
 
 			WORD wButtons = state.Gamepad.wButtons;
@@ -609,6 +884,15 @@ void HelloWorld::update(float dt)
 			}
 			dialog_label->setVisible(true);
 
+<<<<<<< HEAD
+=======
+			stop_label->setVisible(false);
+
+			EventCustom eventVisible("checkVisible");
+			eventVisible.setUserData(new Point(boss->_sprite->getPositionX(), boss->_sprite->getPositionY()));
+			_eventDispatcher->dispatchEvent(&eventVisible);
+
+>>>>>>> origin/master
 			if (dwResult == ERROR_SUCCESS) { // Controller is connected 
 
 				button_a->setVisible(true);
@@ -649,6 +933,12 @@ void HelloWorld::update(float dt)
 			top_label->setVisible(true);
 			std::string s_aux = std::to_string(nexus->_life) + "/5";
 			top_label->setString(s_aux);
+<<<<<<< HEAD
+=======
+
+			stop_label->setVisible(false);
+
+>>>>>>> origin/master
 			s_aux = std::to_string(resources);
 			resources_label->setString(s_aux);
 			resources_label->setPosition(Vec2(resource->getPositionX() +resource->getBoundingBox().size.width/2 + resources_label->getBoundingBox().size.width/2 +10, resource->getPositionY()));
@@ -852,7 +1142,9 @@ void HelloWorld::update(float dt)
 					// DISPARO
 					if (state.Gamepad.bRightTrigger != 0) {
 						if (boss->_weapon == 0 && !boss->_resurrect){ //NORMAL
-							if (coolDownNow >= coolDownMax ) {
+							if (coolDownNow >= coolDownMax && boss->energyN >= 2*2) {
+								boss->normalShooting = true;
+								boss->energyN -= 2;
 								coolDownNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
 								CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
 								WeaponShot* _shotInstance = new WeaponShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
@@ -860,7 +1152,9 @@ void HelloWorld::update(float dt)
 							}
 						}
 						else if (boss->_weapon == 1 && !boss->_resurrect){ // FUEGO
-							if (coolDownFireNow >= coolDownMax){
+							if (coolDownFireNow >= coolDownMax && boss->energyF >= 5*2){
+								boss->fireShooting = true;
+								boss->energyF -= 5;
 								//coolDownFireNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
 								coolDownFireNow = 0.14;
 								CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
@@ -885,21 +1179,31 @@ void HelloWorld::update(float dt)
 						}
 						else if (boss->_weapon == 2 && !boss->_resurrect){ //AIRE
 							if (coolDownAirNow >= coolDownMax){
-								airCharging = true;
-								if (airPower < 5) airPower += dt;
+								boss->airCharging = true;
+								if (airPower < 5 && boss->energyA >= (log(airPower + 0.6) * 4 + 1) * 10 * 2.5) airPower += dt;
 							}
 
+						}
+
+						if (boss->_weapon != 0) boss->normalShooting = false;
+						else if (boss->_weapon != 1) boss->fireShooting = false;
+						else if (boss->_weapon != 2) {
+							boss->airCharging = false;
+							airPower = 0;
 						}
 					}
 
 					if (state.Gamepad.bRightTrigger == 0) {
+						boss->normalShooting = false;
+						boss->fireShooting = false;
 						if (boss->_weapon == 2 && !boss->_resurrect){ //AIRE
-							if (airCharging){
+							if (boss->airCharging){
 
 								airPower = log(airPower + 0.6) * 4 + 1;
+								boss->energyA -= airPower * 10 * 2.5;
 								if (airPower >= 3.99) airPower = 8;
 
-								airCharging = false;
+								boss->airCharging = false;
 								coolDownAirNow = 0;
 
 								CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
@@ -1019,6 +1323,20 @@ void HelloWorld::update(float dt)
 								airPower = 0;
 							}
 						}
+					}
+
+					// BARRA ENERGÍA ARMAS
+					if (boss->_weapon == 0){
+						bar->setScaleX(boss->energyN / 100);
+						bar->setColor(ccc3(200, 200, 0));
+					}
+					else if (boss->_weapon == 1) {
+						bar->setScaleX(boss->energyF / 100);
+						bar->setColor(ccc3(200, 0, 0));
+					}
+					else if (boss->_weapon == 2) {
+						bar->setScaleX(boss->energyA / 100);
+						bar->setColor(ccc3(0, 200, 200));
 					}
 
 					// ROTAR CAMARA
