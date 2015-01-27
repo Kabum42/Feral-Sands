@@ -52,6 +52,11 @@ Atrezzo::Atrezzo(int floorSize2, Point initial_point_2, String type2) {
 		_radius = scale*0.2;
 		_sprite = Sprite3D::create("Gate.obj", "GateText.png");
 	}
+	else if (type2.compare("ruin") == 0) {
+		scale = 50*(floorSize/2048);
+		_radius = scale*0.2;
+		_sprite = Sprite3D::create("RuinStructure.obj", "RuinStructureText.png");
+	}
 
 	
 	_sprite->setPosition3D(Vec3(initial_point_2.x, initial_point_2.y, 0));

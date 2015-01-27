@@ -1,5 +1,12 @@
-# File created by ZBrush
-# ToolType: PolyMesh3D
-# www.zbrush.com
-newmtl defaultMat
+#
+#
+#
+
+newmtl Group2 Mesh_defaultMat
+illum 2
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ns 0.000000
 map_Kd RuinStructure.bmp
+

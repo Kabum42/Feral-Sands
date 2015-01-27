@@ -449,14 +449,6 @@ bool HelloWorld::init()
 	lake->setCameraMask(2);
 	this->addChild(lake, 0);
 	*/
-	/*
-	auto ruin1 = Sprite3D::create("RuinStructure.obj", "RuinStructureText.png");
-	ruin1->setScale(25 * (floorSize / 2048));
-	ruin1->setRotation3D(Vec3(90, 0, 0));
-	ruin1->setPosition3D(Vec3(0*(floorSize/2048), -150*(floorSize/2048), 0));
-	ruin1->setCameraMask(2);
-	this->addChild(ruin1, 0);
-	*/
 	
 	Point p = Point(0, 0);
 
@@ -496,6 +488,54 @@ bool HelloWorld::init()
 	bezier.controlPoint_1 = Point(-1650, -500);
 	bezier.endPosition = Point(-1300, 0);
 	*/
+
+	Atrezzo* ruin = new Atrezzo(floorSize, Point(30*(floorSize/2048), -100*(floorSize/2048)), "ruin");
+	static_objects [num_static_objects] = ruin;
+	num_static_objects++;
+	ruin->_sprite->setCameraMask(2);
+	this->addChild(ruin->_sprite, 1);
+	rotateToPoint(ruin->_sprite, Point(0, 0));
+	ruin->_sprite->setRotation3D(Vec3(90, 0, ruin->_sprite->getRotation3D().z +180));
+
+	ruin = new Atrezzo(floorSize, Point(-90*(floorSize/2048), -55*(floorSize/2048)), "ruin");
+	static_objects [num_static_objects] = ruin;
+	num_static_objects++;
+	ruin->_sprite->setCameraMask(2);
+	this->addChild(ruin->_sprite, 1);
+	rotateToPoint(ruin->_sprite, Point(0, 0));
+	ruin->_sprite->setRotation3D(Vec3(90, 0, ruin->_sprite->getRotation3D().z +180));
+
+	ruin = new Atrezzo(floorSize, Point(-90*(floorSize/2048), 55*(floorSize/2048)), "ruin");
+	static_objects [num_static_objects] = ruin;
+	num_static_objects++;
+	ruin->_sprite->setCameraMask(2);
+	this->addChild(ruin->_sprite, 1);
+	rotateToPoint(ruin->_sprite, Point(0, 0));
+	ruin->_sprite->setRotation3D(Vec3(90, 0, ruin->_sprite->getRotation3D().z +180));
+
+	ruin = new Atrezzo(floorSize, Point(-10*(floorSize/2048), 100*(floorSize/2048)), "ruin");
+	static_objects [num_static_objects] = ruin;
+	num_static_objects++;
+	ruin->_sprite->setCameraMask(2);
+	this->addChild(ruin->_sprite, 1);
+	rotateToPoint(ruin->_sprite, Point(0, 0));
+	ruin->_sprite->setRotation3D(Vec3(90, 0, ruin->_sprite->getRotation3D().z +180));
+
+	ruin = new Atrezzo(floorSize, Point(90*(floorSize/2048), 55*(floorSize/2048)), "ruin");
+	static_objects [num_static_objects] = ruin;
+	num_static_objects++;
+	ruin->_sprite->setCameraMask(2);
+	this->addChild(ruin->_sprite, 1);
+	rotateToPoint(ruin->_sprite, Point(0, 0));
+	ruin->_sprite->setRotation3D(Vec3(90, 0, ruin->_sprite->getRotation3D().z +180));
+
+	ruin = new Atrezzo(floorSize, Point(110*(floorSize/2048), -50*(floorSize/2048)), "ruin");
+	static_objects [num_static_objects] = ruin;
+	num_static_objects++;
+	ruin->_sprite->setCameraMask(2);
+	this->addChild(ruin->_sprite, 1);
+	rotateToPoint(ruin->_sprite, Point(0, 0));
+	ruin->_sprite->setRotation3D(Vec3(90, 0, ruin->_sprite->getRotation3D().z +180));
 
 	// PATHSTONES, EMPIEZA POR LA DE LA IZQUIERDA DEL TODO Y SIGUE EN SENTIDO DE LAS AGUJAS DEL RELOJ
 
