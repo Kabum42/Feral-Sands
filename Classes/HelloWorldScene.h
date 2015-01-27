@@ -53,6 +53,8 @@ public:
 	void HelloWorld::keyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event);
 	void HelloWorld::keyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event *event);
 
+	void HelloWorld::GameOver();
+
     
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
