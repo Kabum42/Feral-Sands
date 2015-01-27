@@ -1298,7 +1298,7 @@ void HelloWorld::update(float dt)
 								boss->energyN -= 2;
 								coolDownNow = state.Gamepad.bRightTrigger / 255 * coolDownMax / 2;
 								CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("shoot.wav");
-								WeaponShot* _shotInstance = new WeaponShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D());
+								WeaponShot* _shotInstance = new WeaponShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D());
 								addMobileObject(_shotInstance);
 							}
 						}
@@ -1312,17 +1312,17 @@ void HelloWorld::update(float dt)
 
 								Vec3 _playerMovement = Vec3(state.Gamepad.sThumbLX / 70, state.Gamepad.sThumbLY / 70, 0);
 
-								FireShot* _fireInstance = new FireShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -14 + (rand() % 14) - 7));
+								FireShot* _fireInstance = new FireShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, -14 + (rand() % 14) - 7));
 								//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
 								_fireInstance->_displacement = _playerMovement;
 								addMobileObject(_fireInstance);
 
-								_fireInstance = new FireShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, (rand() % 14) - 7));
+								_fireInstance = new FireShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, (rand() % 14) - 7));
 								//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
 								_fireInstance->_displacement = _playerMovement;
 								addMobileObject(_fireInstance);
 
-								_fireInstance = new FireShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 14 + (rand() % 14) - 7));
+								_fireInstance = new FireShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 14 + (rand() % 14) - 7));
 								//_playerMovement = Vec3(_playerMovement.x * _fireInstance->_direction.x, _playerMovement.y * _fireInstance->_direction.y, 0);
 								_fireInstance->_displacement = _playerMovement;
 								addMobileObject(_fireInstance);
@@ -1363,110 +1363,110 @@ void HelloWorld::update(float dt)
 								AirShot* _airInstance;
 
 								if (airPower == 8){
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -30 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, -30 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
 
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
 								}
 
 								if (airPower >= 3){
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -24 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, -24 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
 
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
 
 								}
 
 								if (airPower >= 2){
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -18 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, -18 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
 
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
 								}
 
-								_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+								_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
 								addMobileObject(_airInstance);
-								_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+								_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
 								addMobileObject(_airInstance);
-								_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+								_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
 								addMobileObject(_airInstance);
-								_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+								_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
 								addMobileObject(_airInstance);
-								_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+								_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
 								addMobileObject(_airInstance);
 
 								if (airPower >= 2){
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 18 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 18 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
 
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
 								}
 
 								if (airPower >= 3){
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 24 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 24 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
 
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
 								}
 
 								if (airPower == 8) {
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 30 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 30 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
 
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, -12 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, -6 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 0 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 6 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
-									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D(), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
+									_airInstance = new AirShot(floorSize, boss->_sprite->getPosition3D() + Vec3(-sin(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, -cos(boss->_sprite->getRotation3D().z*2*M_PI/(360) +18*2*M_PI/(360))*50, 55), boss->_sprite->getRotation3D() + Vec3(0, 0, 12 + (rand() % 6) - 3), airPower);
 									addMobileObject(_airInstance);
 								}
 
@@ -1814,19 +1814,24 @@ void HelloWorld::update(float dt)
 
 										repulse(player, enemigo);
 
-										// EL JUGADOR SE HIERE
-										player->_health -= 20;
-										if (player->_health > 0) { 
-											CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
-											player->_sprite->setColor(Color3B(255, 0, 0));
-											player->_injured = 0.1;
+										// EL JUGADOR SE HIERE SI NO ES INVENCIBLE
+
+										if (player->_injured <= 0) {
+											player->_health -= 20;
+											if (player->_health > 0) { 
+												CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("hurt.wav");
+												player->_sprite->setColor(Color3B(255, 0, 0));
+												player->_injured = 0.1;
+											}
+											else {
+												CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
+												player->_resurrect = true;
+												player->_health = 0.01;
+												player->_sprite->setPosition3D(Vec3(0, 0, player->_sprite->getPositionZ()));
+											}
 										}
-										else {
-											CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("explosion.wav");
-											player->_resurrect = true;
-											player->_health = 0.01;
-											player->_sprite->setPosition3D(Vec3(0, 0, player->_sprite->getPositionZ()));
-										}
+
+										
 							
 									}
 									else if (mobile_objects[i]->_type.compare("resource") == 0 || mobile_objects[j]->_type.compare("resource") == 0) {
