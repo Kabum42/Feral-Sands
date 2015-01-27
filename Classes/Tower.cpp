@@ -40,13 +40,12 @@ Tower::Tower(int floorSize2, String _subtype2, Point initial_point_2) {
 
 		_radius = scale_tower*0.4;
 
-		position_z_tower = 1;
+		position_z_tower = 20;
 
 		_sprite = Sprite3D::create("Floor.obj", "alquitran.png");
 		_sprite->setPosition3D(Vec3(initial_point_tower.x, initial_point_tower.y, position_z_tower));
 		_sprite->setRotation3D(Vec3(90, 0, 270));
 		_sprite->setScale(scale_tower);
-		_sprite->setPositionZ(20);
 
 	}
 	else if (_subtype.compare("monster") == 0) {
@@ -55,13 +54,12 @@ Tower::Tower(int floorSize2, String _subtype2, Point initial_point_2) {
 
 		_radius = scale_tower*0.15;
 
-		position_z_tower = 1;
+		position_z_tower = 20;
 
 		_sprite = Sprite3D::create("Floor.obj", "monster.png");
 		_sprite->setPosition3D(Vec3(initial_point_tower.x, initial_point_tower.y, position_z_tower));
 		_sprite->setRotation3D(Vec3(90, 0, 270));
 		_sprite->setScale(scale_tower);
-		_sprite->setPositionZ(20);
 
 	}
 
@@ -84,6 +82,14 @@ Tower::Tower(int floorSize2, String _subtype2, Point initial_point_2) {
 			}
 			else if (!distance_bool && _sprite->isVisible()) {
 				_sprite->setVisible(false);
+			}
+
+			if (_subtype.compare("standard") == 0 || _subtype.compare("monster") == 0) {
+				float aux_color = 255;
+			
+				aux_color -= (sqrt(pow(_sprite->getPositionX(), 2) + pow(_sprite->getPositionY(), 2))/(1024*5))*255;
+
+				_sprite->setColor(Color3B(aux_color, aux_color, aux_color));
 			}
 		}
 	});

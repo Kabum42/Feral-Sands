@@ -11,7 +11,7 @@ PathStone::PathStone(int floorSize2, int number_tiles_2, QuadBezier* bezier_2) {
 	floorSize = floorSize2;
 	_active = true;
 	layer = Layer::create();
-	number_tiles = number_tiles_2;
+	number_tiles = number_tiles_2 / (1.5);
 	bezier = bezier_2;
 	initial_point = bezier->initial_point;
 	_nextPath = NULL;

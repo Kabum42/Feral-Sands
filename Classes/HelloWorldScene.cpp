@@ -1698,11 +1698,11 @@ void HelloWorld::update(float dt)
 				green_tower->setRotation3D(boss->_sprite->getRotation3D());
 				green_tower->setColor(ccc3(0, 200, 0));
 
-				green_slow->setPosition3D(Vec3(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + + (rightThumbY/500)*(floorSize/2048), 2));
+				green_slow->setPosition3D(Vec3(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + + (rightThumbY/500)*(floorSize/2048), 20));
 				green_slow->setRotation3D(boss->_sprite->getRotation3D());
 				green_slow->setColor(ccc3(0, 200, 0));
 
-				green_monster->setPosition3D(Vec3(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + + (rightThumbY/500)*(floorSize/2048), 2));
+				green_monster->setPosition3D(Vec3(boss->_sprite->getPositionX() + (rightThumbX/500)*(floorSize/2048), boss->_sprite->getPositionY() + + (rightThumbY/500)*(floorSize/2048), 20));
 				green_monster->setRotation3D(boss->_sprite->getRotation3D());
 				green_monster->setColor(ccc3(0, 200, 0));
 
