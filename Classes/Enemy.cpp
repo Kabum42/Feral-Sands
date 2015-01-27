@@ -136,6 +136,14 @@ Enemy::Enemy(int floorSize2, String s_enemy2, Point initial_point_enemy2, PathSt
 			else if (!distance_bool && _sprite->isVisible()) {
 				_sprite->setVisible(false);
 			}
+
+			if (_injured <= 0) {
+				float aux_color = 255;
+			
+				aux_color -= (sqrt(pow(_sprite->getPositionX(), 2) + pow(_sprite->getPositionY(), 2))/(1024*5))*255;
+
+				_sprite->setColor(Color3B(aux_color, aux_color, aux_color));
+			}
 		}
 	});
 

@@ -98,6 +98,15 @@ Player::Player(int floorSize2, Point initial_point_player2) {
 	_eventDispatcher->addCustomEventListener("EnterFrame", [=](EventCustom* event) {
 		float* data = static_cast<float*>(event->getUserData());
 		update(data[0]);
+
+		if (_injured <= 0) {
+			float aux_color = 255;
+			
+			aux_color -= (sqrt(pow(_sprite->getPositionX(), 2) + pow(_sprite->getPositionY(), 2))/(1024*5))*255;
+
+			_sprite->setColor(Color3B(aux_color, aux_color, aux_color));
+			weaponModel->setColor(Color3B(aux_color, aux_color, aux_color));
+		}
 	});
 	
 	

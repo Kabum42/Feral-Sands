@@ -113,6 +113,12 @@ PathStone::PathStone(int floorSize2, int number_tiles_2, QuadBezier* bezier_2) {
 					tiles[i]->setVisible(false);
 				}
 
+				float aux_color = 255;
+			
+				aux_color -= (sqrt(pow(tiles[i]->getPositionX(), 2) + pow(tiles[i]->getPositionY(), 2))/(1024*5))*255;
+
+				tiles[i]->setColor(Color3B(aux_color, aux_color, aux_color));
+
 			}
 
 		}
